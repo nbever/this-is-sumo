@@ -1,15 +1,15 @@
 package com.nate.sumo.display;
 
-public abstract class Screen implements Drawable
+public abstract class Screen implements Drawable, KeyHandler
 {
 	private Screen lastScreen;
 	private boolean closing = false;
 	private boolean loading = true;
 	
-	public abstract void handleKey( int key, int scanCode, int action, int mods );
 	public abstract void drawScreen();
 	public abstract void drawClosing();
 	public abstract void drawLoading();
+	public abstract void handleKey( int key, int scanCode, int action, int mods );
 	
 	public Screen( Screen lastScreen ){
 		this.lastScreen = lastScreen;

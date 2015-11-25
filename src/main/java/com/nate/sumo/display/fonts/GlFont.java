@@ -14,13 +14,10 @@ import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBTTPackContext;
-import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.stb.STBTTAlignedQuad;
-import org.lwjgl.system.MemoryUtil;
 import org.newdawn.slick.util.ResourceLoader;
 
-public abstract class GlFont
+public class GlFont
 {
 	private static final int FONT_HEIGHT = 128;
 	private static final int BITMAP_W = 512;
@@ -39,8 +36,13 @@ public abstract class GlFont
 		0, 1, 2
 	};
 	
-	protected GlFont( String resource ) throws URISyntaxException{
-		loadFont( resource );
+	protected GlFont( String resource ){
+		try {
+			loadFont( resource );
+		}
+		catch( Exception e ){
+			e.printStackTrace();
+		}
 	}
 	
 	private void loadFont( String resource ) throws URISyntaxException{
@@ -86,7 +88,11 @@ public abstract class GlFont
 		glDeleteTextures( fontTex );
 	}
 	
-	public void drawString( String text, Integer font){
+	public void drawString( String text ){
+		
+		glPushMatrix();
+		// standard scale factor
+		glScalef( 0.002f, 0.002f, 0.002f );
 		
 		FloatBuffer xb = BufferUtils.createFloatBuffer(1);
 		FloatBuffer yb = BufferUtils.createFloatBuffer(1);
@@ -119,6 +125,7 @@ public abstract class GlFont
 			);
 		}
 		glEnd();
+		glPopMatrix();
 	}
 	
 	private void drawBoxTC( float x0, float y0, float x1, float y1, float s0, float t0, float s1, float t1 ){
