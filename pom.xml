@@ -15,10 +15,6 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<repository>
-			<id>jMonkeyEngine-repo</id>
-			<url>http://updates.jmonkeyengine.org/maven/</url>
-		</repository>
 	</repositories>
 	
 	<properties>
@@ -31,6 +27,11 @@
         <groupId>com.nate</groupId>
         <artifactId>md5loader</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+    	<groupId>slick-util</groupId>
+    	<artifactId>slick-util</artifactId>
+    	<version>0.1</version>
     </dependency>
 	<dependency>
 		<groupId>org.lwjgl</groupId>
