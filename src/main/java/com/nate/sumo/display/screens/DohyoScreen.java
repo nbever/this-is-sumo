@@ -4,7 +4,6 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 import com.nate.sumo.display.Screen;
-import com.nate.sumo.display.SwipeScreen;
 
 public class DohyoScreen extends SwipeScreen
 {

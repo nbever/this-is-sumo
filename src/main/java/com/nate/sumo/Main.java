@@ -7,6 +7,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.awt.DisplayMode;
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -21,6 +23,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
 import com.nate.sumo.display.Screen;
+import com.nate.sumo.display.ScreenManager;
+import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.display.screens.DohyoScreen;
 import com.nate.sumo.display.screens.MainScreen;
 import com.nate.util.SharedLibraryLoader;
@@ -41,11 +45,10 @@ public class Main
 
 	int WIDTH = 800;
 	int HEIGHT = 600;
+	int backgroundTexture;
 
 	// The window handle
 	private long window;
-
-	private Screen currentScreen;
 	
 	public void run() {
 		System.out.println("Hello LWJGL " + Sys.getVersion() + "!");
@@ -53,7 +56,6 @@ public class Main
 		try {
 
 			init();
-			currentScreen = new MainScreen();
 			loop();
 
 			// Release window and window callbacks
@@ -98,8 +100,8 @@ public class Main
 					glfwSetWindowShouldClose(window, GL_TRUE); 
 					// We will detect this in our rendering loop
 				}
-				else if ( getCurrentScreen() != null ){
-					getCurrentScreen().handleKey( key, scancode, action, mods );
+				else {
+					ScreenManager.getInstance().handleKey( key, scancode, action, mods );
 				}
 			}
 		});
@@ -133,6 +135,8 @@ public class Main
 		//GL.createCapabilities( true );
 		// valid for latest build
 		GLContext.createFromCurrent(); // use this line instead with the 3.0.0a build
+		
+		ScreenManager.getInstance();
 		
 		glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 		int frameRate = 60;
@@ -179,21 +183,16 @@ public class Main
 		
 		glMatrixMode( GL_MODELVIEW );
 		glPolygonMode( GL_FRONT_AND_BACK, GL11.GL_FILL);
-		
-		if ( getCurrentScreen() != null ){
-			glPushMatrix();
-			glTranslatef( 0.0f, 0.0f, -1.0f );
-//			glScalef( 0.5f, 0.5f, 0.5f );
-			getCurrentScreen().draw();
+
 			
-			glPopMatrix();
-		}
+//			glScalef( 0.5f, 0.5f, 0.5f );
+		glPushMatrix();
+			glTranslatef( 0.0f, 0.0f, -1.0f );
+	
+			ScreenManager.getInstance().draw();
+		glPopMatrix();
 		
 		glfwSwapBuffers(window);
-	}
-
-	private Screen getCurrentScreen(){
-		return currentScreen;
 	}
 
 }

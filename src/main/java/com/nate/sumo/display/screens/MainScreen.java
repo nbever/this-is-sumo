@@ -3,9 +3,9 @@ package com.nate.sumo.display.screens;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.Arrays;
+import java.util.List;
 
-import com.nate.sumo.display.SwipeScreen;
-import com.nate.sumo.display.TextureManager;
+import com.nate.sumo.display.TextureNames;
 import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.display.widgets.menu.Menu;
 import com.nate.sumo.display.widgets.menu.MenuItem;
@@ -14,8 +14,6 @@ public class MainScreen extends SwipeScreen
 {
 	private Menu menu;
 	
-	private Integer shingleId = -1;
-
 	public MainScreen(){
 		
 		menu = new Menu( Arrays.asList( new MenuItem( "Quick Match" ),
@@ -36,37 +34,10 @@ public class MainScreen extends SwipeScreen
 	@Override
 	public void drawScreen()
 	{
-		if ( shingleId == -1 ){
-			try
-			{
-				shingleId = TextureManager.getInstance().loadTexture( "shrine.jpg" );
-			}
-			catch (Exception e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 		
 		glEnable( GL_TEXTURE_2D );
 		glEnable( GL_BLEND );
 		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-		
-		glBindTexture(GL_TEXTURE_2D, shingleId);
-		
-		glBegin( GL_QUADS );
-			
-			glColor4f( 1.0f, 1.0f, 1.0f, 0.8f );
-			glTexCoord2f( 0.0f, 0.0f );
-			glVertex3f( -1.3f, 1.3f, -0.1f );
-			glTexCoord2f( 1.0f, 0.0f );
-			glVertex3f( 1.3f, 1.3f, -0.1f );
-			glTexCoord2f( 1.0f, 1.0f );
-			glVertex3f( 1.3f, -1.3f, -0.1f );
-			glTexCoord2f( 0.0f, 1.0f );
-			glVertex3f( -1.3f, -1.3f, -0.1f );
-		
-		glEnd();
 		
 		glPushMatrix();
 			glTranslatef( -0.7f, 0.5f, -0.2f );
@@ -76,8 +47,8 @@ public class MainScreen extends SwipeScreen
 			Font.ZENZAI.drawString( "This is Sumo" );
 			
 			glColor4f( 0.07f, 0.3f, 0.07f, 1.0f );
-			glTranslatef( 0.01f, 0.0f, 0.0f );
-			glScalef( 0.95f, 0.95f, 0.95f );
+			glTranslatef( 0.007f, 0.0f, 0.0f );
+//			glScalef( 0.95f, 0.95f, 0.95f );
 			Font.ZENZAI.drawString( "This is Sumo" );
 		glPopMatrix();
 		
@@ -90,19 +61,51 @@ public class MainScreen extends SwipeScreen
 			getMenu().draw();
 		glPopMatrix();
 		
+
+		glPushMatrix();
+
+			glBindTexture( GL_TEXTURE_2D, getTextures().get( TextureNames.HAKUHO_SALT ) );
+		
+			glTranslatef( 0.6f, -0.6f, -0.2f );
+			glScalef( 0.6f, 0.6f, 0.6f );
+		
+			glBegin( GL_QUADS );
+			
+			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+			glTexCoord2f( 0.0f, 0.0f );
+			glVertex3f( 1.0f, 1.0f, 0.0f );
+			glTexCoord2f( 1.0f, 0.0f );
+			glVertex3f( -1.0f, 1.0f, 0.0f );
+			glTexCoord2f( 1.0f, 1.0f );
+			glVertex3f( -1.0f, -1.0f, 0.0f );
+			glTexCoord2f( 0.0f, 1.0f );
+			glVertex3f( 1.0f, -1.0f, 0.0f );
+			
+			glEnd();
+			
+		glPopMatrix();
+		
 		glDisable( GL_TEXTURE_2D );
 		glDisable( GL_BLEND );
+	}
+	
+	@Override
+	public void cleanup(){
+		
 	}
 	
 	private Menu getMenu(){
 		return menu;
 	}
-	
+
 	@Override
-	protected void finalize() throws Throwable
-	{
-		super.finalize();
-		TextureManager.getInstance().releaseTexture( shingleId );
-		shingleId = -1;
+	public List<String> getTextureNames(){
+		
+		if ( textureNames == null ){
+			textureNames = Arrays.asList( TextureNames.HAKUHO_SALT );
+		}
+		
+		return textureNames;
 	}
+
 }

@@ -1,15 +1,12 @@
-package com.nate.sumo.display;
+package com.nate.sumo.display.screens;
 
 import static org.lwjgl.opengl.GL11.*;
+
+import com.nate.sumo.display.Screen;
 
 public abstract class SwipeScreen extends Screen
 {
 
-	public SwipeScreen( Screen lastScreen )
-	{
-		super(lastScreen);
-	}
-	
 	public SwipeScreen(){}
 
 	private static final float OFF_SCREEN = 10.0f;
