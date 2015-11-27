@@ -2,12 +2,20 @@ package com.nate.sumo.display.screens;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.util.Map;
+
 import com.nate.sumo.display.Screen;
 
 public abstract class SwipeScreen extends Screen
 {
 
-	public SwipeScreen(){}
+	public SwipeScreen(){
+		super( null );
+	}
+	
+	public SwipeScreen( Map<String, Object> initData ){
+		super( initData );
+	}
 
 	private static final float OFF_SCREEN = 10.0f;
 	private float leftCoord = OFF_SCREEN;

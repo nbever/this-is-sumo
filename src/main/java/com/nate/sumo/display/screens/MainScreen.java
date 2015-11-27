@@ -1,6 +1,7 @@
 package com.nate.sumo.display.screens;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +29,12 @@ public class MainScreen extends SwipeScreen
 	@Override
 	public void handleKey( int key, int scanCode, int action, int mods )
 	{
-		getMenu().handleKey(key, scanCode, action, mods);
+		if ( key == GLFW_KEY_ENTER && action == GLFW_PRESS && mods == GLFW_MOD_SHIFT ){
+			close();
+		}
+		else {
+			getMenu().handleKey(key, scanCode, action, mods);
+		}
 	}
 
 	@Override
@@ -106,6 +112,13 @@ public class MainScreen extends SwipeScreen
 		}
 		
 		return textureNames;
+	}
+
+	@Override
+	public ScreenInitData getNextScreenData()
+	{
+		ScreenInitData data = new ScreenInitData( FontTestScreen.class );
+		return data;
 	}
 
 }

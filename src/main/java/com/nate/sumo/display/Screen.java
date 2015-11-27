@@ -8,9 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.nate.sumo.display.screens.ScreenInitData;
+
 public abstract class Screen implements Drawable, KeyHandler
 {
 	private Map<String, Integer> textures;
+	private Map<String, Object> initData;
 	protected List<String> textureNames;
 	
 	private boolean closing = false;
@@ -22,27 +25,32 @@ public abstract class Screen implements Drawable, KeyHandler
 	public abstract void drawClosing();
 	public abstract void drawLoading();
 	public abstract void cleanup();
+	public abstract ScreenInitData getNextScreenData();
 	
 	public abstract void handleKey( int key, int scanCode, int action, int mods );
 	
-	public Screen(){
+	public Screen( Map<String, Object> initData ){
 		
-		for ( String resource : getTextureNames() ){
-			
-			try
-			{
-				Integer texId = TextureManager.getInstance().loadTexture( resource );
-				getTextures().put( resource, texId );
-			}
-			catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (URISyntaxException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		this.initData = initData; 
+		
+		if ( getTextureNames() != null ){
+			for ( String resource : getTextureNames() ){
+				
+				try
+				{
+					Integer texId = TextureManager.getInstance().loadTexture( resource );
+					getTextures().put( resource, texId );
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (URISyntaxException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -57,7 +65,7 @@ public abstract class Screen implements Drawable, KeyHandler
 	public void draw(){
 		
 		// means we're done
-		if ( !live && !isClosing() ){
+		if ( isDone() ){
 			unloadTextures();
 			cleanup();
 			return;
@@ -89,6 +97,18 @@ public abstract class Screen implements Drawable, KeyHandler
 	
 	public boolean isClosing(){
 		return closing;
+	}
+	
+	public void close(){
+		closing = true;
+	}
+	
+	public boolean isDone(){
+		return ( !isClosing() && !live );
+	}
+	
+	public Map<String, Object> getInitData(){
+		return initData;
 	}
 	
 	protected Map<String, Integer> getTextures(){

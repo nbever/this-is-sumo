@@ -19,12 +19,13 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class GlFont
 {
-	private static final int FONT_HEIGHT = 128;
-	private static final int BITMAP_W = 512;
-	private static final int BITMAP_H = 512;
+	private static final int BITMAP_W = 1024;
+	private static final int BITMAP_H = 1024;
 	
 	private ByteBuffer chardata;
 	private Integer fontTex;
+
+	private int fontHeight = 24;
 	
 	private static final float[] scale = {
 		24.0f,
@@ -36,7 +37,10 @@ public class GlFont
 		0, 1, 2
 	};
 	
-	protected GlFont( String resource ){
+	protected GlFont( String resource, int fontSize ){
+		
+		fontHeight = fontSize;
+		
 		try {
 			loadFont( resource );
 		}
@@ -72,7 +76,7 @@ public class GlFont
 			
 			ByteBuffer bitmap = BufferUtils.createByteBuffer(BITMAP_W * BITMAP_H);
 			chardata = BufferUtils.createByteBuffer( bitmap.capacity() );
-			stbtt_BakeFontBitmap(ttf, FONT_HEIGHT, bitmap, BITMAP_W, BITMAP_H, 32, chardata);
+			stbtt_BakeFontBitmap(ttf, fontHeight, bitmap, BITMAP_W, BITMAP_H, 32, chardata);
 			
 			glBindTexture(GL_TEXTURE_2D, fontTex);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, BITMAP_W, BITMAP_H, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bitmap);
@@ -88,7 +92,12 @@ public class GlFont
 		glDeleteTextures( fontTex );
 	}
 	
-	public void drawString( String text ){
+	public int getFontTexId(){
+		return fontTex;
+	}
+	
+	
+	public void drawString( char[] text ){
 		
 		glPushMatrix();
 		// standard scale factor
@@ -106,14 +115,14 @@ public class GlFont
 		glBindTexture(GL_TEXTURE_2D, fontTex);
 
 		glBegin(GL_QUADS);
-		for ( int i = 0; i < text.length(); i++ ) {
+		for ( int i = 0; i < text.length; i++ ) {
 			
-			char c = text.charAt(i);
+			char c = text[i];
 			if ( c == '\n' ) {
-				yb.put(0, yb.get(0) + FONT_HEIGHT);
+				yb.put(0, yb.get(0) + fontHeight);
 				xb.put(0, 0.0f);
 				continue;
-			} else if ( c < 32 || 128 <= c )
+			} else if ( c < 32 )// || 128 <= c )
 				continue;
 
 			

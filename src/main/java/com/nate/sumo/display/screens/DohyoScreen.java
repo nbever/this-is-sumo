@@ -3,6 +3,8 @@ package com.nate.sumo.display.screens;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
+import java.util.List;
+
 import com.nate.sumo.display.Screen;
 
 public class DohyoScreen extends SwipeScreen
@@ -12,10 +14,6 @@ public class DohyoScreen extends SwipeScreen
 	
 	public DohyoScreen(){
 		super();
-	}
-	
-	public DohyoScreen( Screen lastScreen ){
-		super( lastScreen );
 	}
 	
 	public void drawScreen()
@@ -75,6 +73,27 @@ public class DohyoScreen extends SwipeScreen
 	
 	private Float getCameraAngle(){
 		return cameraAngle;
+	}
+
+	@Override
+	public List<String> getTextureNames()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void cleanup()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ScreenInitData getNextScreenData()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

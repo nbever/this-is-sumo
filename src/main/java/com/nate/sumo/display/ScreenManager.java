@@ -3,9 +3,14 @@ package com.nate.sumo.display;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.util.Map;
 
+import com.nate.sumo.display.screens.FontTestScreen;
 import com.nate.sumo.display.screens.MainScreen;
+import com.nate.sumo.display.screens.ScreenInitData;
 
 public class ScreenManager implements Drawable, KeyHandler
 {
@@ -13,6 +18,7 @@ public class ScreenManager implements Drawable, KeyHandler
 	private static ScreenManager screenManager;
 	
 	private Screen currentScreen;
+	private Screen nextScreen;
 	private int backgroundTexture;
 	
 	private ScreenManager(){}
@@ -57,7 +63,41 @@ public class ScreenManager implements Drawable, KeyHandler
 		glDisable( GL_TEXTURE_2D );
 		glPopMatrix();
 		
+		// closing so we should draw the next screen
+		if ( getCurrentScreen().isClosing() && !getCurrentScreen().isDone() ){
+			
+			if ( getNextScreen() == null ){
+				ScreenInitData initData = getCurrentScreen().getNextScreenData();
+				try{
+					Constructor<? extends Screen> constructor = null;
+					
+					if ( initData.getInitData() != null && !initData.getInitData().isEmpty() ){
+						constructor = initData.getNextScreenClass().getConstructor( Map.class );
+						nextScreen = constructor.newInstance( initData.getInitData() );
+					}
+					else {
+						constructor = initData.getNextScreenClass().getConstructor();
+						nextScreen = constructor.newInstance();
+					}
+					
+					
+				}
+				catch (Exception e){
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			nextScreen.draw();
+		}
+		
 		getCurrentScreen().draw();
+		
+		if ( getCurrentScreen().isDone() ){
+			currentScreen = nextScreen;
+			nextScreen = null;
+		}
+		
 	}
 	
 	public void handleKey( int key, int scanCode, int action, int mods )
@@ -68,6 +108,10 @@ public class ScreenManager implements Drawable, KeyHandler
 	
 	private Screen getCurrentScreen(){
 		return currentScreen;
+	}
+	
+	private Screen getNextScreen(){
+		return nextScreen;
 	}
 	
 	private void setBackgroundTexture( String resource ) throws IOException, URISyntaxException{
