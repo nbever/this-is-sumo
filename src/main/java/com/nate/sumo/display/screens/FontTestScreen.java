@@ -27,8 +27,9 @@ public class FontTestScreen extends SwipeScreen
 		
 		glColor3f( 1.0f, 1.0f, 1.0f );
 		glTranslatef( 0.0f, 0.0f, -0.2f );
+		glScalef( 2.0f, 2.0f, 2.0f );
 		
-		Font.JAPANESE_CALI.drawString( new char[]{65, 2200, 12354, 0x3042, 0x41} );
+		Font.JAPANESE_CALI.drawString( new char[]{65, 133, 120, 83, 100} );
 		
 		glPopMatrix();
 		
