@@ -117,7 +117,8 @@ public class MainScreen extends SwipeScreen
 	@Override
 	public ScreenInitData getNextScreenData()
 	{
-		ScreenInitData data = new ScreenInitData( FontTestScreen.class );
+//		ScreenInitData data = new ScreenInitData( FontTestScreen.class );
+		ScreenInitData data = new ScreenInitData( DohyoScreen.class );
 		return data;
 	}
 

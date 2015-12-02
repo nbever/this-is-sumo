@@ -5,14 +5,8 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-import java.awt.DisplayMode;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.time.Instant;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
@@ -22,11 +16,7 @@ import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
-import com.nate.sumo.display.Screen;
 import com.nate.sumo.display.ScreenManager;
-import com.nate.sumo.display.TextureManager;
-import com.nate.sumo.display.screens.DohyoScreen;
-import com.nate.sumo.display.screens.MainScreen;
 import com.nate.util.SharedLibraryLoader;
 
 public class Main
@@ -35,6 +25,7 @@ public class Main
 	public static void main( String[] args )
 	{
 		SharedLibraryLoader.load();
+		DatabaseManager.getInstance();
 		Main main = new Main();
 		main.run();
 	}
@@ -43,8 +34,8 @@ public class Main
 	private GLFWErrorCallback errorCallback;
 	private GLFWKeyCallback keyCallback;
 
-	int WIDTH = 800;
-	int HEIGHT = 600;
+	float WIDTH = 800;
+	float HEIGHT = 600;
 	int backgroundTexture;
 
 	// The window handle
@@ -86,7 +77,7 @@ public class Main
 		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); // the window will be resizable
 
 		// Create the window
-		window = glfwCreateWindow(WIDTH, HEIGHT, "Hello World!", NULL, NULL);
+		window = glfwCreateWindow((int)WIDTH, (int)HEIGHT, "Hello World!", NULL, NULL);
 		
 		if ( window == NULL )
 			throw new RuntimeException("Failed to create the GLFW window");
@@ -112,8 +103,8 @@ public class Main
 		// Center our window
 		glfwSetWindowPos(
 				window,
-				(GLFWvidmode.width(vidmode) - WIDTH) / 2,
-				(GLFWvidmode.height(vidmode) - HEIGHT) / 2
+				(int)((GLFWvidmode.width(vidmode) - WIDTH) / 2.0f),
+				(int)((GLFWvidmode.height(vidmode) - HEIGHT) / 2.0f)
 				);
 
 		// Make the OpenGL context current
@@ -139,7 +130,7 @@ public class Main
 		ScreenManager.getInstance();
 		
 		glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-		int frameRate = 60;
+		int frameRate = 65;
 		double lastSample = 0.0;
 
 		glTranslatef( 0.0f, 0.0f, -1.0f );

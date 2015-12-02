@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZ}:%msg%n"/>
+    </Console>
+    <RollingFile name="rolling.file" fileName="logs/this-is-sumo.log"
+                 filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+      <PatternLayout>
+        <Pattern>%d{yyyy-MM-dd'T'HH:mm:ss}: %t : %-5p : %msg%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy />
+        <SizeBasedTriggeringPolicy size="250 MB"/>
+      </Policies>
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+<!--     <Logger name="persistence" level="info" additivity="false">
+        <AppenderRef ref="rolling.file"/>
+    </Logger> -->
+    <Root level="info">
+      <AppenderRef ref="rolling.file"/>
+    </Root>
+  </Loggers>
+</Configuration>

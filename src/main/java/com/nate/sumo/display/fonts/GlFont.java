@@ -15,7 +15,6 @@ import java.nio.channels.FileChannel;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTAlignedQuad;
-import org.newdawn.slick.util.ResourceLoader;
 
 public class GlFont
 {
@@ -55,7 +54,7 @@ public class GlFont
 		
 		try {
 			ByteBuffer ttf;
-			URL fileUrl = ResourceLoader.getResource( "fonts/" + resource );
+			URL fileUrl = GlFont.class.getResource( "/fonts/" + resource );
 			File file = new File( fileUrl.toURI() );
 			
 			if ( !file.exists() ){

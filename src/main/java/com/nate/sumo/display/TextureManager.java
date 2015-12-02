@@ -5,7 +5,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.*;
-import org.newdawn.slick.util.ResourceLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,7 +38,7 @@ public class TextureManager
 	public Integer loadTexture( String resourceName ) throws IOException, URISyntaxException{
 		
 		ByteBuffer byteBuffer;
-		URL fileUrl = ResourceLoader.getResource( "images/" + resourceName );
+		URL fileUrl = TextureManager.class.getResource( "/images/" + resourceName );
 		File file = new File( fileUrl.toURI() );
 		
 		if ( !file.exists() ){

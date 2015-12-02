@@ -28,11 +28,6 @@
         <artifactId>md5loader</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </dependency>
-    <dependency>
-    	<groupId>slick-util</groupId>
-    	<artifactId>slick-util</artifactId>
-    	<version>0.1</version>
-    </dependency>
 	<dependency>
 		<groupId>org.lwjgl</groupId>
 		<artifactId>lwjgl</artifactId>
@@ -56,6 +51,21 @@
 			<version>${lwjgl.version}</version>
 			<classifier>natives-linux</classifier>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.derby</groupId>
+		    <artifactId>derby</artifactId>
+		    <version>10.12.1.1</version>
+		</dependency>
+		<dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.3</version>
+        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
