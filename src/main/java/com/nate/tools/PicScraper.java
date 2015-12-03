@@ -1,4 +1,4 @@
-package com.nate.tools.picscraper;
+package com.nate.tools;
 
 import java.io.BufferedReader;
 import java.io.File;

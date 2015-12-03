@@ -8,6 +8,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -50,9 +51,7 @@ public class DatabaseManager {
 	
 	private void init() throws IOException, SQLException{
 		
-		List<List<Object>> results = query( "SELECT * FROM sys.systable" );
-		
-		if ( results.size() == 0 ){
+		if ( !tableExists( "RIKISHI_INFO" ) ){
 			
 			logger.info( "Creating tables..." );
 			URL resourceUrl = DatabaseManager.class.getResource( "/sumo.ddl" );
@@ -71,6 +70,24 @@ public class DatabaseManager {
 		return connection;
 	}
 	
+	public boolean tableExists( String tableName ) {
+		
+		try
+		{
+			ResultSet set = getConnection().getMetaData().getTables( "APP", null, tableName, null );
+			List<List<Object>> results = parseResults( set );
+			
+			return (results.size() > 0);
+		}
+		catch (SQLException e)
+		{
+			logger.error( "Error checking for table existence.", e );
+		}
+		
+		return true;
+		
+	}
+	
 	public List<List<Object>> query( String sql ) {
 		
 		List<List<Object>> typedResults = new ArrayList<List<Object>>();
@@ -80,50 +97,59 @@ public class DatabaseManager {
 			
 			ResultSet results = stmnt.executeQuery( sql );
 			
-			int columns = results.getMetaData().getColumnCount();
-			
-			while( results.next() == true ){
-				
-				List<Object> row = new ArrayList<Object>();
-				
-				for ( int i = 0; i < columns; i++ ){
-					
-					int type = results.getMetaData().getColumnType( i );
-					
-					switch( type ){
-						case Types.INTEGER:
-							row.add( results.getInt( i ) );
-							break;
-						case Types.DOUBLE:
-							row.add( results.getDouble( i ) );
-							break;
-						case Types.BOOLEAN:
-							row.add( results.getBoolean( i ) );
-							break;
-						case Types.FLOAT:
-							row.add( results.getFloat( i ) );
-							break;
-						case Types.CHAR:
-						case Types.VARCHAR:
-							row.add( results.getString( i ) );
-							break;
-						default:
-							row.add( results.getObject( i ) );
-							break;
-					}
-				}// for
-				
-				typedResults.add( row );
-			}
+			typedResults = parseResults(results);
 		}
 		catch( Exception e ){
-			
+			logger.error( e );
 		}
 		
 		return typedResults;
 	}
 	
-	public boolean insert( String sql ){
+	private List<List<Object>> parseResults( ResultSet results ) throws SQLException{
+		
+		List<List<Object>> typedResults = new ArrayList<List<Object>>();
+		int columns = results.getMetaData().getColumnCount();
+		
+		while( results.next() == true ){
+			
+			List<Object> row = new ArrayList<Object>();
+			ResultSetMetaData metaData = results.getMetaData();
+			
+			for ( int i = 1; i <= columns; i++ ){
+				
+				int type = metaData.getColumnType( i );
+				
+				switch( type ){
+					case Types.INTEGER:
+						row.add( results.getInt( i ) );
+						break;
+					case Types.DOUBLE:
+						row.add( results.getDouble( i ) );
+						break;
+					case Types.BOOLEAN:
+						row.add( results.getBoolean( i ) );
+						break;
+					case Types.FLOAT:
+						row.add( results.getFloat( i ) );
+						break;
+					case Types.CHAR:
+					case Types.VARCHAR:
+						row.add( results.getString( i ) );
+						break;
+					default:
+						row.add( results.getObject( i ) );
+						break;
+				}
+			}// for
+			
+			typedResults.add( row );
+		}
+		
+		return typedResults;
+	}
+	
+	public boolean execute( String sql ){
 		
 		boolean result = false;
 		

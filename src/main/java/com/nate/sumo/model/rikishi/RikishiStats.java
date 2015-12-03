@@ -6,11 +6,8 @@ public class RikishiStats {
 
 	// skill section
 	private Integer oshi;
-	private Integer shitatenage;
-	private Integer uwatenage;
-	private Integer sotogake;
-	private Integer uchigake;
-	private Integer sukuinage;
+	private Integer gake;
+	private Integer nage;
 	private Integer yorikiri;
 	private Integer hatakikomi;
 	private Integer tsuki;
@@ -40,44 +37,20 @@ public class RikishiStats {
 		this.oshi = oshi;
 	}
 
-	public Integer getShitatenage() {
-		return shitatenage;
+	public Integer getNage() {
+		return nage;
 	}
-
-	public void setShitatenage(Integer shitatenage) {
-		this.shitatenage = shitatenage;
+	
+	public void setNage(Integer nage) {
+		this.nage = nage;
 	}
-
-	public Integer getUwatenage() {
-		return uwatenage;
+	
+	public Integer getGake(){
+		return gake;
 	}
-
-	public void setUwatenage(Integer uwatenage) {
-		this.uwatenage = uwatenage;
-	}
-
-	public Integer getSotogake() {
-		return sotogake;
-	}
-
-	public void setSotogake(Integer sotogake) {
-		this.sotogake = sotogake;
-	}
-
-	public Integer getUchigake() {
-		return uchigake;
-	}
-
-	public void setUchigake(Integer uchigake) {
-		this.uchigake = uchigake;
-	}
-
-	public Integer getSukuinage() {
-		return sukuinage;
-	}
-
-	public void setSukuinage(Integer sukuinage) {
-		this.sukuinage = sukuinage;
+	
+	public void setGake( Integer gake ){
+		this.gake = gake;
 	}
 
 	public Integer getYorikiri() {

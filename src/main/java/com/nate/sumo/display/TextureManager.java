@@ -38,7 +38,7 @@ public class TextureManager
 	public Integer loadTexture( String resourceName ) throws IOException, URISyntaxException{
 		
 		ByteBuffer byteBuffer;
-		URL fileUrl = TextureManager.class.getResource( "/images/" + resourceName );
+		URL fileUrl = TextureManager.class.getResource( "/" + resourceName );
 		File file = new File( fileUrl.toURI() );
 		
 		if ( !file.exists() ){
