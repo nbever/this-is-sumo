@@ -26,11 +26,11 @@ public class FontTestScreen extends SwipeScreen
 		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 		
 		glColor3f( 1.0f, 1.0f, 1.0f );
-		glTranslatef( 0.0f, 0.0f, -0.2f );
+		glTranslatef( -0.9f, 0.0f, -0.2f );
 		glScalef( 2.0f, 2.0f, 2.0f );
 		
-		Font.JAPANESE_CALI.drawString( new char[]{65, 133, 120, 83, 100} );
-		
+//		Font.JAPANESE_CALI.drawString( new char[]{65, 133, 120, 83, 100} );
+		Font.JAPANESE_CALI.drawJapaneseString( "白鵬はすごい　やった".toCharArray() );
 		glPopMatrix();
 		
 		glDisable( GL_BLEND );

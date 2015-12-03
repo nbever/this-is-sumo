@@ -95,6 +95,12 @@ public class GlFont
 		return fontTex;
 	}
 	
+	public void drawJapaneseString( char[] text ){
+		
+		String str = new String( text );
+		char[] tIds = JapaneseFontTranslator.convert( str );
+		drawString( tIds );
+	}
 	
 	public void drawString( char[] text ){
 		

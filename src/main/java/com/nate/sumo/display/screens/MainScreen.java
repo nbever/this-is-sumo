@@ -46,16 +46,16 @@ public class MainScreen extends SwipeScreen
 		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 		
 		glPushMatrix();
-			glTranslatef( -0.7f, 0.5f, -0.2f );
+			glTranslatef( -1.05f, 0.5f, -0.2f );
 			
-			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-			glScalef( 3.0f, 3.0f, 3.0f );
-			Font.ZENZAI.drawString( "This is Sumo" );
+			glColor4f( 0.7f, 0.1f, 0.1f, 1.0f );
+			glScalef( 3.5f, 4.5f, 3.5f );
+			Font.JAPANESE_CALI.drawJapaneseString( "これは大相撲" );
 			
-			glColor4f( 0.07f, 0.3f, 0.07f, 1.0f );
-			glTranslatef( 0.007f, 0.0f, 0.0f );
-//			glScalef( 0.95f, 0.95f, 0.95f );
-			Font.ZENZAI.drawString( "This is Sumo" );
+			glColor4f( 1.7f, 1.0f, 1.0f, 1.0f );
+			glTranslatef( 0.03f, 0.009f, 0.0f );
+			glScalef( 0.9f, 0.6f, 0.9f );
+			Font.JAPANESE_CALI.drawJapaneseString( "これは大相撲" );
 		glPopMatrix();
 		
 		
@@ -117,8 +117,8 @@ public class MainScreen extends SwipeScreen
 	@Override
 	public ScreenInitData getNextScreenData()
 	{
-//		ScreenInitData data = new ScreenInitData( FontTestScreen.class );
-		ScreenInitData data = new ScreenInitData( DohyoScreen.class );
+		ScreenInitData data = new ScreenInitData( FontTestScreen.class );
+//		ScreenInitData data = new ScreenInitData( DohyoScreen.class );
 		return data;
 	}
 

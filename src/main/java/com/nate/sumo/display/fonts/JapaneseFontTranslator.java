@@ -8,7 +8,9 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +22,8 @@ public class JapaneseFontTranslator
 {
 	private static final Logger logger = LogManager.getLogger();
 
+	private static Map<Integer, Integer> characterMap;
+	
 	/**
 	 * This build the database table that maps unicode value to our condensed 
 	 * Japanese font texture file
@@ -27,8 +31,6 @@ public class JapaneseFontTranslator
 	 * @throws  
 	 */
 	public static void generateJapaneseSqlMap() throws IOException{
-		
-		List<String> batchSet = new ArrayList<String>();
 		
 		InputStream inStream = JapaneseFontTranslator.class.getResourceAsStream( "/unicode_to_tex" );
 		BufferedReader reader = new BufferedReader( new InputStreamReader( inStream, "UTF-8" ) );
@@ -41,24 +43,43 @@ public class JapaneseFontTranslator
 				continue;
 			}
 			
-			String sql = "insert into " + DatabaseConstants.TBL_JPMAP + "(" + 
-				DatabaseConstants.C_UNICODE + ", " + DatabaseConstants.C_NATECODE + ") values (" +
-				rawChar + ", " + index + ")";
-
-			logger.info( sql );
+			Integer mappedValue = getCharacterMap().get( rawChar );
 			
-			DatabaseManager.getInstance().insert( sql );
-//			batchSet.add( sql );
-//			
-//			if ( batchSet.size() >= 100 ){
-//				DatabaseManager.getInstance().executeBatchInsert( batchSet );
-//				batchSet.clear();
-//			}
+			if ( mappedValue == null ){
+				getCharacterMap().put( rawChar, index );
+			}
+			else {
+				logger.warn( "Found a duplicate character: " + ((int)rawChar) + ": " + rawChar + " index: " + index );
+			}
 			
 			index++;
 		}
+	}
+	
+	public static char[] convert( String jStr ){
 		
-		DatabaseManager.getInstance().executeBatchInsert( batchSet );
-		batchSet.clear();
+		char[] cList = new char[jStr.length()];
+		
+		for ( int i = 0; i < jStr.length(); i++ ){
+			char jChar = jStr.charAt( i );
+			Integer mappedValue = getCharacterMap().get( (int)jChar );
+			
+			// null means a space
+			if ( mappedValue == null ){
+				mappedValue = (int)(" ".charAt( 0 ));
+			}
+			
+			cList[i] = (char)mappedValue.intValue();
+		}
+		
+		return cList;
+	}
+	
+	private static Map<Integer, Integer> getCharacterMap(){
+		if ( characterMap == null ){
+			characterMap = new HashMap<Integer, Integer>();
+		}
+		
+		return characterMap;
 	}
 }

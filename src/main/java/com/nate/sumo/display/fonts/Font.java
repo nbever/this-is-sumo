@@ -23,4 +23,16 @@ public enum Font
 			realFont.drawString(text);
 		}
 	}
+	
+	public void drawJapaneseString( char[] text ){
+		if ( realFont != null ){
+			realFont.drawJapaneseString( text );
+		}
+	}
+	
+	public void drawJapaneseString( String text ){
+		if ( realFont != null ){
+			realFont.drawJapaneseString( text.toCharArray() );
+		}
+	}
 }
