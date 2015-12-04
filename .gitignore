@@ -1,17 +1,9 @@
 .classpath
-
 .settings
-
 .project
-
 derby.log
-
 target/
-
 db/**
-
 logs/
-**
 /.DS_Store
-
 images/
