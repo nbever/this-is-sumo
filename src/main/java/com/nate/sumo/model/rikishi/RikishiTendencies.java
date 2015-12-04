@@ -3,13 +3,16 @@ package com.nate.sumo.model.rikishi;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.nate.sumo.model.fight.FightAction;
+import com.nate.sumo.model.fight.scenario.Scenario;
+
 public class RikishiTendencies {
 
-	private Map<Scenario, Integer> tendencies;
+	private Map<Scenario, Map<Class<? extends FightAction>, Integer>> tendencies;
 	
-	public Map<Scenario, Integer> getTendencies(){
+	public Map<Scenario, Map<Class<? extends FightAction>, Integer>> getTendencies(){
 		if ( tendencies == null ){
-			tendencies = new HashMap<Scenario, Integer>();
+			tendencies = new HashMap<Scenario, Map<Class<? extends FightAction>, Integer>>();
 		}
 		
 		return tendencies;

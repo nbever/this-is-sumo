@@ -1,28 +1,36 @@
 package com.nate.sumo.display.fonts;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.nate.sumo.DatabaseConstants;
-import com.nate.sumo.DatabaseManager;
 
 public class JapaneseFontTranslator
 {
 	private static final Logger logger = LogManager.getLogger();
 
 	private static Map<Integer, Integer> characterMap;
+	
+	public static boolean isUnique( Integer charRep ){
+		
+		if ( getCharacterMap().isEmpty() ){
+			try {
+				generateJapaneseSqlMap();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		Integer rep = getCharacterMap().get( charRep );
+		
+		return (rep == null);
+	}
 	
 	/**
 	 * This build the database table that maps unicode value to our condensed 

@@ -51,6 +51,8 @@ public class DatabaseManager {
 	
 	private void init() throws IOException, SQLException{
 		
+		JapaneseFontTranslator.generateJapaneseSqlMap();
+		
 		if ( !tableExists( "RIKISHI_INFO" ) ){
 			
 			logger.info( "Creating tables..." );
@@ -58,7 +60,6 @@ public class DatabaseManager {
 			loadSql( new File( resourceUrl.getFile() ) ); 
 			
 			logger.info( "Loading necessary SQL into the database..." );
-			JapaneseFontTranslator.generateJapaneseSqlMap();
 		}
 	}
 	
