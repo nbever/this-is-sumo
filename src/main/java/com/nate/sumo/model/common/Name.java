@@ -1,6 +1,5 @@
 package com.nate.sumo.model.common;
 
-import java.util.List;
 
 public class Name {
 
@@ -8,12 +7,21 @@ public class Name {
 	private String lastName_en;
 	private String firstName_jp;
 	private String lastName_jp;
-	private List<Integer> firstName_kanji;
-	private List<Integer> lastName_kanji;
+	private String firstName_kanji;
+	private String lastName_kanji;
 	
 	public Name(){}
 	
-	public Name( String firstName, List<Integer> kanji ){
+	public Name( String firstName_en, String firstName_jp, String lastName_en, String lastName_jp, String firstName_kanji, String lastName_kanji ){
+		this.firstName_en = firstName_en;
+		this.firstName_jp = firstName_jp;
+		this.lastName_en = lastName_en;
+		this.lastName_jp = lastName_jp;
+		this.firstName_kanji = firstName_kanji;
+		this.lastName_kanji = lastName_kanji;
+	}
+	
+	public Name( String firstName, String kanji ){
 		this.firstName_en = firstName;
 		this.firstName_kanji = kanji;
 	}
@@ -50,22 +58,20 @@ public class Name {
 		this.lastName_jp = lastName_jp;
 	}
 
-	public List<Integer> getFirstName_kanji() {
+	public String getFirstName_kanji() {
 		return firstName_kanji;
 	}
 
-	public void setFirstName_kanji(List<Integer> firstName_kanji) {
+	public void setFirstName_kanji( String firstName_kanji) {
 		this.firstName_kanji = firstName_kanji;
 	}
 
-	public List<Integer> getLastName_kanji() {
+	public String getLastName_kanji() {
 		return lastName_kanji;
 	}
 
-	public void setLastName_kanji(List<Integer> lastName_kanji) {
+	public void setLastName_kanji( String lastName_kanji) {
 		this.lastName_kanji = lastName_kanji;
 	}
-	
-	
 	
 }

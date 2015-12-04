@@ -1,0 +1,6 @@
+INSERT INTO APP.ICHIMON( ID, EN_NAME, JP_NAME ) VALUES ( 0, "Dewanoumi", "出羽海");
+INSERT INTO APP.ICHIMON( ID, EN_NAME, JP_NAME ) VALUES ( 1, "Isegahama", "伊勢ヶ濱");
+INSERT INTO APP.ICHIMON( ID, EN_NAME, JP_NAME ) VALUES ( 2, "Nishonoseki", "二所ノ関");
+INSERT INTO APP.ICHIMON( ID, EN_NAME, JP_NAME ) VALUES ( 3, "Takanohana", "貴乃花");
+INSERT INTO APP.ICHIMON( ID, EN_NAME, JP_NAME ) VALUES ( 4, "Takasago", "高砂");
+INSERT INTO APP.ICHIMON( ID, EN_NAME, JP_NAME ) VALUES ( 5, "Tokitsukaze", "時津風");

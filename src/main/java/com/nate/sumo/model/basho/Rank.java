@@ -1,32 +1,44 @@
 package com.nate.sumo.model.basho;
 
-import java.util.Arrays;
-
 import com.nate.sumo.model.common.Name;
 
 public class Rank {
 
+	public static final Integer UNLIMITED = -1;
+	
 	public enum RankClass{
-		YOKOZUNA( new Name( "Yokozuna", Arrays.asList( 12, 3 )) ),
-		OZEKI( new Name( "Ozeki", Arrays.asList( 1 )) ),
-		SEKIWAKE( new Name( "Sekiwake", Arrays.asList( 3 )) ),
-		KOMUSUBI( new Name( "Komusubi", Arrays.asList( 4 )) ),
-		MAEGASHIRA( new Name( "Maegashira", Arrays.asList( 5 )) ),
-		JURYO( new Name( "Juryo", Arrays.asList( 1 )) ),
-		MAKUSHITA( new Name( "Makushita", Arrays.asList( 1 )) ),
-		SANDANME( new Name( "Sandanme", Arrays.asList( 2 )) ),
-		JONIDAN( new Name( "Jonidan", Arrays.asList( 2 )) ),
-		JONOKUCHI( new Name( "Jonokuchi", Arrays.asList( 2 )) ),
-		MAE_ZUMO( new Name( "Mae-zumo", Arrays.asList( 2 )) );
+		YOKOZUNA( new Name( "Yokozuna", "横綱"), UNLIMITED, UNLIMITED ),
+		OZEKI( new Name( "Ozeki", "大関"), UNLIMITED, 4 ),
+		SEKIWAKE( new Name( "Sekiwake", "関脇"), 4, 2 ),
+		KOMUSUBI( new Name( "Komusubi", "小結"), 4, 2 ),
+		MAEGASHIRA( new Name( "Maegashira", "前頭"), 17, 16 ),
+		JURYO( new Name( "Juryo", "十両"), 16, 14 ),
+		MAKUSHITA( new Name( "Makushita", "幕下"), 60, 60 ),
+		SANDANME( new Name( "Sandanme", "三段目"), 100, 100 ),
+		JONIDAN( new Name( "Jonidan", "序二段"), 130, 100 ),
+		JONOKUCHI( new Name( "Jonokuchi", "序ノ口"), 50, 20 ),
+		MAE_ZUMO( new Name( "Mae-zumo", "前相撲"), UNLIMITED, UNLIMITED );
 		
 		private Name name;
+		private Integer max;
+		private Integer preferred;
 		
-		private RankClass( Name aName ){
+		private RankClass( Name aName, Integer max, Integer preferred ){
 			this.name = aName;
+			this.max = max;
+			this.preferred = preferred;
 		}
 		
 		public Name getName(){
 			return name;
+		}
+		
+		public Integer getMax(){
+			return max;
+		}
+		
+		public Integer getPreferred(){
+			return preferred;
 		}
 	};
 	
@@ -42,10 +54,14 @@ public class Rank {
 		this.rankClass = aClass;
 		this.rankSide = aSide;
 		
-		if ( this.rankClass.equals( RankClass.MAEGASHIRA ) && aNumber > 17 ){
-			aNumber = 17;
-		}
-		
+		this.rankNumber = aNumber;
+	}
+	
+	public Rank ( RankClass aClass ){
+		this.rankClass = aClass;
+	}
+	
+	public Rank( RankClass aClass, Integer aNumber ){
 		this.rankNumber = aNumber;
 	}
 	

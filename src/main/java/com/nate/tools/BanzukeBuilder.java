@@ -1,25 +1,33 @@
 package com.nate.tools;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.sql.ResultSet;
-import java.util.List;
+import java.time.Month;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.nate.sumo.DatabaseManager;
+import com.nate.sumo.model.basho.Rank;
+import com.nate.sumo.model.basho.Rank.RankClass;
+import com.nate.sumo.model.common.Height;
+import com.nate.sumo.model.common.Location;
+import com.nate.sumo.model.common.Name;
+import com.nate.sumo.model.common.Weight;
+import com.nate.sumo.model.rikishi.RikishiInfo;
 
 public class BanzukeBuilder
 {
-	private static final String ENGLISH_QUERY = "http://sumodb.sumogames.de/Query.aspx?show_form=0&columns=1&rowcount=5&show_sansho=on&showheya=on" + 
+	private static final String MAIN_URL = "http://sumodb.sumogames.de";
+	private static final String ENGLISH_QUERY = MAIN_URL + "/Query.aspx?show_form=0&columns=1&rowcount=5&show_sansho=on&showheya=on" + 
 			"&showshusshin=on&showbirthdate=on&showhatsu=on&showintai=on&showheight=on&showweight=on&showhighest=on&";
-	private static final String JAPANESE_QUERY = "http://sumodb.sumogames.de/Query.aspx?show_form=0&columns=1&rowcount=5&show_sansho=on&showheya=on" + 
-			"&showshusshin=on&showbirthdate=on&showhatsu=on&showintai=on&showheight=on&showweight=on&showhighest=on&l=j&";
+	
 	private static final String YEAR = "form2_year=";
 	private static final String MONTH = "form2_month=";
 	
@@ -90,7 +98,126 @@ public class BanzukeBuilder
 		createBanzukeTable( tableName );
 		
 		Document engPage = Jsoup.connect( ENGLISH_QUERY + YEAR + year + "&" + MONTH + month ).get();
-		Document japPage = Jsoup.connect( JAPANESE_QUERY + YEAR + year + "&" + MONTH + month ).get();
+		
+		Elements enElms = engPage.select( "table.record>tbody>tr" );
+		
+		for ( int i = 2; i < enElms.size(); i++ ){
+			
+			Element enTr = enElms.get( i );
+			
+			Elements enTds = enTr.select( "td" );
+			
+			String rikishiUrl = enTds.get( 0 ).select( "a" ).get( 0 ).attr( "href" );
+			
+			RikishiInfo rInfo = buildRikishiInfo( rikishiUrl );
+		}
+	}
+	
+	private RikishiInfo buildRikishiInfo( String url ) throws IOException{
+		
+		RikishiInfo rinf = new RikishiInfo();
+		
+		Name shikona = new Name();
+		Name realName = new Name();
+		Name heya = new Name();
+		Location hometown = new Location();
+		
+		rinf.setId( Long.parseLong( url.split( "=" )[1] ) );
+		
+		Document enPage = Jsoup.connect( MAIN_URL + "/" + url ).get();
+		Document jpPage = Jsoup.connect( MAIN_URL + "/" + url + "&l=j" ).get();
+		
+		Elements enTrs = enPage.select( "table.rikishidata table.rikishidata tr" );
+		Elements jpTrs = jpPage.select( "table.rikishidata table.rikishidata tr" );
+		
+		// highest rank
+		String highRankText = enTrs.get( 0 ).select( "td" ).get( 1 ).text();
+		String[] tokens = highRankText.split( " " );
+		RankClass rClass = RankClass.valueOf( tokens[0] );
+
+		if ( !tokens[1].startsWith( "(" ) ){
+			Integer rInt = Integer.parseInt( tokens[1] );
+			rinf.setHighestRank( new Rank( rClass, rInt ) );
+		}
+		else {
+			rinf.setHighestRank( new Rank( rClass ) );
+		}
+		
+		// real name
+		String[] enName = enTrs.get( 1 ).select( "td" ).get( 1 ).text().split( " " );
+		String[] jpName = jpTrs.get( 1 ).select( "td" ).get( 1 ).text().split( " " );
+		
+		realName.setFirstName_en( enName[0].substring( 0, 1 ) + enName[0].toLowerCase().substring( 1 ) );
+		realName.setFirstName_kanji( jpName[0] );
+		
+		if ( enName.length > 1 ){
+			realName.setLastName_en( enName[1] );
+		}
+		
+		if ( jpName.length > 1 ){
+			realName.setLastName_kanji( jpName[1] );
+		}
+		
+		rinf.setRealName( realName );
+		
+		// birthday
+		String dString = enTrs.get( 2 ).select( "td" ).get( 1 ).text();
+		dString = dString.substring( 0, dString.lastIndexOf( "(" ) - 1 );
+		rinf.setBirthday( parseDate( dString ) );
+		
+		// shusshin
+		String enShusshin = enTrs.get( 3 ).select( "td" ).get( 1 ).text();
+		String jpShusshin = jpTrs.get( 3 ).select( "td" ).get( 1 ).text();
+		String[] enShusshins = enShusshin.split( ", " );
+		
+		Name homeName = new Name();
+		
+		homeName.setFirstName_en( enShusshins[0] );
+		
+		if ( enShusshins.length > 1 ){
+			enShusshins[1] = enShusshins[1].replaceAll( " - Mongolia", "" );
+			homeName.setLastName_en( enShusshins[1] );
+		}
+		
+		if ( jpShusshin.indexOf( "県") != -1 ){
+			homeName.setFirstName_kanji( jpShusshin.substring( 0, jpShusshin.indexOf( "県" ) ) );
+			homeName.setLastName_kanji( jpShusshin.substring( jpShusshin.indexOf( "県" ), jpShusshin.length() - 2 ) );
+		}
+		else {
+			homeName.setFirstName_kanji( jpShusshin );
+		}
+		
+		rinf.setHometown( hometown );
+		
+		// height and weight
+		String[] handw = enTrs.get( 4 ).select( "td" ).get( 1 ).text().split( " " );
+		rinf.setWeight( new Weight( Integer.parseInt( handw[2] ) ) );
+		rinf.setHeight( new Height( Integer.parseInt( handw[0] ) ) );
+		
+		// heya name
+		heya.setFirstName_en( enTrs.get( 5 ).select( "td" ).get( 1 ).text() );
+		heya.setFirstName_kanji( jpTrs.get( 5 ).select( "td" ).get( 1 ).text() );
+		
+		
+		return rinf;
+	}
+	
+	private Date parseDate( String d ){
+		
+		String month = d.substring( 0, d.indexOf( " " ) );
+		String day = d.substring( d.indexOf( " " )+1, d.indexOf( "," ) );
+		String year = d.substring( d.lastIndexOf( " " ) + 1 );
+		
+		Calendar c = Calendar.getInstance();
+		c.set( Calendar.MONTH, Month.valueOf( month.toUpperCase() ).getValue() - 1 );
+		c.set( Calendar.DAY_OF_MONTH, Integer.parseInt( day ) );
+		c.set( Calendar.YEAR, Integer.parseInt( year ) );
+		c.set( Calendar.HOUR_OF_DAY, 0 );
+		c.set( Calendar.SECOND, 0 );
+		c.set( Calendar.MINUTE, 0 );
+		c.set( Calendar.MILLISECOND, 0 );
+		
+		return new Date( c.getTimeInMillis() );
 	}
 	
 	private boolean checkForExistence( String tableName ){
