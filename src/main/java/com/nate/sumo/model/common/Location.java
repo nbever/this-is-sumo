@@ -1,13 +1,14 @@
 package com.nate.sumo.model.common;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.nate.sumo.DatabaseManager;
 import com.nate.sumo.model.Entity;
 
-public class Location extends Entity{
+public class Location extends Entity<Location>{
 
 	private Name country;
 	private Name area;
@@ -94,5 +95,19 @@ public class Location extends Entity{
 	public String toString() {
 	
 		return getCountry().getFirstName_en() + ", " + getArea().getFirstName_en() + ":" + getLongitude().toString() + " " + getLatitude().toString();
+	}
+
+	public static Location getById( Long id )
+	{
+		Iterator<Location> locIt = getKnownLocations().values().iterator();
+		
+		while( locIt.hasNext() ){
+			Location l = locIt.next();
+			if ( l.getId().equals( id ) ){
+				return l;
+			}
+		}
+		
+		return null;
 	}
 }

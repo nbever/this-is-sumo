@@ -64,6 +64,8 @@ public class DatabaseManager {
 			loadSql( new File( DatabaseManager.class.getResource( "/locations.sql" ).getFile() ) );
 			logger.info(  "Adding ichimon..." );
 			loadSql( new File( DatabaseManager.class.getResource( "/ichimon.sql" ).getFile() ) );
+			logger.info( "Adding heya..." );
+			loadSql( new File( DatabaseManager.class.getResource( "/heya.sql" ).getFile() ) );
 		}
 	}
 	

@@ -1,6 +1,6 @@
 package com.nate.sumo.model;
 
-public class Entity {
+public abstract class Entity<T> {
 
 	private Long id;
 	

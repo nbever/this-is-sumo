@@ -14,6 +14,7 @@ public class RikishiInfo {
 	private Name realName;
 	private Name shikona;
 	private Location hometown;
+	private Heya heya;
 	
 	private Height height;
 	private Weight weight;
@@ -54,6 +55,14 @@ public class RikishiInfo {
 
 	public void setHometown(Location hometown) {
 		this.hometown = hometown;
+	}
+	
+	public Heya getHeya(){
+		return heya;
+	}
+	
+	public void setHeya( Heya aheya ){
+		this.heya = aheya;
 	}
 	
 	public Rank getHighestRank(){

@@ -20,6 +20,7 @@ import com.nate.sumo.model.common.Height;
 import com.nate.sumo.model.common.Location;
 import com.nate.sumo.model.common.Name;
 import com.nate.sumo.model.common.Weight;
+import com.nate.sumo.model.rikishi.Heya;
 import com.nate.sumo.model.rikishi.RikishiInfo;
 
 public class BanzukeBuilder
@@ -119,7 +120,6 @@ public class BanzukeBuilder
 		
 		Name shikona = new Name();
 		Name realName = new Name();
-		Name heya = new Name();
 		Location hometown = new Location();
 		
 		rinf.setId( Long.parseLong( url.split( "=" )[1] ) );
@@ -170,24 +170,13 @@ public class BanzukeBuilder
 		String jpShusshin = jpTrs.get( 3 ).select( "td" ).get( 1 ).text();
 		String[] enShusshins = enShusshin.split( ", " );
 		
-		Name homeName = new Name();
-		
-		homeName.setFirstName_en( enShusshins[0] );
-		
 		if ( enShusshins.length > 1 ){
 			enShusshins[1] = enShusshins[1].replaceAll( " - Mongolia", "" );
-			homeName.setLastName_en( enShusshins[1] );
 		}
 		
-		if ( jpShusshin.indexOf( "県") != -1 ){
-			homeName.setFirstName_kanji( jpShusshin.substring( 0, jpShusshin.indexOf( "県" ) ) );
-			homeName.setLastName_kanji( jpShusshin.substring( jpShusshin.indexOf( "県" ), jpShusshin.length() - 2 ) );
-		}
-		else {
-			homeName.setFirstName_kanji( jpShusshin );
-		}
+		Location l = Location.getKnownLocations().get( enShusshins[0] + enShusshins[1] );
 		
-		rinf.setHometown( hometown );
+		rinf.setHometown( l );
 		
 		// height and weight
 		String[] handw = enTrs.get( 4 ).select( "td" ).get( 1 ).text().split( " " );
@@ -195,9 +184,32 @@ public class BanzukeBuilder
 		rinf.setHeight( new Height( Integer.parseInt( handw[0] ) ) );
 		
 		// heya name
-		heya.setFirstName_en( enTrs.get( 5 ).select( "td" ).get( 1 ).text() );
-		heya.setFirstName_kanji( jpTrs.get( 5 ).select( "td" ).get( 1 ).text() );
+		String heyaKey = enTrs.get( 5 ).select( "td" ).get( 1 ).text();
 		
+		Heya heya = Heya.getKnownHeya().get( heyaKey );
+		
+		// shikona
+		String[] enShik = enTrs.get( 6 ).select( "td" ).get( 1 ).text().split( " " );
+		String[] jpShik = jpTrs.get( 6 ).select( "td" ).get( 1 ).text().split( " " );
+		
+		shikona.setFirstName_en( enShik[0] );
+		shikona.setLastName_en( enShik[1] );
+		shikona.setFirstName_kanji( jpShik[0] );
+		shikona.setLastName_kanji( jpShik[1] );
+		
+		//the hiragana
+		String hiragana = jpPage.select( "table.layout td h2" ).text();
+		String[] hNames = hiragana.substring( hiragana.indexOf("(") + 1, hiragana.lastIndexOf(")") ).split( " " );
+		shikona.setFirstName_jp( hNames[0] );
+		shikona.setLastName_jp( hNames[1] );
+		
+		rinf.setShikona( shikona );
+		
+		// hatsu basho
+		String[] hatsuBasho = enTrs.get( 7 ).select( "td" ).get( 1 ).text().split( "\\." );
+		Calendar c = Calendar.getInstance();
+		c.set( Integer.parseInt( hatsuBasho[0] ), Integer.parseInt( hatsuBasho[1] ), 1, 0, 0, 0 );
+		rinf.setHatsuBasho( c.getTime() );
 		
 		return rinf;
 	}
