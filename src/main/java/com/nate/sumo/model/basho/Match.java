@@ -18,6 +18,8 @@ public class Match {
 		this.westRikishi = westRikishi;
 	}
 	
+	public Match(){}
+	
 	public Rank getEastRank(){
 		return this.eastRank;
 	}

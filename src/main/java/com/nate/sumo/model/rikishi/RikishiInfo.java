@@ -6,6 +6,7 @@ import com.nate.sumo.model.basho.Rank;
 import com.nate.sumo.model.common.Height;
 import com.nate.sumo.model.common.Location;
 import com.nate.sumo.model.common.Name;
+import com.nate.sumo.model.common.Record;
 import com.nate.sumo.model.common.Weight;
 
 public class RikishiInfo {
@@ -22,6 +23,8 @@ public class RikishiInfo {
 	private Integer age;
 	private Rank highestRank;
 	private Date hatsuBasho;
+	
+	private Record careerRecord;
 	
 	public RikishiInfo(){}
 
@@ -111,6 +114,14 @@ public class RikishiInfo {
 
 	public void setAge(Integer age) {
 		this.age = age;
+	}
+	
+	public Record getCareerRecord(){
+		return careerRecord;
+	}
+	
+	public void setCareerRecord( Record record ){
+		careerRecord = record;
 	}
 	
 	@Override
