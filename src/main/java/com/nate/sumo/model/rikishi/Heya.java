@@ -39,9 +39,12 @@ public class Heya extends Entity<Heya>{
 				heya.setLocation( Location.getById( locationId ) );
 				
 				Name prefix = new Name();
-				prefix.setFirstName_en( result.get( 4 ).toString() );
-				prefix.setFirstName_jp( result.get( 5 ).toString() );
-				prefix.setFirstName_kanji( result.get( 6 ).toString () );
+				
+				if ( result.get( 4 ) != null && result.get( 5 ) != null && result.get( 6 ) != null ){
+					prefix.setFirstName_en( result.get( 4 ).toString() );
+					prefix.setFirstName_jp( result.get( 5 ).toString() );
+					prefix.setFirstName_kanji( result.get( 6 ).toString () );
+				}
 				
 				heya.setPrefix( prefix );
 				

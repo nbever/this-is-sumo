@@ -1,12 +1,13 @@
 package com.nate.tools;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Month;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -19,7 +20,6 @@ import org.jsoup.select.Elements;
 
 import com.nate.sumo.DatabaseManager;
 import com.nate.sumo.model.basho.Kimarite;
-import com.nate.sumo.model.basho.Match;
 import com.nate.sumo.model.basho.Rank;
 import com.nate.sumo.model.basho.Rank.RankClass;
 import com.nate.sumo.model.common.Height;
@@ -29,8 +29,6 @@ import com.nate.sumo.model.common.Record;
 import com.nate.sumo.model.common.Weight;
 import com.nate.sumo.model.rikishi.Heya;
 import com.nate.sumo.model.rikishi.RikishiInfo;
-import com.nate.sumo.model.rikishi.RikishiStats;
-import com.nate.sumo.model.rikishi.RikishiTemperment;
 
 public class BanzukeBuilder
 {
@@ -109,11 +107,12 @@ public class BanzukeBuilder
 //		
 //		createBanzukeTable( tableName );
 		
-		Document engPage = Jsoup.connect( ENGLISH_QUERY + YEAR + year + "&" + MONTH + month ).get();
+		Document engPage = Jsoup.connect( ENGLISH_QUERY + YEAR + year + "&" + MONTH + month ).timeout( 30000 ).get();
 		
 		Elements enElms = engPage.select( "table.record>tbody>tr" );
 		
-		for ( int i = 2; i < 3/*enElms.size()*/; i++ ){
+		// starts at 2
+		for ( int i = 584; i < enElms.size(); i++ ){
 			
 			Element enTr = enElms.get( i );
 			
@@ -121,10 +120,12 @@ public class BanzukeBuilder
 			
 			String rikishiUrl = enTds.get( 0 ).select( "a" ).get( 0 ).attr( "href" );
 			
-			Document enPage = Jsoup.connect( MAIN_URL + "/" + rikishiUrl ).get();
-			Document jpPage = Jsoup.connect( MAIN_URL + "/" + rikishiUrl + "&l=j" ).get();
+			Document enPage = Jsoup.connect( MAIN_URL + "/" + rikishiUrl ).timeout( 30000 ).get();
+			Document jpPage = Jsoup.connect( MAIN_URL + "/" + rikishiUrl + "&l=j" ).timeout( 30000 ).get();
 			
 			Long rikishiId = Long.parseLong( rikishiUrl.split( "=" )[1] );
+			
+			System.out.println( "Row: " + i + " Rikishi ID: " + rikishiId + " URL: " + rikishiUrl );
 			
 			RikishiInfo rInfo = buildRikishiInfo( rikishiId, enPage, jpPage );
 			
@@ -140,13 +141,22 @@ public class BanzukeBuilder
 					tYear--;
 				}
 				
-				String bashoUrl = BASHO_QUERY + "r=" + rInfo.getId() + "&b=" + year + "." + month;
+				String sMonth = Integer.toString( tMonth );
+				
+				if ( sMonth.length() == 1 ){
+					sMonth = "0" + sMonth;
+				}
+				
+				String bashoUrl = BASHO_QUERY + "r=" + rInfo.getId() + "&b=" + tYear + sMonth;
 				bashoUrls.add( bashoUrl );
 			}
 			
 			List<List<MatchResult>> bashoResults = buildBashoResults( bashoUrls );
-			RikishiStats stats = buildRikishiStats( bashoResults );
-			RikishiTemperment temperment = buildRikishiTemperment( bashoResults );
+			
+			writeRecord( i, year, month, rInfo, bashoResults );
+			
+//			RikishiStats stats = buildRikishiStats( bashoResults );
+//			RikishiTemperment temperment = buildRikishiTemperment( bashoResults );
 		}
 	}
 	
@@ -155,19 +165,44 @@ public class BanzukeBuilder
 		RikishiInfo rinf = new RikishiInfo();
 		rinf.setId( id );
 		
+		// set up the indices since they change with whether or not the rikishi went to college.
+		int HIGH_RANK = 0;
+		int REAL_NAME = 1;
+		int BIRTHDAY = 2;
+		int SHUSSIN = 3;
+		int H_AND_W = 4;
+		int UNIVERSITY = -1;
+		int HEYA = 5;
+		int SHIKONA = 6;
+		int HATSU = 7;
+		int CAREER = 9;
+		
 		Name shikona = new Name();
 		Name realName = new Name();
-		Location hometown = new Location();
 		
 		Elements enTrs = enPage.select( "table.rikishidata table.rikishidata tr" );
 		Elements jpTrs = jpPage.select( "table.rikishidata table.rikishidata tr" );
 		
+		// they went to university
+		if ( enTrs.select( "td:matches(University)" ).size() > 0 ){
+			HEYA = 6;
+			SHIKONA = 7;
+			HATSU = 8;
+			CAREER = 10;
+			UNIVERSITY = 5;
+		}
+		
+		// there's an intai... have to add one to career
+		if ( enTrs.select( "td:matches(Intai)" ).size() > 0 ){
+			CAREER++;
+		}
+		
 		// highest rank
-		String highRankText = enTrs.get( 0 ).select( "td" ).get( 1 ).text();
+		String highRankText = enTrs.get( HIGH_RANK ).select( "td" ).get( 1 ).text();
 		String[] tokens = highRankText.split( " " );
 		RankClass rClass = RankClass.valueOf( tokens[0].toUpperCase() );
 
-		if ( !tokens[1].startsWith( "(" ) ){
+		if ( tokens.length > 1 && !tokens[1].startsWith( "(" ) ){
 			Integer rInt = Integer.parseInt( tokens[1] );
 			rinf.setHighestRank( new Rank( rClass, rInt ) );
 		}
@@ -176,8 +211,8 @@ public class BanzukeBuilder
 		}
 		
 		// real name
-		String[] enName = enTrs.get( 1 ).select( "td" ).get( 1 ).text().split( " " );
-		String[] jpName = jpTrs.get( 1 ).select( "td" ).get( 1 ).text().split( "\u3000" );
+		String[] enName = enTrs.get( REAL_NAME ).select( "td" ).get( 1 ).text().split( " " );
+		String[] jpName = jpTrs.get( REAL_NAME ).select( "td" ).get( 1 ).text().split( "\u3000" );
 		
 		realName.setLastName_en( enName[0].substring( 0, 1 ) + enName[0].toLowerCase().substring( 1 ) );
 		realName.setLastName_kanji( jpName[0] );
@@ -193,13 +228,16 @@ public class BanzukeBuilder
 		rinf.setRealName( realName );
 		
 		// birthday
-		String dString = enTrs.get( 2 ).select( "td" ).get( 1 ).text();
-		dString = dString.substring( 0, dString.lastIndexOf( "(" ) - 1 );
+		String dString = enTrs.get( BIRTHDAY ).select( "td" ).get( 1 ).text();
+		
+		if ( dString.lastIndexOf( "(" ) != -1 ){
+			dString = dString.substring( 0, dString.lastIndexOf( "(" ) - 1 );
+		}
+		
 		rinf.setBirthday( parseDate( dString ) );
 		
 		// shusshin
-		String enShusshin = enTrs.get( 3 ).select( "td" ).get( 1 ).text();
-		String jpShusshin = jpTrs.get( 3 ).select( "td" ).get( 1 ).text();
+		String enShusshin = enTrs.get( SHUSSIN ).select( "td" ).get( 1 ).text();
 		String[] enShusshins = enShusshin.split( ", " );
 		
 		if ( enShusshins.length > 1 ){
@@ -211,55 +249,96 @@ public class BanzukeBuilder
 		rinf.setHometown( l );
 		
 		// height and weight
-		String[] handw = enTrs.get( 4 ).select( "td" ).get( 1 ).text().split( " " );
-		rinf.setWeight( new Weight( Integer.parseInt( handw[2] ) ) );
-		rinf.setHeight( new Height( Integer.parseInt( handw[0] ) ) );
+		String[] handw = enTrs.get( H_AND_W ).select( "td" ).get( 1 ).text().split( " " );
+		Float fWeight = Float.parseFloat( handw[2] );
+		Float fHeight = Float.parseFloat( handw[0] );
+		rinf.setWeight( new Weight( fWeight.intValue() ) );
+		rinf.setHeight( new Height( fHeight.intValue() ) );
 		
 		// heya name
-		String heyaKey = enTrs.get( 5 ).select( "td" ).get( 1 ).text();
+		String heyaKey = enTrs.get( HEYA ).select( "td" ).get( 1 ).text();
 		
 		Heya heya = Heya.getKnownHeya().get( heyaKey );
 		rinf.setHeya( heya );
 		
-		// shikona
-		String[] enShik = enTrs.get( 6 ).select( "td" ).get( 1 ).text().split( "\\s+" );
-		String[] jpShik = jpTrs.get( 6 ).select( "td" ).get( 1 ).text().split( "\\s+" ); 
-				
-		if ( jpShik.length < 2 ) {
-			jpShik = jpTrs.get( 6 ).select( "td" ).get( 1 ).text().split( "\u3000" );
+		// university
+		if ( UNIVERSITY != -1 ){
+			Name university = new Name();
+			university.setFirstName_en( enTrs.get( UNIVERSITY ).select( "td" ).get( 1 ).text() );
+			university.setFirstName_kanji( jpTrs.get( UNIVERSITY ).select( "td" ).get( 1 ).text() );
+			rinf.setuniversity( university );
 		}
 		
-		shikona.setFirstName_en( enShik[0] );
-		shikona.setLastName_en( enShik[1] );
-		shikona.setFirstName_kanji( jpShik[0] );
-		shikona.setLastName_kanji( jpShik[1] );
+		// shikona
+		String[] enShik = enTrs.get( SHIKONA ).select( "td" ).get( 1 ).text().split( "\\s+" );
+		String[] jpShik = jpTrs.get( SHIKONA ).select( "td" ).get( 1 ).text().split( "\\s+" ); 
+				
+//		if ( jpShik.length < 2 ) {
+//			jpShik = jpTrs.get( 6 ).select( "td" ).get( 1 ).text().split( "\u3000" );
+//		}
+		jpShik = jpShik[ jpShik.length - 1 ].split( "\u3000" );
 		
+		if ( enShik.length > 1 ){
+			shikona.setFirstName_en( enShik[ enShik.length-2] );
+			shikona.setLastName_en( enShik[enShik.length-1] );
+		}
+		else {
+			shikona.setFirstName_en( enShik[enShik.length - 1]);
+		}
+		
+		if ( jpShik.length > 1 ){
+			shikona.setFirstName_kanji( jpShik[jpShik.length - 2] );
+			shikona.setLastName_kanji( jpShik[jpShik.length - 1] );
+		}
+		else {
+			shikona.setFirstName_kanji( jpShik[jpShik.length - 1]);
+		}
 		//the hiragana
 		String hiragana = jpPage.select( "table.layout td h2" ).text();
 		hiragana = hiragana.substring( hiragana.indexOf("\uff08") + 1, hiragana.lastIndexOf("\uff09") );
 		String[] hNames = hiragana.split( "\u3000" );
 		shikona.setFirstName_jp( hNames[0] );
-		shikona.setLastName_jp( hNames[1] );
+		
+		if ( hNames.length > 1 ){
+			shikona.setLastName_jp( hNames[1] );
+		}
 		
 		rinf.setShikona( shikona );
 		
+		System.out.println( shikona.getFirstName_en() + " " + shikona.getLastName_en() + " : " + shikona.getFirstName_kanji() + " " + shikona.getLastName_kanji() );
+		
 		// hatsu basho
-		String[] hatsuBasho = enTrs.get( 7 ).select( "td" ).get( 1 ).text().split( "\\." );
+		String[] hatsuBasho = enTrs.get( HATSU ).select( "td" ).get( 1 ).text().split( "\\." );
 		Calendar c = Calendar.getInstance();
+		
+		if ( hatsuBasho[1].indexOf( " " ) != -1 ){
+			hatsuBasho[1] = hatsuBasho[1].substring( 0, hatsuBasho[1].indexOf(" ") );
+		}
+		
 		c.set( Integer.parseInt( hatsuBasho[0] ), Integer.parseInt( hatsuBasho[1] ), 1, 0, 0, 0 );
 		rinf.setHatsuBasho( c.getTime() );
 		
 		// career record
-		String[] careerStr = enTrs.get( 9 ).select( "td" ).get( 1 ).text().split( "\\-" );
+		String[] careerStr = enTrs.get( CAREER ).select( "td" ).get( 1 ).text().split( "\\-" );
 		Record record = new Record();
+		
 		Integer wins = Integer.parseInt( careerStr[0] );
-		Integer loses = Integer.parseInt( careerStr[1] );
+		Integer loses = 0;
 		Integer forfeits = 0;
 		
-		if ( careerStr[2].indexOf( "/") != -1 ){
-			forfeits = Integer.parseInt( careerStr[2].substring(0, careerStr[2].indexOf("/") ) );
+		// this means no forfeits yet
+		if ( careerStr.length == 2 ){
+			loses = Integer.parseInt( careerStr[1].substring( 0, careerStr[1].indexOf( "/" ) ) );
 		}
-		
+		// they have forfeited
+		else {
+			loses = Integer.parseInt( careerStr[1] );
+			
+			if ( careerStr[2].indexOf( "/") != -1 ){
+				forfeits = Integer.parseInt( careerStr[2].substring(0, careerStr[2].indexOf("/") ) );
+			}	
+		}
+
 		record.setWins( wins );
 		record.setLoses( loses );
 		record.setForfeits( forfeits );
@@ -278,7 +357,7 @@ public class BanzukeBuilder
 			
 			try
 			{
-				Document bashoPage = Jsoup.connect( url ).get();
+				Document bashoPage = Jsoup.connect( url ).timeout( 30000 ).get();
 				Elements rows = bashoPage.select( "table.rb_torikumi tr" );
 				
 				Iterator<Element> eleIt = rows.iterator();
@@ -302,7 +381,11 @@ public class BanzukeBuilder
 						win = true;
 					}
 					
-					kimarite = Kimarite.valueOf( fields.get( 2 ).text().toUpperCase() );
+					String kText = fields.get( 2 ).text();
+					
+					if  ( kText.trim() != "" && kText.trim().length() > 4 ){
+						kimarite = Kimarite.valueOf( fields.get( 2 ).text().toUpperCase() );
+					}
 					
 					Element matchInfo = fields.get( 3 ).select( "a" ).get( 0 );
 					
@@ -312,8 +395,19 @@ public class BanzukeBuilder
 					opponentRank = Rank.parseRank( infoBits[0] );
 					
 					String[] recordInfo = fields.get( 3 ).select( "a" ).get( 1 ).text().split( " " );
-					String rStr = recordInfo[1];
-					rStr = rStr.substring( 1, rStr.length() - 2 );
+					
+					int recordToUse = 1;
+					
+					if ( recordInfo.length < 2 ){
+						recordToUse = 0;
+					}
+					
+					String rStr = recordInfo[recordToUse];
+
+					if ( rStr.indexOf( "(" ) != -1 ){
+						rStr = rStr.substring( 1, rStr.length() - 1 );
+					}
+					
 					String[] nums = rStr.split( "-" );
 					
 					opponentRecord.setWins( Integer.parseInt( nums[0] ) );
@@ -328,6 +422,7 @@ public class BanzukeBuilder
 					result.setKimarite( kimarite );
 					result.setOpponentRank( opponentRank );
 					result.setOpponentRecord( opponentRecord );
+					result.setWin( win );
 					
 					matches.add( result );
 				}
@@ -343,14 +438,14 @@ public class BanzukeBuilder
 		
 		return results;
 	}
-	
-	private RikishiStats buildRikishiStats( List<List<MatchResult>> bashoResults ){
-		return null;
-	}
-	
-	private RikishiTemperment buildRikishiTemperment( List<List<MatchResult>> bashoResults ){
-		return null;
-	}
+//	
+//	private RikishiStats buildRikishiStats( List<List<MatchResult>> bashoResults ){
+//		return null;
+//	}
+//	
+//	private RikishiTemperment buildRikishiTemperment( List<List<MatchResult>> bashoResults ){
+//		return null;
+//	}
 	
 	private Date parseDate( String d ){
 		
@@ -414,6 +509,140 @@ public class BanzukeBuilder
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Write this info into a file for computations to take place on.
+	 * 
+	 * @param info
+	 * @param bashoResults
+	 * @throws IOException 
+	 */
+	private void writeRecord( Integer rowIndex, Integer year, Integer basho,  RikishiInfo info, List<List<MatchResult>> bashoResults ) throws IOException{
+		
+		File crunchFile = new File( year + "-" + basho + ".crunch" );
+		
+		if ( !crunchFile.exists() ){
+			crunchFile.createNewFile();
+		}
+		
+		try ( FileWriter writer = new FileWriter( crunchFile, true ) ){
+			
+			writer.write( rowIndex + ":" );
+			
+			writeHelper( writer, Long.toString( info.getId() ) );
+			writeHelper( writer, info.getRealName().getFirstName_en() );
+			writeHelper( writer, info.getRealName().getFirstName_jp() );
+			writeHelper( writer, info.getRealName().getFirstName_kanji() );
+			writeHelper( writer, info.getRealName().getLastName_en() );
+			writeHelper( writer, info.getRealName().getLastName_jp() );
+			writeHelper( writer, info.getRealName().getLastName_kanji() );
+			writeHelper( writer, info.getShikona().getFirstName_en() );
+			writeHelper( writer, info.getShikona().getFirstName_jp() );
+			writeHelper( writer, info.getShikona().getFirstName_kanji() );
+			writeHelper( writer, info.getShikona().getLastName_en() );
+			writeHelper( writer, info.getShikona().getLastName_jp() );
+			writeHelper( writer, info.getShikona().getLastName_kanji() );
+			
+			if ( info.getUniversity() != null ){
+				writeHelper( writer, info.getUniversity().getFirstName_en() );
+				writeHelper( writer, info.getUniversity().getFirstName_kanji() );
+			}
+			else {
+				writeHelper( writer, "" );
+				writeHelper( writer, "" );
+			}
+			
+			writeHelper( writer, Long.toString( info.getBirthday().getTime() ) );
+			writeHelper( writer, Long.toString( info.getHatsuBasho().getTime() ) );
+			writeHelper( writer, info.getHeight().getValue().toString() );
+			writeHelper( writer, info.getWeight().getValue().toString() );
+			
+			if ( info.getHeya() == null ){
+				writeHelper( writer, "-1" );
+			}
+			else {
+				writeHelper( writer, info.getHeya().getId().toString() );
+			}
+			
+			if ( info.getHometown() == null ){
+				writeHelper( writer, "-1" );
+			}
+			else {
+				writeHelper( writer, info.getHometown().getId().toString() );
+			}
+			
+			writeHelper( writer, info.getHighestRank().getRankClass().name() );
+			
+			if ( info.getHighestRank().getRankNumber() == null ){
+				writeHelper( writer, "0" );
+			}
+			else {
+				writeHelper( writer, info.getHighestRank().getRankNumber().toString() );
+			}
+			
+			if ( info.getHighestRank().getRankSide() == null ){
+				writeHelper( writer, Rank.RankSide.EAST.name() );
+			}
+			else {
+				writeHelper( writer, info.getHighestRank().getRankSide().name() );
+			}
+			
+			writeHelper( writer, info.getCareerRecord().getWins().toString() );
+			writeHelper( writer, info.getCareerRecord().getLoses().toString() );
+			writeHelper( writer, info.getCareerRecord().getForfeits().toString() );
+			writer.write( "-_-" );
+			
+			for ( List<MatchResult> bashoResult : bashoResults ){
+				
+				for ( MatchResult match : bashoResult ){
+					
+					writeHelper( writer, match.getWin().toString() );
+					
+					if ( match.getKimarite() != null ){
+						writeHelper( writer, match.getKimarite().name() );
+					}
+					else {
+						writeHelper( writer, "" );
+					}
+					
+					writeHelper( writer, match.getOpponenId().toString() );
+					writeHelper( writer, match.getOpponentRank().getRankClass().name() );
+					
+					if ( match.getOpponentRank().getRankNumber() != null ){
+						writeHelper( writer, match.getOpponentRank().getRankNumber().toString() );
+					}
+					else {
+						writeHelper( writer, "0" );
+					}
+					
+					if ( match.getOpponentRank().getRankSide() == null ){
+						writeHelper( writer, Rank.RankSide.EAST.name() );
+					}
+					else {
+						writeHelper( writer, match.getOpponentRank().getRankSide().name() );
+					}
+					
+					writeHelper( writer, match.getOpponentRecord().getWins().toString() );
+					writeHelper( writer, match.getOpponentRecord().getLoses().toString() );
+					writeHelper( writer, match.getOpponentRecord().getForfeits().toString() );
+					writer.write( "=" );
+				}
+				
+				writer.write( "***" );
+			}
+			
+			writer.write( '\n' );
+		}
+		
+	}
+	
+	private void writeHelper( FileWriter writer, String item ) throws IOException{
+		
+		if ( item != null ){
+			writer.write( item );			
+		}
+		writer.write( "," );
 	}
 	
 	private class MatchResult{

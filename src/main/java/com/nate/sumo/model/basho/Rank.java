@@ -102,7 +102,7 @@ public class Rank {
 		RankClass clazz = RankClass.JONIDAN;
 		Integer number = 0;
 		
-		String side = abbr.substring( abbr.length() - 2 );
+		String side = abbr.substring( abbr.length() - 1 );
 		
 		if ( side.equalsIgnoreCase( "e" ) ){
 			rankSide = RankSide.EAST;
@@ -122,10 +122,15 @@ public class Rank {
 			return rank;
 		}
 		
+		if ( clazz == RankClass.MAE_ZUMO ){
+			rank = new Rank( clazz );
+			return rank;
+		}
+		
 		String numStr = abbr.substring( clazz.getAbbreviation().length() );
 		
 		if ( rankSide != null ){
-			numStr = numStr.substring( 0, numStr.length() - 2 );
+			numStr = numStr.substring( 0, numStr.length() - 1 );
 		}
 		
 		number = Integer.parseInt( numStr );
@@ -137,7 +142,6 @@ public class Rank {
 	public Rank ( RankClass aClass, RankSide aSide, Integer aNumber ){
 		this.rankClass = aClass;
 		this.rankSide = aSide;
-		
 		this.rankNumber = aNumber;
 	}
 	
@@ -147,6 +151,7 @@ public class Rank {
 	
 	public Rank( RankClass aClass, Integer aNumber ){
 		this.rankNumber = aNumber;
+		this.rankClass = aClass;
 	}
 	
 	public RankClass getRankClass(){

@@ -14,6 +14,7 @@ public class RikishiInfo {
 	private Long id;
 	private Name realName;
 	private Name shikona;
+	private Name university;
 	private Location hometown;
 	private Heya heya;
 	
@@ -50,6 +51,14 @@ public class RikishiInfo {
 
 	public void setShikona(Name shikona) {
 		this.shikona = shikona;
+	}
+	
+	public Name getUniversity(){
+		return this.university;
+	}
+	
+	public void setuniversity( Name aName ){
+		this.university = aName;
 	}
 
 	public Location getHometown() {

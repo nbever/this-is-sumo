@@ -178,22 +178,26 @@ public class DatabaseManager {
 		
 		try {
 			Statement st = getConnection().createStatement();
-			
+
 			for ( String s : batch ){
-				st.addBatch( s );
+				logger.info( "Executing: " + s );
+				st.execute( s );
 			}
-			
-			results = st.executeBatch();
-			
-			for ( int i = 0; i < results.length; i++ ){
-				String r = "SUCCESS";
-				
-				if ( results[i] < 0 ){
-					r = "FAIL " + r;
-				}
-				
-				logger.info(  r + " " + batch.get( i ) );
-			}
+//			for ( String s : batch ){
+//				st.addBatch( s );
+//			}
+//			
+//			results = st.executeBatch();
+//			
+//			for ( int i = 0; i < results.length; i++ ){
+//				String r = "SUCCESS";
+//				
+//				if ( results[i] < 0 ){
+//					r = "FAIL " + r;
+//				}
+//				
+//				logger.info(  r + " " + batch.get( i ) );
+//			}
 		}
 		catch( SQLException se ){
 			logger.error( "Problem inserting records.", se );
@@ -216,6 +220,10 @@ public class DatabaseManager {
 			while( (c = reader.read()) != -1 ){
 				
 				char ch = (char)c;
+				
+				if ( ch == '\t' || ch == '\r' || ch == '\n' ){
+					continue;
+				}
 				
 				if ( ch == ';' ){
 					
