@@ -18,6 +18,13 @@ public abstract class FightAction {
 		FAILURE
 	}
 	
+	public enum DIRECTION {
+		MIGI,
+		HIDARI,
+		FORWARD,
+		BACKWARD
+	}
+	
 	private Float startingMedialBalance;
 	private Float startingLateralBalance;
 	private Float startingEnergy;
@@ -25,6 +32,7 @@ public abstract class FightAction {
 	private Long phaseStartTime;
 	
 	private STATUS currentStatus;
+	private DIRECTION actionDirection;
 	
 	private FightCoordinates startingSpot;
 	
@@ -103,5 +111,15 @@ public abstract class FightAction {
 
 	private void setCallback(Function<Consequence, Void> callback) {
 		this.callback = callback;
+	}
+
+	public DIRECTION getActionDirection()
+	{
+		return actionDirection;
+	}
+
+	public void setActionDirection( DIRECTION actionDirection )
+	{
+		this.actionDirection = actionDirection;
 	}
 }

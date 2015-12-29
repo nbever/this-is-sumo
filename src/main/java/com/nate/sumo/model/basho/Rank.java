@@ -8,16 +8,17 @@ public class Rank {
 	
 	public enum RankClass{
 		YOKOZUNA( new Name( "Yokozuna", "横綱"), UNLIMITED, UNLIMITED, "Y" ),
-		OZEKI( new Name( "Ozeki", "大関"), UNLIMITED, 4, "O" ),
-		SEKIWAKE( new Name( "Sekiwake", "関脇"), 4, 2, "S" ),
-		KOMUSUBI( new Name( "Komusubi", "小結"), 4, 2, "K" ),
+		OZEKI( new Name( "Ozeki", "大関"), UNLIMITED, 2, "O" ),
+		SEKIWAKE( new Name( "Sekiwake", "関脇"), 2, 1, "S" ),
+		KOMUSUBI( new Name( "Komusubi", "小結"), 2, 1, "K" ),
 		MAEGASHIRA( new Name( "Maegashira", "前頭"), 17, 16, "M" ),
 		JURYO( new Name( "Juryo", "十両"), 16, 14, "J" ),
 		MAKUSHITA( new Name( "Makushita", "幕下"), 60, 60, "Ms" ),
 		SANDANME( new Name( "Sandanme", "三段目"), 100, 100, "Sd" ),
 		JONIDAN( new Name( "Jonidan", "序二段"), 130, 100, "Jd" ),
 		JONOKUCHI( new Name( "Jonokuchi", "序ノ口"), 50, 20, "Jk" ),
-		MAE_ZUMO( new Name( "Mae-zumo", "前相撲"), UNLIMITED, UNLIMITED, "Mz" );
+		MAE_ZUMO( new Name( "Mae-zumo", "前相撲"), UNLIMITED, UNLIMITED, "Mz" ),
+		BANZUKE_GAI( new Name( "Banzuke-gai", "番付外" ), UNLIMITED, UNLIMITED, "Bg" );
 		
 		private Name name;
 		private Integer max;
@@ -82,6 +83,9 @@ public class Rank {
 			else if ( abbr.indexOf( YOKOZUNA.getAbbreviation() ) != -1 ){
 				return RankClass.YOKOZUNA;
 			}
+			else if ( abbr.indexOf( BANZUKE_GAI.getAbbreviation() ) != -1 ){
+				return RankClass.BANZUKE_GAI;
+			}
 			else {
 				return null;
 			}
@@ -122,7 +126,7 @@ public class Rank {
 			return rank;
 		}
 		
-		if ( clazz == RankClass.MAE_ZUMO ){
+		if ( clazz == RankClass.MAE_ZUMO || clazz == RankClass.BANZUKE_GAI ){
 			rank = new Rank( clazz );
 			return rank;
 		}

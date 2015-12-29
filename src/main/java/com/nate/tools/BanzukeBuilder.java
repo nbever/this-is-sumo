@@ -22,6 +22,7 @@ import com.nate.sumo.DatabaseManager;
 import com.nate.sumo.model.basho.Kimarite;
 import com.nate.sumo.model.basho.Rank;
 import com.nate.sumo.model.basho.Rank.RankClass;
+import com.nate.sumo.model.basho.Rank.RankSide;
 import com.nate.sumo.model.common.Height;
 import com.nate.sumo.model.common.Location;
 import com.nate.sumo.model.common.Name;
@@ -112,13 +113,19 @@ public class BanzukeBuilder
 		Elements enElms = engPage.select( "table.record>tbody>tr" );
 		
 		// starts at 2
-		for ( int i = 584; i < enElms.size(); i++ ){
+		for ( int i = 2; i < enElms.size(); i++ ){
 			
 			Element enTr = enElms.get( i );
 			
 			Elements enTds = enTr.select( "td" );
 			
 			String rikishiUrl = enTds.get( 0 ).select( "a" ).get( 0 ).attr( "href" );
+			Rank currentRank = null;
+			
+			// get current rank
+			if ( enTds.size() > 10 ){
+				currentRank = Rank.parseRank( enTds.get( 10 ).text() );
+			}
 			
 			Document enPage = Jsoup.connect( MAIN_URL + "/" + rikishiUrl ).timeout( 30000 ).get();
 			Document jpPage = Jsoup.connect( MAIN_URL + "/" + rikishiUrl + "&l=j" ).timeout( 30000 ).get();
@@ -127,7 +134,13 @@ public class BanzukeBuilder
 			
 			System.out.println( "Row: " + i + " Rikishi ID: " + rikishiId + " URL: " + rikishiUrl );
 			
+			if ( currentRank == null ){
+				System.out.println( "This rikishi has not rank so will be skipped." );
+				continue;
+			}
+			
 			RikishiInfo rInfo = buildRikishiInfo( rikishiId, enPage, jpPage );
+			rInfo.setCurrentRank( currentRank );
 			
 			List<String> bashoUrls = new ArrayList<String>();
 			
@@ -345,7 +358,59 @@ public class BanzukeBuilder
 		
 		rinf.setCareerRecord( record );
 		
+		// find yusho stuffs
+		String[] makuStats = enTrs.select( "td:matches(In Makuuchi) + td").text().split( "," );
+		
+		rinf.setMakuuchiYusho( getStatValue( makuStats, "Yusho" ) );
+		rinf.setMakuuchiJunYusho( getStatValue( makuStats, "Jun-Yusho" ) );
+		rinf.setGinoSho( getStatValue( makuStats, "Gino-Sho" ) );
+		rinf.setShukunSho( getStatValue( makuStats, "Shukun-Sho" ) );
+		rinf.setKantoSho( getStatValue( makuStats, "Kanto-Sho" ) );
+		
+		String[] juryoStats = enTrs.select( "td:matches(In Juryo) + td").text().split( "," );
+		
+		rinf.setJuryoYusho( getStatValue( juryoStats, "Yusho" ) );
+		rinf.setJuryoJunYusho( getStatValue( juryoStats, "Jun-Yusho" ) );
+		
+		String[] makushitaStats = enTrs.select( "td:matches(In Makushita) + td").text().split( "," );
+		
+		rinf.setMakushitaYusho( getStatValue( makushitaStats, "Yusho" ) );
+		rinf.setMakushitaJunYusho( getStatValue( makushitaStats, "Jun-Yusho" ) );
+		
+		String[] sandanmeStats = enTrs.select( "td:matches(In Sandanme) + td").text().split( "," );
+		
+		rinf.setSandanmeYusho( getStatValue( sandanmeStats, "Yusho" ) );
+		rinf.setSandanmeJunYusho( getStatValue( sandanmeStats, "Jun-Yusho" ) );
+		
+		String[] jonidanStats = enTrs.select( "td:matches(In Jonidan) + td").text().split( "," );
+		
+		rinf.setJonidanYusho( getStatValue( jonidanStats, "Yusho" ) );
+		rinf.setJonidanJunYusho( getStatValue( jonidanStats, "Jun-Yusho" ) );
+		
+		String[] jonokuchiStats = enTrs.select( "td:matches(In Jonokuchi) + td").text().split( "," );
+		
+		rinf.setJonokuchiYusho( getStatValue( jonokuchiStats, "Yusho" ) );
+		rinf.setJonokuchiJunYusho( getStatValue( jonokuchiStats, "Jun-Yusho" ) );
+		
+		String[] maeZumoStats = enTrs.select( "td:matches(In Mae-Zumo) + td").text().split( "," );
+		
+		rinf.setMaeZumoYusho( getStatValue( maeZumoStats, "Yusho" ) );
+		
 		return rinf;
+	}
+	
+	private Integer getStatValue( String[] statElements, String tag ){
+		
+		for( String element : statElements ){
+			
+			if ( element.indexOf( tag ) != -1 ){
+				String[] vals = element.trim().split( " " );
+				
+				return Integer.parseInt( vals[0] );
+			}
+		}
+		
+		return 0;
 	}
 	
 	private List<List<MatchResult>> buildBashoResults( List<String> bashoUrls ){
@@ -438,14 +503,6 @@ public class BanzukeBuilder
 		
 		return results;
 	}
-//	
-//	private RikishiStats buildRikishiStats( List<List<MatchResult>> bashoResults ){
-//		return null;
-//	}
-//	
-//	private RikishiTemperment buildRikishiTemperment( List<List<MatchResult>> bashoResults ){
-//		return null;
-//	}
 	
 	private Date parseDate( String d ){
 		
@@ -463,52 +520,6 @@ public class BanzukeBuilder
 		c.set( Calendar.MILLISECOND, 0 );
 		
 		return new Date( c.getTimeInMillis() );
-	}
-	
-	private boolean checkForExistence( String tableName ){
-		boolean exists = DatabaseManager.getInstance().tableExists( tableName );
-		
-		return exists;
-	}
-	
-	private void createBanzukeTable( String tableName ){
-		
-		BufferedReader reader = null;
-		
-		try {
-			URL ddlUrl = BanzukeBuilder.class.getResource( "/banzuke.ddl" );
-			reader = new BufferedReader( new FileReader( ddlUrl.getFile() ) );
-			
-			String ddl = "";
-			String line = null;
-			
-			while( (line = reader.readLine()) != null ){
-				ddl += line;
-			}
-			
-
-			ddl.replace( "APP.BANZUKE", tableName );
-			
-			DatabaseManager.getInstance().execute( ddl );
-		}
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finally {
-			if ( reader != null ){
-				try
-				{
-					reader.close();
-				}
-				catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 	
 	/**
@@ -543,6 +554,22 @@ public class BanzukeBuilder
 			writeHelper( writer, info.getShikona().getLastName_en() );
 			writeHelper( writer, info.getShikona().getLastName_jp() );
 			writeHelper( writer, info.getShikona().getLastName_kanji() );
+			
+			writeHelper( writer, info.getCurrentRank().getRankClass().name() );
+			
+			if ( info.getCurrentRank().getRankSide() == null ){
+				writeHelper( writer, RankSide.EAST.name() );
+			}
+			else {
+				writeHelper( writer, info.getCurrentRank().getRankSide().name() );
+			}
+			
+			if ( info.getCurrentRank().getRankNumber() == null ){
+				writeHelper( writer, "0" );
+			}
+			else {
+				writeHelper( writer, info.getCurrentRank().getRankNumber().toString() );
+			}
 			
 			if ( info.getUniversity() != null ){
 				writeHelper( writer, info.getUniversity().getFirstName_en() );
@@ -591,6 +618,24 @@ public class BanzukeBuilder
 			writeHelper( writer, info.getCareerRecord().getWins().toString() );
 			writeHelper( writer, info.getCareerRecord().getLoses().toString() );
 			writeHelper( writer, info.getCareerRecord().getForfeits().toString() );
+			
+			writeHelper( writer, info.getMakuuchiYusho().toString() );
+			writeHelper( writer, info.getMakuuchiJunYusho().toString() );
+			writeHelper( writer, info.getGinoSho().toString() );
+			writeHelper( writer, info.getKantoSho().toString() );
+			writeHelper( writer, info.getShukunSho().toString() );
+			writeHelper( writer, info.getJuryoYusho().toString() );
+			writeHelper( writer, info.getJuryoJunYusho().toString() );
+			writeHelper( writer, info.getMakushitaYusho().toString() );
+			writeHelper( writer, info.getMakushitaJunYusho().toString() );
+			writeHelper( writer, info.getSandanmeYusho().toString() );
+			writeHelper( writer, info.getSandanmeJunYusho().toString() );
+			writeHelper( writer, info.getJonidanYusho().toString() );
+			writeHelper( writer, info.getJonidanJunYusho().toString() );
+			writeHelper( writer, info.getJonokuchiYusho().toString() );
+			writeHelper( writer, info.getJonokuchiJunYusho().toString() );
+			writeHelper( writer, info.getMaeZumoYusho().toString() );
+			
 			writer.write( "-_-" );
 			
 			for ( List<MatchResult> bashoResult : bashoResults ){
@@ -643,67 +688,6 @@ public class BanzukeBuilder
 			writer.write( item );			
 		}
 		writer.write( "," );
-	}
-	
-	private class MatchResult{
-		
-		private Long opponenId = -1L;
-		private Boolean win = false;
-		private Record opponentRecord;
-		private Kimarite kimarite;
-		private Rank opponentRank;
-		
-		public MatchResult(){}
-
-		public Long getOpponenId()
-		{
-			return opponenId;
-		}
-
-		public void setOpponenId( Long opponenId )
-		{
-			this.opponenId = opponenId;
-		}
-
-		public Boolean getWin()
-		{
-			return win;
-		}
-
-		public void setWin( Boolean win )
-		{
-			this.win = win;
-		}
-
-		public Record getOpponentRecord()
-		{
-			return opponentRecord;
-		}
-
-		public void setOpponentRecord( Record opponentRecord )
-		{
-			this.opponentRecord = opponentRecord;
-		}
-
-		public Kimarite getKimarite()
-		{
-			return kimarite;
-		}
-
-		public void setKimarite( Kimarite kimarite )
-		{
-			this.kimarite = kimarite;
-		}
-
-		public Rank getOpponentRank()
-		{
-			return opponentRank;
-		}
-
-		public void setOpponentRank( Rank opponentRank )
-		{
-			this.opponentRank = opponentRank;
-		}
 	}
 
 }
