@@ -17,6 +17,7 @@ import com.nate.sumo.model.basho.Rank.RankClass;
 import com.nate.sumo.model.basho.Rank.RankSide;
 import com.nate.sumo.model.rikishi.RikishiInfo;
 import com.nate.sumo.model.rikishi.RikishiStats;
+import com.nate.sumo.model.rikishi.RikishiTemperment;
 
 public class TestSkillCreator
 {
@@ -119,7 +120,7 @@ public class TestSkillCreator
 		match.setOpponenId( 1L );
 		match.setOpponentRank( new Rank( RankClass.YOKOZUNA ) );
 		
-		sc.modifyStatsByKimarite( match, stats, 5.0 );
+		sc.modifyStatsByKimarite( match, stats, new RikishiTemperment(), 5.0 );
 		
 		System.out.println( stats.toString() );
 	}

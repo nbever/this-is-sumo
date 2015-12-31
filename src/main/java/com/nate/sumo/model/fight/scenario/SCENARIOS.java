@@ -8,8 +8,6 @@ public enum SCENARIOS {
 	LOSING( new LosingScenario()),
 	EDGE_DANGER( new EdgeDangerScenario()),
 	EDGE_VICTORY( new EdgeVictoryScenario()),
-	TIRED( new TiredScenario()),
-	OPPONENT_TIRED( new OpponentTiredScenario()),
 	HAVE_PREFERRED_GRIP( new PreferredGridScenario()),
 	OPPONENT_FAVORITE_GRIP( new OpponentPreferredGripScenario());
 	

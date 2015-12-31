@@ -27,9 +27,26 @@ import com.nate.sumo.model.common.Location;
 import com.nate.sumo.model.common.Name;
 import com.nate.sumo.model.common.Record;
 import com.nate.sumo.model.common.Weight;
+import com.nate.sumo.model.fight.FightAction;
+import com.nate.sumo.model.fight.actions.DashiNage;
+import com.nate.sumo.model.fight.actions.Gake;
+import com.nate.sumo.model.fight.actions.Hatakikomi;
+import com.nate.sumo.model.fight.actions.Nage;
+import com.nate.sumo.model.fight.actions.Oshi;
+import com.nate.sumo.model.fight.actions.Tsuki;
+import com.nate.sumo.model.fight.actions.Utchari;
+import com.nate.sumo.model.fight.actions.Yotsu;
+import com.nate.sumo.model.fight.scenario.EdgeDangerScenario;
+import com.nate.sumo.model.fight.scenario.EdgeVictoryScenario;
+import com.nate.sumo.model.fight.scenario.LosingScenario;
+import com.nate.sumo.model.fight.scenario.OpponentPreferredGripScenario;
+import com.nate.sumo.model.fight.scenario.PreferredGridScenario;
+import com.nate.sumo.model.fight.scenario.WinningScenario;
 import com.nate.sumo.model.rikishi.Heya;
 import com.nate.sumo.model.rikishi.RikishiInfo;
 import com.nate.sumo.model.rikishi.RikishiStats;
+import com.nate.sumo.model.rikishi.RikishiTemperment;
+import com.nate.sumo.model.rikishi.RikishiTendencies;
 
 public class SkillCreator
 {
@@ -96,13 +113,15 @@ public class SkillCreator
 				List<List<MatchResult>> bashoResults = convertToList( bashos );
 				
 				RikishiStats stats = getStartingStats( rinf, year, month );
+				RikishiTemperment temp = getStartingTemperment( stats, rinf.getCurrentRank(), getAge( rinf.getBirthday(), year, month ) );
+				RikishiTendencies trends = new RikishiTendencies();
 				
-				matchAnalysis( rinf, stats, bashoResults );
+				matchAnalysis( rinf, temp, stats, trends, bashoResults );
 			}
 		}
 	}
 	
-	protected void matchAnalysis( RikishiInfo rinf, RikishiStats stats, List<List<MatchResult>> bashoResults ){
+	protected void matchAnalysis( RikishiInfo rinf, RikishiTemperment temp, RikishiStats stats, RikishiTendencies trends, List<List<MatchResult>> bashoResults ){
 		
 		// going oldest basho to latest
 		Collections.reverse( bashoResults );
@@ -110,6 +129,8 @@ public class SkillCreator
 		
 		while( bashoIt.hasNext() ){
 			List<MatchResult> matches = bashoIt.next();
+			int wins = 0;
+			int loses = 0;
 			
 			int consecutiveWins = 0;
 			int consecutiveLoses = 0;
@@ -118,37 +139,16 @@ public class SkillCreator
 			for ( MatchResult match : matches ){
 				
 				int opponentRankPosition = determineRelativeRank( rinf.getCurrentRank(), match.getOpponentRank() );
-				Double pointTally = 1.0;
-				
-				// take into account the opponent difference as given by the points (1,0) and (15,10) as a quadratic
-				// where x is the difference and y is the bonus
-				Double q = getOpponentDiffValue( opponentRankPosition );
-				pointTally += q;
-				
-				// take into account the consecutive nature.
+				Double pointTally = getMatchPointTally( rinf, match, consecutiveWins, consecutiveLoses, day, opponentRankPosition );
 				int c = consecutiveLoses;
-				if ( match.getWin() ){
-					c = consecutiveWins;
-				}
 				
-				// for consecutives we add 0.5 per consecutive win
-				Double cQ = getConsecutiveValue( c );
-				pointTally += cQ;
-				
-				// bonus for the last five days going from 5% to 20%
-				if ( day >= 11 ){
-					Double perc = endOfBashoBonusPercentage( day );
-					Double bVal = pointTally * (1.0 + perc );
-					pointTally += bVal;
-				}
+				// how much we lose on defense is based on rikishi difference (2, 0.1)  (-20, 1.0)
+				Double percToLose = ((-0.9/22.0) * opponentRankPosition  + (2.0/11.0));
 				
 				if ( !match.getWin() ){
 					pointTally *= -1.0;
 					consecutiveLoses++;
 					consecutiveWins = 0;
-					
-					// how much we lose on defense is based on rikishi difference
-					Double percToLose = ((-0.9/22.0) * opponentRankPosition  + (2.0/11.0));
 					
 					if ( percToLose < 0 ){
 						percToLose = 0.0;
@@ -159,17 +159,202 @@ public class SkillCreator
 					}
 					
 					stats.setDefense( stats.getDefense() + (percToLose * pointTally) );
+					loses++;
 				}
 				else {
 					consecutiveWins++;
+					wins++;
+					c = consecutiveWins;
 					consecutiveLoses = 0;
 				}
 				
-				modifyStatsByKimarite( match, stats, pointTally );
+				// effect on focus by rank
+				Double focusBonus = percToLose*pointTally;
+				
+				// effect by consecutive wins/loses
+				Double bonusPerc = (1.0/14.0)*(double)c + (1.0/14.0);
+				focusBonus += bonusPerc * pointTally;
+				
+				// first day / last day victory
+				if ( day == 1 || day == 15 ){
+					focusBonus += 0.2 * pointTally;
+					
+					// win and go kachi-koshi? or Los and go Kachi Koshi
+					if ( (match.getWin() && wins == 8) || (!match.getWin() && wins == 7 ) ){
+						focusBonus += 0.2*pointTally;
+					}
+				}
+				
+				modifyStatsByKimarite( match, stats, temp, pointTally );
 				
 				day++;
 			}
 		}// while
+		
+		// do this separately.
+		analyzeKimariteDistribution( bashoResults, trends, temp );
+	}
+
+	/**
+	 * Figure out the tendencies and its effects on temperment.  
+	 * 
+	 * @param trends
+	 * @param temp
+	 */
+	protected void analyzeKimariteDistribution( List<List<MatchResult>> bashoResults, RikishiTendencies trends, RikishiTemperment temp ){
+		
+		Map<Kimarite, Integer> winMap = new HashMap<Kimarite, Integer>();
+		Map<Kimarite, Integer> lossMap = new HashMap<Kimarite, Integer>();
+		Integer wins = 0;
+		Integer loses = 0;
+		Integer matches = 0;
+		
+		for ( List<MatchResult> basho : bashoResults ){
+			for ( MatchResult match : basho ){
+				
+				matches++;
+				
+				Kimarite k = match.getKimarite();
+				Map<Kimarite, Integer> mapToUse = winMap;
+				
+				if ( !match.getWin() ){
+					mapToUse = lossMap;
+					loses++;
+				}
+				else {
+					wins++;
+				}
+				
+				Integer val = mapToUse.get( k );
+				
+				if ( val == null ){
+					val = 0;
+				}
+				
+				val++;
+				
+				mapToUse.put( k, val );
+			}
+		}
+		
+		// now we have our distributions so we can start making inferences
+		Map<Class<? extends FightAction>, Integer> winningMap = new HashMap<Class<? extends FightAction>, Integer>();
+		Map<Class<? extends FightAction>, Integer> edgeLosingMap = new HashMap<Class<? extends FightAction>, Integer>();
+		
+		Iterator<Kimarite> wIt = winMap.keySet().iterator();
+		Iterator<Kimarite> lIt = lossMap.keySet().iterator();
+		
+		// go through the wins
+		while ( wIt.hasNext() ){
+			Kimarite k = wIt.next();
+			Integer val = winMap.get( k );
+			Integer value = (int)(((double)val / (double)wins) * 100.0);
+			
+			if ( k.equals( Kimarite.UTCHARI ) ){
+				edgeLosingMap.put( Utchari.class, (2*value % 100) );
+			}
+			
+			switch( k.getType() ){
+				case OSHI:
+					winningMap.put( Oshi.class, value );
+					break;
+				case GAKE:
+					winningMap.put( Gake.class, value );
+					break;
+				case YOTSU:
+					winningMap.put( Yotsu.class, value );
+					break;
+				case NAGE:
+					winningMap.put( Nage.class, value );
+					break;
+				case DEFENSE:
+					winningMap.put( DashiNage.class, value );
+					break;
+				case HIKU:
+					winningMap.put( Hatakikomi.class, value );
+					break;
+				case TSUKI:
+					winningMap.put( Tsuki.class, value );
+					break;
+				case SPECIAL:
+					break;
+				default:
+			}
+		}// end wins
+		
+		// go through the loses
+		while( lIt.hasNext() ){
+			
+			Kimarite k = lIt.next();
+			Integer value = lossMap.get( k );
+			
+			switch( k.getType() ){
+				case OSHI:
+					
+					break;
+				case GAKE:
+					
+					break;
+				case YOTSU:
+					
+					break;
+				case NAGE:
+					
+					break;
+				case DEFENSE:
+					
+					break;
+				case HIKU:
+					
+					break;
+				case TSUKI:
+					
+					break;
+				case SPECIAL:
+					break;
+				default:
+			}
+		}
+	}
+	
+	/**
+	 * Figure out how many points are given for this match
+	 * 
+	 * @param rinf
+	 * @param match
+	 * @param consecutiveWins
+	 * @param consecutiveLoses
+	 * @param day
+	 * @param opponentRankPosition
+	 * @return
+	 */
+	protected Double getMatchPointTally( RikishiInfo rinf, MatchResult match, int consecutiveWins, int consecutiveLoses, int day, Integer opponentRankPosition ){
+		
+		Double pointTally = 1.0;
+		
+		// take into account the opponent difference as given by the points (1,0) and (15,10) as a quadratic
+		// where x is the difference and y is the bonus
+		Double q = getOpponentDiffValue( opponentRankPosition );
+		pointTally += q;
+		
+		// take into account the consecutive nature.
+		int c = consecutiveLoses;
+		if ( match.getWin() ){
+			c = consecutiveWins;
+		}
+		
+		// for consecutives we add 0.5 per consecutive win
+		Double cQ = getConsecutiveValue( c );
+		pointTally += cQ;
+		
+		// bonus for the last five days going from 5% to 20%
+		if ( day >= 11 ){
+			Double perc = endOfBashoBonusPercentage( day );
+			Double bVal = pointTally * (1.0 + perc );
+			pointTally += bVal;
+		}
+		
+		return pointTally;
 	}
 	
 	/**
@@ -178,7 +363,7 @@ public class SkillCreator
 	 * @param match
 	 * @param stats
 	 */
-	protected void modifyStatsByKimarite( MatchResult match, RikishiStats stats, Double pointTally ){
+	protected void modifyStatsByKimarite( MatchResult match, RikishiStats stats, RikishiTemperment temp, Double pointTally ){
 		
 		// now we need to figure out the skills that are affected
 		if ( match.getKimarite().getType().equals( Type.OSHI ) ){
@@ -222,6 +407,8 @@ public class SkillCreator
 				stats.setRightLeg( stats.getRightLeg() + (0.3*pointTally) );
 				stats.setLeftLeg( stats.getLeftLeg() + (0.7 * pointTally) );						
 			}
+			
+			temp.setIq( temp.getIq() + (0.4*pointTally) );
 		}
 		else if ( match.getKimarite().getType().equals( Type.DEFENSE ) ){
 			
@@ -239,7 +426,11 @@ public class SkillCreator
 			
 			if ( match.getKimarite().equals( Kimarite.UTCHARI ) ){
 				stats.setEdgeTechnique( stats.getEdgeTechnique() + pointTally );
+				temp.setFocus( temp.getFocus() + pointTally );
 			}
+			
+			temp.setAnger( temp.getAnger() - ( 0.6 * pointTally ) );
+			temp.setEmotions( temp.getEmotions() - (0.4 * pointTally ) );
 		}
 		else if ( match.getKimarite().getType().equals( Type.TSUKI ) ){
 			
@@ -282,6 +473,10 @@ public class SkillCreator
 			stats.setHiku( stats.getHiku() + pointTally ); 
 			stats.setDefense( stats.getDefense() + (0.2 * pointTally ) );
 			stats.setUpperBody( stats.getUpperBody() + ( 0.2 * pointTally ) );
+			
+			if ( !match.getWin() ){
+				temp.setFocus( temp.getFocus() + (0.2 * pointTally ) );
+			}
 		}
 		else if ( match.getKimarite().getType().equals( Type.SPECIAL ) ){
 			
@@ -293,6 +488,10 @@ public class SkillCreator
 			stats.setEdgeTechnique( stats.getEdgeTechnique() + (1.3 * pointTally) );
 			
 			// mental implications too
+			if ( !match.getWin() ){
+				temp.setIq( temp.getIq() + (1.4*pointTally));
+				temp.setEmotions( temp.getEmotions() + (0.4 * pointTally) );
+			}
 		}
 	}
 	
@@ -427,6 +626,43 @@ public class SkillCreator
 		Period between = Period.between( bDate, nowDate );
 		Integer age = between.getYears();
 		return age;
+	}
+	
+	/**
+	 * Baseline temperment
+	 * 
+	 * @param stats
+	 * @param age
+	 * @return
+	 */
+	protected RikishiTemperment getStartingTemperment( RikishiStats stats, Rank currentRank, Integer age ){
+		
+		Double base = stats.getOverallSkill();
+		
+		RikishiTemperment temp = new RikishiTemperment();
+		
+		// start even keel
+		temp.setAnger( 500.0 );
+		
+		temp.setIq( base );
+		
+		// drive is determined by rank and age.  Quick risers = more drive.
+		Rank lowRank = new Rank( RankClass.MAE_ZUMO );
+		int rankDiff = -1 * determineRelativeRank( currentRank, lowRank );
+		
+		// starting point is age based.  (18,500), (40, 0)
+		Double startingDrive = (-500.0 / 22.0) * (double)age + 909.091;
+		
+		// now the higher the rank, the higher the boost.  If 560 then 500 boost.
+		// 240 then 0.  e^x+c = y
+		Double boost = (500.0 / Math.pow( 560.0, 2.0))*Math.pow( (double)rankDiff, 2.0);
+		
+		temp.setDrive( boost + startingDrive );
+		
+		temp.setFocus( 500.0 );
+		temp.setEmotions( 500.0 );
+		
+		return temp;
 	}
 	
 	// set up the base line.
