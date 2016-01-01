@@ -28,19 +28,25 @@ import com.nate.sumo.model.common.Name;
 import com.nate.sumo.model.common.Record;
 import com.nate.sumo.model.common.Weight;
 import com.nate.sumo.model.fight.FightAction;
+import com.nate.sumo.model.fight.GRIP;
 import com.nate.sumo.model.fight.actions.DashiNage;
+import com.nate.sumo.model.fight.actions.Defense;
 import com.nate.sumo.model.fight.actions.Gake;
 import com.nate.sumo.model.fight.actions.Hatakikomi;
+import com.nate.sumo.model.fight.actions.Move;
 import com.nate.sumo.model.fight.actions.Nage;
 import com.nate.sumo.model.fight.actions.Oshi;
 import com.nate.sumo.model.fight.actions.Tsuki;
 import com.nate.sumo.model.fight.actions.Utchari;
 import com.nate.sumo.model.fight.actions.Yotsu;
+import com.nate.sumo.model.fight.actions.tachiai.Henka;
+import com.nate.sumo.model.fight.actions.tachiai.Kachiage;
+import com.nate.sumo.model.fight.actions.tachiai.Nodowa;
+import com.nate.sumo.model.fight.actions.tachiai.TachiAiAction;
+import com.nate.sumo.model.fight.actions.tachiai.Ketaguri;
 import com.nate.sumo.model.fight.scenario.EdgeDangerScenario;
 import com.nate.sumo.model.fight.scenario.EdgeVictoryScenario;
 import com.nate.sumo.model.fight.scenario.LosingScenario;
-import com.nate.sumo.model.fight.scenario.OpponentPreferredGripScenario;
-import com.nate.sumo.model.fight.scenario.PreferredGridScenario;
 import com.nate.sumo.model.fight.scenario.WinningScenario;
 import com.nate.sumo.model.rikishi.Heya;
 import com.nate.sumo.model.rikishi.RikishiInfo;
@@ -238,8 +244,11 @@ public class SkillCreator
 		}
 		
 		// now we have our distributions so we can start making inferences
-		Map<Class<? extends FightAction>, Integer> winningMap = new HashMap<Class<? extends FightAction>, Integer>();
-		Map<Class<? extends FightAction>, Integer> edgeLosingMap = new HashMap<Class<? extends FightAction>, Integer>();
+		Map<Class<? extends FightAction>, Integer> winningMap = generateScenarioMap();
+		Map<Class<? extends FightAction>, Integer> losingMap = generateScenarioMap();
+		Map<Class<? extends FightAction>, Integer> edgeLosingMap = generateScenarioMap();
+		Map<Class<? extends FightAction>, Integer> edgeWinningMap = generateScenarioMap();
+		Map<Class<? extends FightAction>, Integer> tachiAiMap = new HashMap<Class<? extends FightAction>, Integer>();
 		
 		Iterator<Kimarite> wIt = winMap.keySet().iterator();
 		Iterator<Kimarite> lIt = lossMap.keySet().iterator();
@@ -250,31 +259,53 @@ public class SkillCreator
 			Integer val = winMap.get( k );
 			Integer value = (int)(((double)val / (double)wins) * 100.0);
 			
-			if ( k.equals( Kimarite.UTCHARI ) ){
-				edgeLosingMap.put( Utchari.class, (2*value % 100) );
-			}
-			
 			switch( k.getType() ){
 				case OSHI:
-					winningMap.put( Oshi.class, value );
+					winningMap.put( Oshi.class, winningMap.get( Oshi.class ) + value );
+					
+					if ( k.equals( Kimarite.OSHITAOSHI ) || k.equals( Kimarite.ABISETAOSHI ) || k.equals( Kimarite.OKURITAOSHI ) ){
+						tachiAiMap.put( Kachiage.class, tachiAiMap.get( Kachiage.class ) + val );
+					}
+					else {
+						
+						// anger splits between oshi and nodowa
+						Integer nodowa = (int)((temp.getAnger() * 0.0005) * (double)val);
+						tachiAiMap.put( Nodowa.class, tachiAiMap.get( Nodowa.class ) + nodowa );
+						tachiAiMap.put( com.nate.sumo.model.fight.actions.tachiai.Oshi.class, tachiAiMap.get( com.nate.sumo.model.fight.actions.tachiai.Oshi.class ) + (val - nodowa) );
+					}
 					break;
 				case GAKE:
-					winningMap.put( Gake.class, value );
+					winningMap.put( Gake.class, winningMap.get( Gake.class ) + value );
+					tachiAiMap.put( Ketaguri.class, tachiAiMap.get( Ketaguri.class ) + value );
 					break;
 				case YOTSU:
-					winningMap.put( Yotsu.class, value );
+					winningMap.put( Yotsu.class, winningMap.get( Yotsu.class ) + value );
+					tachiAiMap.put( com.nate.sumo.model.fight.actions.tachiai.Yotsu.class, tachiAiMap.get( com.nate.sumo.model.fight.actions.tachiai.Yotsu.class) + value );
 					break;
 				case NAGE:
-					winningMap.put( Nage.class, value );
+					winningMap.put( Nage.class, winningMap.get( Nage.class ) + value );
+					tachiAiMap.put( com.nate.sumo.model.fight.actions.tachiai.Yotsu.class, tachiAiMap.get( com.nate.sumo.model.fight.actions.tachiai.Yotsu.class) + value );
 					break;
 				case DEFENSE:
-					winningMap.put( DashiNage.class, value );
+					winningMap.put( DashiNage.class, winningMap.get( Defense.class ) + value );
+					tachiAiMap.put( com.nate.sumo.model.fight.actions.tachiai.Defense.class, tachiAiMap.get( com.nate.sumo.model.fight.actions.tachiai.Defense.class ) + value );
 					break;
 				case HIKU:
-					winningMap.put( Hatakikomi.class, value );
+					winningMap.put( Hatakikomi.class, winningMap.get( Hatakikomi.class ) + value );
+					tachiAiMap.put( Henka.class, tachiAiMap.get( Henka.class ) + value );
 					break;
 				case TSUKI:
-					winningMap.put( Tsuki.class, value );
+					winningMap.put( Tsuki.class, winningMap.get( Tsuki.class ) + value );
+					
+					if ( k.equals( Kimarite.TSUKIOTOSHI ) || k.equals( Kimarite.TSUKITAOSHI ) ){
+						tachiAiMap.put( Kachiage.class, tachiAiMap.get( Kachiage.class ) + value );
+					}
+					else {
+						// anger splits between oshi and nodowa
+						Integer nodowa = (int)((temp.getAnger() * 0.0005) * (double)val);
+						tachiAiMap.put( Nodowa.class, tachiAiMap.get( Nodowa.class ) + nodowa );
+						tachiAiMap.put( com.nate.sumo.model.fight.actions.tachiai.Tsuki.class, tachiAiMap.get( com.nate.sumo.model.fight.actions.tachiai.Tsuki.class ) + value);
+					}
 					break;
 				case SPECIAL:
 					break;
@@ -282,39 +313,129 @@ public class SkillCreator
 			}
 		}// end wins
 		
+		normalizeMap( winningMap );
+		normalizeMap( tachiAiMap );
+		
 		// go through the loses
 		while( lIt.hasNext() ){
 			
 			Kimarite k = lIt.next();
-			Integer value = lossMap.get( k );
 			
 			switch( k.getType() ){
 				case OSHI:
-					
+					putNewPercentageInMap( losingMap, winningMap, Arrays.asList( Oshi.class, Move.class, Hatakikomi.class, Tsuki.class ) );
 					break;
 				case GAKE:
-					
+					putNewPercentageInMap( losingMap, winningMap, Arrays.asList( Defense.class, Move.class, Yotsu.class ) );
 					break;
 				case YOTSU:
-					
+					putNewPercentageInMap( losingMap, winningMap, Arrays.asList( Yotsu.class, Nage.class, Gake.class, DashiNage.class ) );
 					break;
 				case NAGE:
-					
+					putNewPercentageInMap( losingMap, winningMap, Arrays.asList( Yotsu.class, Defense.class, Move.class, DashiNage.class, Nage.class, Gake.class ) );
 					break;
 				case DEFENSE:
-					
+					putNewPercentageInMap( losingMap, winningMap, Arrays.asList( Oshi.class, Tsuki.class, Nage.class, Yotsu.class ) );
 					break;
 				case HIKU:
-					
+					putNewPercentageInMap( losingMap, winningMap, Arrays.asList( Oshi.class, Tsuki.class, Defense.class ) );
 					break;
 				case TSUKI:
-					
+					putNewPercentageInMap( losingMap, winningMap, Arrays.asList( Tsuki.class, Oshi.class, Move.class, Hatakikomi.class ) );
 					break;
 				case SPECIAL:
+					putNewPercentageInMap( losingMap, winningMap, Arrays.asList( Yotsu.class, Defense.class, Move.class, DashiNage.class, Nage.class, Gake.class ) );
 					break;
 				default:
 			}
 		}
+		
+		// now we must normalize it back to percentages
+		normalizeMap( losingMap );
+		
+		// edge losing will be like losing except adjusted for Utchari
+		Long winSum = winMap.values().stream().mapToLong( v -> v.longValue() ).sum();
+		Integer utcharis = winMap.get( Kimarite.UTCHARI );
+		utcharis = ((int)(((double)utcharis / (double)winSum ) * 100.0) * 4 ) % 100;
+		final Integer per = utcharis / 9;
+		utcharis = 9 * per;
+		
+		edgeLosingMap.keySet().stream().forEach( clazz -> {
+			Integer val = losingMap.get( clazz );
+			val -= per;
+			edgeLosingMap.put( clazz, val );
+		});
+		
+		edgeLosingMap.put( Utchari.class, utcharis );
+		
+		// winning edge just doesn't have any defense, move, gake or dashinage
+		// but otherwise it's just like the winning map
+		winningMap.keySet().stream().forEach( clazz -> {
+			
+			if ( clazz != Defense.class && clazz != Gake.class && clazz != DashiNage.class && clazz != Move.class ){
+				edgeWinningMap.put( clazz, winningMap.get( clazz ) );
+			}
+		});
+	}
+	
+	/**
+	 * Take a map and normalize it to a sum of 100
+	 * @param map
+	 */
+	protected void normalizeMap( Map<Class<? extends FightAction>, Integer> map ){
+		
+		Integer sum = map.values().stream().mapToInt( v -> v.intValue() ).sum();
+		
+		map.keySet().stream().forEach( clazz -> {
+			Integer cVal = map.get( clazz );
+			Integer newVal = (int)(((double)cVal / (double)sum ) * 100.0);
+			map.put( clazz, newVal );
+		});
+	}
+	
+	/**
+	 * Little helper to put the new percentage calculation in the map.  It will sum
+	 * the numbers as percentages so they can be normalized.
+	 * @param map
+	 * @param clazz
+	 * @param newSum
+	 */
+	protected void putNewPercentageInMap( Map<Class<? extends FightAction>, Integer> toMap, 
+			Map<Class<? extends FightAction>, Integer> fromMap,
+			List<Class<? extends FightAction>> classes ) {
+		
+		Integer sum = 0;
+		
+		for ( Class<? extends FightAction> clazz : classes ){
+			sum += fromMap.get( clazz );
+		}
+		
+		for ( Class<? extends FightAction> clazz : classes ){
+			Integer newVal = ((int)(((double)fromMap.get( clazz ) / (double)sum ) * 100.0 ) + toMap.get( clazz ));
+			toMap.put( clazz, newVal );
+		}
+	}
+	
+	/**
+	 * Just create a map with zeros to avoid any null sh-tuff
+	 * @return
+	 */
+	protected Map<Class<? extends FightAction>, Integer> generateScenarioMap(){
+		
+		Map<Class<? extends FightAction>, Integer> map = new HashMap<Class<? extends FightAction>, Integer>();
+		
+		map.put( Oshi.class, 0 );
+		map.put( Tsuki.class, 0 );
+		map.put( Move.class, 0 );
+		map.put( Hatakikomi.class, 0 );
+		map.put( Defense.class, 0 );
+		map.put( Nage.class, 0 );
+		map.put( Gake.class, 0 );
+		map.put( Utchari.class, 0 );
+		map.put( Yotsu.class, 0 );
+		map.put( DashiNage.class, 0 );
+		
+		return map;
 	}
 	
 	/**
@@ -681,7 +802,7 @@ public class SkillCreator
 		stats.setEdgeTechnique( overall * 0.8 );
 		stats.setGake( (overall * 0.6) );
 		stats.setGripAbility( overall );
-		stats.setGripBreak( (overall * 0.7) );
+		stats.setGripBreak( (overall * (Math.random() * 0.7)) );
 		stats.setHiku( overall );
 		stats.setLeftArm( overall );
 		stats.setRightArm( overall );
@@ -691,14 +812,26 @@ public class SkillCreator
 		stats.setUpperBody( overall );
 		stats.setNage( overall );
 		stats.setOshi( overall );
-		stats.setSecondaryGripAbility( (overall*0.6) );
+		stats.setSecondaryGripAbility( (overall* Math.random()) );
 		stats.setOverallSkill( overall );
 		stats.setTsuki( overall );
+		stats.setTachiAi( overall );
 		
 		stats.setPotential( ( (1000.0/-18.0) * age + 2000 ) );
 		stats.setBalanceControl( overall / 10 );
 		stats.setRecovery( overall / 10 );
 		stats.setQuickness( overall * 0.6 );
+		
+		//randomly create their preferred grip
+		int val = (int)(Math.random() * 100 + 1);
+		
+		if ( val < 75 ){
+			stats.setPreferredGrip( GRIP.MIGI_YOTSU );
+		}
+		else {
+			stats.setPreferredGrip( GRIP.HIDARI_YOTSU );
+		}
+				
 		
 		return stats;
 	}

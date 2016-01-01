@@ -7,9 +7,7 @@ public enum SCENARIOS {
 	WINNING( new WinningScenario()),
 	LOSING( new LosingScenario()),
 	EDGE_DANGER( new EdgeDangerScenario()),
-	EDGE_VICTORY( new EdgeVictoryScenario()),
-	HAVE_PREFERRED_GRIP( new PreferredGridScenario()),
-	OPPONENT_FAVORITE_GRIP( new OpponentPreferredGripScenario());
+	EDGE_VICTORY( new EdgeVictoryScenario());
 	
 	private Scenario scenarioImpl;
 	

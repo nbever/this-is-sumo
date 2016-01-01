@@ -13,6 +13,7 @@ public class RikishiStats {
 	private Double tsuki = 500.0;
 	private Double defense = 500.0;
 	private Double overallSkill = 500.0;
+	private Double tachiAi = 500.0;
 	
 	//strength
 	private Double upperBody = 500.0;
@@ -259,5 +260,15 @@ public class RikishiStats {
 		str += "Grip Break: " + getGripBreak() + "\n";
 		
 		return str;
+	}
+
+	public Double getTachiAi()
+	{
+		return tachiAi;
+	}
+
+	public void setTachiAi( Double tachiAi )
+	{
+		this.tachiAi = tachiAi;
 	}
 }
