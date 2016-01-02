@@ -1,9 +1,6 @@
-package com.nate.sumo.model.fight.actions.tachiai;
+package com.nate.sumo.model.fight;
 
 import java.util.function.Function;
-
-import com.nate.sumo.model.fight.Consequence;
-import com.nate.sumo.model.fight.FightAction;
 
 public abstract class TachiAiAction extends FightAction
 {

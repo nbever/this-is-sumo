@@ -1,6 +1,7 @@
 package com.nate.sumo.model.rikishi;
 
 import java.util.Date;
+import java.util.List;
 
 import com.nate.sumo.model.basho.Rank;
 import com.nate.sumo.model.common.Height;
@@ -42,6 +43,8 @@ public class RikishiInfo {
 	private Integer jonokuchiYusho;
 	private Integer jonokuchiJunYusho;
 	private Integer maeZumoYusho;
+	
+	private List<Injury> injuries;
 	
 	private Record careerRecord;
 	
@@ -324,6 +327,14 @@ public class RikishiInfo {
 	public void setJonokuchiJunYusho( Integer jonokuchiJunYusho )
 	{
 		this.jonokuchiJunYusho = jonokuchiJunYusho;
+	}
+	
+	public List<Injury> getInjuries(){
+		return injuries;
+	}
+	
+	public void setInjuries( List<Injury> injuries ){
+		this.injuries = injuries;
 	}
 	
 	@Override

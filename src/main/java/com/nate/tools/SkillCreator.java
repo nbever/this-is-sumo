@@ -1,9 +1,13 @@
 package com.nate.tools;
 
+import java.awt.Color;
+import java.awt.image.BufferedImageFilter;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
@@ -17,6 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.nate.sumo.DatabaseManager;
+import com.nate.sumo.model.appearence.AppearenceMap;
 import com.nate.sumo.model.basho.Kimarite;
 import com.nate.sumo.model.basho.Kimarite.Type;
 import com.nate.sumo.model.basho.Rank;
@@ -39,15 +45,11 @@ import com.nate.sumo.model.fight.actions.Oshi;
 import com.nate.sumo.model.fight.actions.Tsuki;
 import com.nate.sumo.model.fight.actions.Utchari;
 import com.nate.sumo.model.fight.actions.Yotsu;
+import com.nate.sumo.model.fight.actions.tachiai.Harite;
 import com.nate.sumo.model.fight.actions.tachiai.Henka;
 import com.nate.sumo.model.fight.actions.tachiai.Kachiage;
 import com.nate.sumo.model.fight.actions.tachiai.Nodowa;
-import com.nate.sumo.model.fight.actions.tachiai.TachiAiAction;
 import com.nate.sumo.model.fight.actions.tachiai.Ketaguri;
-import com.nate.sumo.model.fight.scenario.EdgeDangerScenario;
-import com.nate.sumo.model.fight.scenario.EdgeVictoryScenario;
-import com.nate.sumo.model.fight.scenario.LosingScenario;
-import com.nate.sumo.model.fight.scenario.WinningScenario;
 import com.nate.sumo.model.rikishi.Heya;
 import com.nate.sumo.model.rikishi.RikishiInfo;
 import com.nate.sumo.model.rikishi.RikishiStats;
@@ -121,12 +123,142 @@ public class SkillCreator
 				RikishiStats stats = getStartingStats( rinf, year, month );
 				RikishiTemperment temp = getStartingTemperment( stats, rinf.getCurrentRank(), getAge( rinf.getBirthday(), year, month ) );
 				RikishiTendencies trends = new RikishiTendencies();
+				AppearenceMap appearence = getAppearence( rinf );
 				
 				matchAnalysis( rinf, temp, stats, trends, bashoResults );
+				
+				// everything is in place so now we need to create the tables
+				storeBanzuke( rinf, temp, stats, trends, year, month );
 			}
 		}
 	}
 	
+	/**
+	 * Takes the info and generates all the SQL required to create this roster
+	 * 
+	 * @param rinf
+	 * @param temp
+	 * @param stats
+	 * @param trends
+	 * @param year
+	 * @param month
+	 * @throws IOException
+	 */
+	protected void storeBanzuke( RikishiInfo rinf, RikishiTemperment temp, RikishiStats stats, RikishiTendencies trends, Integer year, Integer month ) throws IOException{
+		
+		String infTable = "APP.BANZUKE_" + year + "_" + month;
+		String trendTable = "APP.DNA_" + year + "_" + month;
+		String lookTable = "APP.LOOK_" + year + "_" + month;
+		String animTable = "APP.ANIMATIONS_" + year + "_" + month;
+		
+		dropTables( infTable, trendTable, lookTable, animTable );
+		
+		// create a temporary ddl
+		File masterDdl = new File( DatabaseManager.class.getResource( "/banzuke.ddl" ).getFile() );
+		File tempDdl = new File( "temp_" + year + "_" + month + ".ddl" );
+		tempDdl.createNewFile();
+		
+		try (
+				BufferedReader buffReader = new BufferedReader( new FileReader( masterDdl ) );
+				BufferedWriter writer = new BufferedWriter( new FileWriter( tempDdl ) );
+		){
+		
+			String line = "";
+			
+			while ( (line = buffReader.readLine()) != null ){
+				
+				line = line.replace( "APP.BANZUKE", infTable );
+				line = line.replace( "APP.DNA", trendTable );
+				line = line.replace( "APP.LOOK", lookTable );
+				line = line.replace( "APP.ANIMATIONS", animTable );
+				
+				writer.write( line );
+				writer.newLine();
+			}
+			
+			writer.flush();
+		}
+		
+		DatabaseManager dbm = DatabaseManager.getInstance();
+		
+	}
+	
+	/**
+	 * Drop tables if they exist
+	 * @param tableNames
+	 */
+	protected void dropTables( String... tableNames ){
+		
+		for ( String name : tableNames ){
+			if ( DatabaseManager.getInstance().tableExists( name ) ){
+				DatabaseManager.getInstance().execute( "DROP TABLE " + name );
+			}
+		}
+	}
+	
+	/**
+	 * Generate an appearence map for this rikishi
+	 * 
+	 * @param info
+	 * @return
+	 */
+	protected AppearenceMap getAppearence( RikishiInfo info ){
+		AppearenceMap map = new AppearenceMap();
+		
+		int weightClass = 1;
+		
+		if ( info.getWeight().getValue() < 130 ){
+			weightClass = 0;
+		}
+		else if ( info.getWeight().getValue() > 180 ){
+			weightClass = 2;
+		}
+		
+		if ( info.getHometown() != null && info.getHometown().getCountry().getFirstName_en() != "Japan" ){
+			
+			if ( info.getHometown().getCountry().getFirstName_en().equalsIgnoreCase( "Mongolia" ) ){
+				map.setHeadModel( AppearenceMap.MONGOLIAN_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.MONGOLIAN_HEAD_MODELS.size() ) ) );
+				map.setHeadTxt( AppearenceMap.MONGOLIAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.MONGOLIAN_HEAD_TXTS.size() ) ) );				
+			}
+			// european
+			else {
+				map.setHeadModel( AppearenceMap.EUROPEAN_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.EUROPEAN_HEAD_MODELS.size() ) ) );
+				map.setHeadTxt( AppearenceMap.EUROPEAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.EUROPEAN_HEAD_TXTS.size() ) ) );
+			}
+		}
+		// Japanese
+		else {
+			
+			map.setHeadModel( AppearenceMap.JAPANESE_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.JAPANESE_HEAD_MODELS.size() ) ) );
+			map.setHeadTxt( AppearenceMap.JAPANESE_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.JAPANESE_HEAD_TXTS.size() ) ) );
+		}
+	
+		int model = (int)(Math.random() * AppearenceMap.BODY_W1_MODELS.size());
+		map.setBodyModel( AppearenceMap.BODY_MODELS.get( weightClass ).get( model ) );
+		int bodyTxt = (int)(Math.random() * AppearenceMap.BODY_TXT_W1.size() );
+		map.setBodyTxt( AppearenceMap.BODY_TXTS.get( weightClass ).get( bodyTxt ) );
+		map.setMawashiModel( AppearenceMap.MAWASHI_MODELS.get( weightClass ) );
+		
+		Color mColor = new Color( (int)(Math.random()*255), (int)(Math.random()*255), (int)(Math.random()*255) );
+		map.setMawashiColor( mColor );
+		
+		map.setHairModel( AppearenceMap.HAIR_MODELS.get( (int)(Math.random()*AppearenceMap.HAIR_MODELS.size() ) ) );
+		map.setHairTxt( AppearenceMap.HAIR_TEXTS.get( (int)(Math.random()*AppearenceMap.HAIR_TEXTS.size() ) ) );
+		map.setKeshoModel( AppearenceMap.KESHO_MODELS.get( weightClass ) );
+		map.setKeshoTxt( AppearenceMap.KESHO_TXTS.get( (int)(Math.random()*AppearenceMap.KESHO_TXTS.size() ) ) );
+		
+		return map;
+	}
+	
+	/**
+	 * Analyze the matches and figure out the tendencies
+	 * 
+	 * @param rinf
+	 * @param temp
+	 * @param stats
+	 * @param trends
+	 * @param bashoResults
+	 */
 	protected void matchAnalysis( RikishiInfo rinf, RikishiTemperment temp, RikishiStats stats, RikishiTendencies trends, List<List<MatchResult>> bashoResults ){
 		
 		// going oldest basho to latest
@@ -298,7 +430,7 @@ public class SkillCreator
 					winningMap.put( Tsuki.class, winningMap.get( Tsuki.class ) + value );
 					
 					if ( k.equals( Kimarite.TSUKIOTOSHI ) || k.equals( Kimarite.TSUKITAOSHI ) ){
-						tachiAiMap.put( Kachiage.class, tachiAiMap.get( Kachiage.class ) + value );
+						tachiAiMap.put( Harite.class, tachiAiMap.get( Harite.class ) + value );
 					}
 					else {
 						// anger splits between oshi and nodowa

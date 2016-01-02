@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.nate.sumo.model.fight.Consequence;
 import com.nate.sumo.model.fight.FightAction;
+import com.nate.sumo.model.fight.TachiAiAction;
 
 public class Defense extends TachiAiAction{
 
