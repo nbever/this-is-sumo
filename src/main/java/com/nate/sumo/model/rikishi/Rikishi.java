@@ -1,7 +1,6 @@
 package com.nate.sumo.model.rikishi;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.nate.sumo.DatabaseConstants;
@@ -240,6 +239,24 @@ public class Rikishi {
 		updates.add( dnaUpdate );
 		
 		//appearence
+		String appUpdate = "INSERT INTO" + DatabaseConstants.LOOK_BASE + suffix + " SET ";
+		appUpdate += DatabaseConstants.C_MAWASHI_COLOR + "='" + getAppearenceMap().colorToString( getAppearenceMap().getMawashiColor() ) + "',";
+		appUpdate += DatabaseConstants.C_MAWASHI_TXT + "='" + getAppearenceMap().getMawashiTxt() + "',";
+		appUpdate += DatabaseConstants.C_MAWASHI_MODEL + "='" + getAppearenceMap().getMawashiModel() + "',";
+		appUpdate += DatabaseConstants.C_BODY_MODEL + "='" + getAppearenceMap().getBodyModel() + "',";
+		appUpdate += DatabaseConstants.C_HEAD_MODEL + "='" + getAppearenceMap().getHeadModel() + "',";
+		appUpdate += DatabaseConstants.C_BODY_TXT + "='" + getAppearenceMap().getBodyTxt() + "',";
+		appUpdate += DatabaseConstants.C_HEAD_TXT + "='" + getAppearenceMap().getHeadTxt() + "',";
+		appUpdate += DatabaseConstants.C_HAIR_COLOR + "='" + getAppearenceMap().colorToString( getAppearenceMap().getHairColor() ) + "',";
+		appUpdate += DatabaseConstants.C_HAIR_TXT + "='" + getAppearenceMap().getHairTxt() + "',";
+		appUpdate += DatabaseConstants.C_HAIR_MODEL + "='" + getAppearenceMap().getHairModel() + ",'";
+		appUpdate += DatabaseConstants.C_KESHO_MODEL + "='" + getAppearenceMap().getKeshoModel() + "',";
+		appUpdate += DatabaseConstants.C_KESHO_TXT + "='" + getAppearenceMap().getKeshoTxt() + "',";
+		appUpdate += DatabaseConstants.C_PORTRAIT + "='" + getAppearenceMap().getPortrait() + "',";
+		appUpdate += DatabaseConstants.C_SKIN_TONE + "='" + getAppearenceMap().colorToString( getAppearenceMap().getSkinTone() ) + "' WHERE " +
+			DatabaseConstants.C_RIKISHI_ID + '=' + getRikishiInfo().getId();
+		
+		updates.add( appUpdate );
 		
 		return updates;
 	}

@@ -1,7 +1,6 @@
 package com.nate.tools;
 
 import java.awt.Color;
-import java.awt.image.BufferedImageFilter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -51,6 +50,7 @@ import com.nate.sumo.model.fight.actions.tachiai.Kachiage;
 import com.nate.sumo.model.fight.actions.tachiai.Nodowa;
 import com.nate.sumo.model.fight.actions.tachiai.Ketaguri;
 import com.nate.sumo.model.rikishi.Heya;
+import com.nate.sumo.model.rikishi.Rikishi;
 import com.nate.sumo.model.rikishi.RikishiInfo;
 import com.nate.sumo.model.rikishi.RikishiStats;
 import com.nate.sumo.model.rikishi.RikishiTemperment;
@@ -108,6 +108,8 @@ public class SkillCreator
 			
 			String line = null;
 			
+			File banzukeFile = setupBanzukeStoreFile( year, month );
+			
 			while ( (line = buffRead.readLine()) != null ){
 				
 				// break it into pieces
@@ -128,23 +130,27 @@ public class SkillCreator
 				matchAnalysis( rinf, temp, stats, trends, bashoResults );
 				
 				// everything is in place so now we need to create the tables
-				storeBanzuke( rinf, temp, stats, trends, year, month );
+				Rikishi rikishi = new Rikishi();
+				rikishi.setAnimationMap( null );
+				rikishi.setAppearenceMap( appearence );
+				rikishi.setRikishiInfo( rinf );
+				rikishi.setRikishiStats( stats );
+				rikishi.setRikishiTemperment( temp );
+				rikishi.setRikishiTendencies( trends );
+				
+				storeBanzuke( banzukeFile, rikishi, year, month );
 			}
 		}
 	}
 	
 	/**
-	 * Takes the info and generates all the SQL required to create this roster
-	 * 
-	 * @param rinf
-	 * @param temp
-	 * @param stats
-	 * @param trends
+	 * Starts the file off right.
 	 * @param year
 	 * @param month
-	 * @throws IOException
+	 * @return
+	 * @throws IOException 
 	 */
-	protected void storeBanzuke( RikishiInfo rinf, RikishiTemperment temp, RikishiStats stats, RikishiTendencies trends, Integer year, Integer month ) throws IOException{
+	protected File setupBanzukeStoreFile( Integer year, Integer month ) throws IOException{
 		
 		String infTable = "APP.BANZUKE_" + year + "_" + month;
 		String trendTable = "APP.DNA_" + year + "_" + month;
@@ -179,8 +185,36 @@ public class SkillCreator
 			writer.flush();
 		}
 		
-		DatabaseManager dbm = DatabaseManager.getInstance();
+		return tempDdl;
+	}
+	
+	/**
+	 * Takes the info and generates all the SQL required to create this roster
+	 * 
+	 * @param rinf
+	 * @param temp
+	 * @param stats
+	 * @param trends
+	 * @param year
+	 * @param month
+	 * @throws IOException
+	 */
+	protected void storeBanzuke( File banzukeFile, Rikishi rikishi, Integer year, Integer month ) throws IOException{
 		
+		try ( 
+			FileWriter fileOut = new FileWriter( banzukeFile, true );
+			BufferedWriter writer = new BufferedWriter( fileOut ); ){
+			
+			List<String> sqls = rikishi.getCreateSql( year, month );
+			sqls.addAll( rikishi.getUpdateSql( year, month ) );
+			
+			for ( String sql : sqls ){
+				writer.write( sql );
+				writer.newLine();
+			}
+			
+			writer.flush();
+		}
 	}
 	
 	/**
@@ -216,11 +250,13 @@ public class SkillCreator
 		
 		int colorFactor = 0;
 		
-		if ( info.getHometown() != null && info.getHometown().getCountry().getFirstName_en() != "Japan" ){
+		if ( info.getHometown() != null && info.getHometown().getCountry().getFirstName_en() != "Japan" &&
+			info.getHometown().getArea().getFirstName_en() != "Hawaii" ){
 			
 			if ( info.getHometown().getCountry().getFirstName_en().equalsIgnoreCase( "Mongolia" ) ){
 				map.setHeadModel( AppearenceMap.MONGOLIAN_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.MONGOLIAN_HEAD_MODELS.size() ) ) );
 				map.setHeadTxt( AppearenceMap.MONGOLIAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.MONGOLIAN_HEAD_TXTS.size() ) ) );
+				map.setHairColor( AppearenceMap.MONGOLIAN_HAIR_COLORS.get( (int)(Math.random() * AppearenceMap.MONGOLIAN_HAIR_COLORS.size() ) ) );
 				
 				colorFactor = (int)(Math.random()*70 );
 			}
@@ -228,6 +264,7 @@ public class SkillCreator
 			else {
 				map.setHeadModel( AppearenceMap.EUROPEAN_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.EUROPEAN_HEAD_MODELS.size() ) ) );
 				map.setHeadTxt( AppearenceMap.EUROPEAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.EUROPEAN_HEAD_TXTS.size() ) ) );
+				map.setHairColor( AppearenceMap.EUROPEAN_HAIR_COLORS.get( (int)(Math.random() * AppearenceMap.EUROPEAN_HAIR_COLORS.size() ) ) );
 				
 				colorFactor = (int)(Math.random() * 40 );
 			}
@@ -237,6 +274,7 @@ public class SkillCreator
 			
 			map.setHeadModel( AppearenceMap.JAPANESE_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.JAPANESE_HEAD_MODELS.size() ) ) );
 			map.setHeadTxt( AppearenceMap.JAPANESE_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.JAPANESE_HEAD_TXTS.size() ) ) );
+			map.setHairColor( AppearenceMap.JAPANESE_HAIR_COLORS.get( (int)(Math.random() * AppearenceMap.JAPANESE_HAIR_COLORS.size() ) ) );
 			
 			colorFactor = (int)(Math.random() * 100 );
 		}

@@ -132,6 +132,40 @@ public class AppearenceMap {
 	public static final String KESHO_TXT_10 = "kesho_txt_10.jpg";
 	public static final List<String> KESHO_TXTS = Arrays.asList( KESHO_TXT_1, KESHO_TXT_2, KESHO_TXT_3, KESHO_TXT_4, KESHO_TXT_5, KESHO_TXT_6, KESHO_TXT_7, KESHO_TXT_8, KESHO_TXT_9, KESHO_TXT_10 );
 	
+	public static final Color HAIR_BLACK = new Color( 9, 8, 6 );
+	public static final Color HAIR_OFF_BLACK = new Color( 44, 34, 43 );
+	public static final Color HAIR_DARK_GRAY = new Color( 113, 99, 90 );
+	public static final Color HAIR_MEDIUM_GRAY = new Color( 183, 166, 158 );
+	public static final Color HAIR_LIGHT_GRAY = new Color( 214, 196, 194 );
+	public static final Color HAIR_PLATNUM_BLONDE = new Color( 202, 191, 177 );
+	public static final Color HAIR_BLEACHED_BLONDE = new Color( 220, 208, 186 );
+	public static final Color HAIR_WHITE_BLONDE = new Color( 255, 245,225 );
+	public static final Color HAIR_LIGHT_BLONDE = new Color( 230, 206, 168 );
+	public static final Color HAIR_GOLDEN_BLONDE = new Color( 229, 200, 168 );
+	public static final Color HAIR_ASH_BLONDE = new Color( 222, 188, 153 );
+	public static final Color HAIR_HONEY_BLONDE = new Color( 184, 151, 120 );
+	public static final Color HAIR_STRAWBERRY_BLONDE = new Color( 165, 107, 70 );
+	public static final Color HAIR_LIGHT_RED = new Color( 181, 82, 57 );
+	public static final Color HAIR_DARK_RED = new Color( 141, 74, 67 );
+	public static final Color HAIR_LIGHT_AUBURN = new Color( 145, 85, 61 );
+	public static final Color HAIR_DARK_AUBURN = new Color( 83, 61, 50 );
+	public static final Color HAIR_DARK_BROWN = new Color( 59, 48, 36 );
+	public static final Color HAIR_GOLDEN_BROWN = new Color( 85, 72, 56 );
+	public static final Color HAIR_MEDIUM_BROWN = new Color( 78, 67, 63 );
+	public static final Color HAIR_CHESTNUT_BROWN = new Color( 80, 68, 68 );
+	public static final Color HAIR_BROWN = new Color( 106, 78, 66 );
+	public static final Color HAIR_LIGHT_BROWN = new Color( 167, 133, 106 );
+	public static final Color HAIR_ASH_BROWN = new Color( 151, 121, 97 );
+	public static final List<Color> JAPANESE_HAIR_COLORS = 
+		Arrays.asList( HAIR_BLACK, HAIR_OFF_BLACK, HAIR_DARK_BROWN, HAIR_DARK_AUBURN, HAIR_BLACK, HAIR_BLACK );
+	public static final List<Color> MONGOLIAN_HAIR_COLORS = Arrays.asList( HAIR_BLACK, HAIR_OFF_BLACK, HAIR_BLACK );
+	public static final List<Color> EUROPEAN_HAIR_COLORS = Arrays.asList( HAIR_BLACK, HAIR_OFF_BLACK, HAIR_BLEACHED_BLONDE, HAIR_WHITE_BLONDE, 
+		HAIR_LIGHT_BLONDE, HAIR_GOLDEN_BLONDE, HAIR_ASH_BLONDE, HAIR_HONEY_BLONDE, HAIR_STRAWBERRY_BLONDE, HAIR_LIGHT_RED, HAIR_DARK_RED, HAIR_LIGHT_AUBURN,
+		HAIR_DARK_AUBURN, HAIR_DARK_BROWN, HAIR_GOLDEN_BROWN, HAIR_MEDIUM_BROWN, HAIR_CHESTNUT_BROWN, HAIR_BROWN, HAIR_LIGHT_BROWN, HAIR_ASH_BROWN,
+		HAIR_DARK_AUBURN, HAIR_DARK_BROWN, HAIR_GOLDEN_BROWN, HAIR_MEDIUM_BROWN, HAIR_CHESTNUT_BROWN, HAIR_BROWN, HAIR_LIGHT_BROWN, HAIR_ASH_BROWN,
+		HAIR_DARK_AUBURN, HAIR_DARK_BROWN, HAIR_GOLDEN_BROWN, HAIR_MEDIUM_BROWN, HAIR_CHESTNUT_BROWN, HAIR_BROWN, HAIR_LIGHT_BROWN, HAIR_ASH_BROWN, HAIR_BLACK,
+		HAIR_BLACK, HAIR_BLACK );
+	
 	private String mawashiModel;
 	private String mawashiTxt;
 	private Color mawashiColor;
@@ -154,6 +188,27 @@ public class AppearenceMap {
 	
 	public AppearenceMap(){}
 
+	public String colorToString( Color color ){
+		return color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "," + color.getAlpha();
+	}
+	
+	public Color stringToColor( String colorString ){
+		String[] sections = colorString.split( "," );
+		
+		int r = Integer.parseInt( sections[0] );
+		int g = Integer.parseInt( sections[1] );
+		int b = Integer.parseInt( sections[2] );
+		int a = 255;
+		
+		if ( sections.length > 3 ){
+			a = Integer.parseInt( sections[3] );
+		}
+		
+		Color color = new Color( r, g, b, a );
+		
+		return color;
+	}
+	
 	public String getMawashiModel()
 	{
 		return mawashiModel;
