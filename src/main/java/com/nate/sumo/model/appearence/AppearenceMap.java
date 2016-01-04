@@ -138,6 +138,7 @@ public class AppearenceMap {
 	
 	private String bodyModel;
 	private String bodyTxt;
+	private Color skinTone;
 	
 	private String hairModel;
 	private String hairTxt;
@@ -281,5 +282,15 @@ public class AppearenceMap {
 	public void setHeadTxt( String headTxt )
 	{
 		this.headTxt = headTxt;
+	}
+
+	public Color getSkinTone()
+	{
+		return skinTone;
+	}
+
+	public void setSkinTone( Color skinTone )
+	{
+		this.skinTone = skinTone;
 	}
 }

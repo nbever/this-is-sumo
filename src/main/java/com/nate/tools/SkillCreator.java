@@ -214,16 +214,22 @@ public class SkillCreator
 			weightClass = 2;
 		}
 		
+		int colorFactor = 0;
+		
 		if ( info.getHometown() != null && info.getHometown().getCountry().getFirstName_en() != "Japan" ){
 			
 			if ( info.getHometown().getCountry().getFirstName_en().equalsIgnoreCase( "Mongolia" ) ){
 				map.setHeadModel( AppearenceMap.MONGOLIAN_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.MONGOLIAN_HEAD_MODELS.size() ) ) );
-				map.setHeadTxt( AppearenceMap.MONGOLIAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.MONGOLIAN_HEAD_TXTS.size() ) ) );				
+				map.setHeadTxt( AppearenceMap.MONGOLIAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.MONGOLIAN_HEAD_TXTS.size() ) ) );
+				
+				colorFactor = (int)(Math.random()*70 );
 			}
 			// european
 			else {
 				map.setHeadModel( AppearenceMap.EUROPEAN_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.EUROPEAN_HEAD_MODELS.size() ) ) );
 				map.setHeadTxt( AppearenceMap.EUROPEAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.EUROPEAN_HEAD_TXTS.size() ) ) );
+				
+				colorFactor = (int)(Math.random() * 40 );
 			}
 		}
 		// Japanese
@@ -231,8 +237,14 @@ public class SkillCreator
 			
 			map.setHeadModel( AppearenceMap.JAPANESE_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.JAPANESE_HEAD_MODELS.size() ) ) );
 			map.setHeadTxt( AppearenceMap.JAPANESE_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.JAPANESE_HEAD_TXTS.size() ) ) );
+			
+			colorFactor = (int)(Math.random() * 100 );
 		}
 	
+		colorFactor = 255 - colorFactor;
+		
+		map.setSkinTone( new Color( colorFactor, colorFactor, colorFactor ));
+		
 		int model = (int)(Math.random() * AppearenceMap.BODY_W1_MODELS.size());
 		map.setBodyModel( AppearenceMap.BODY_MODELS.get( weightClass ).get( model ) );
 		int bodyTxt = (int)(Math.random() * AppearenceMap.BODY_TXT_W1.size() );

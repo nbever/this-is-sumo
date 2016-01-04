@@ -239,6 +239,8 @@ public class Rikishi {
 		
 		updates.add( dnaUpdate );
 		
+		//appearence
+		
 		return updates;
 	}
 }

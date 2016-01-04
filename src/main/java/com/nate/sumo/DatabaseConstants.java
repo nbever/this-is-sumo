@@ -106,5 +106,6 @@ public class DatabaseConstants
 	public static final String C_KESHO_MODEL = "KESHO_MODEL";
 	public static final String C_KESHO_TXT = "KESHO_TXT";
 	public static final String C_PORTRAIT = "PORTRAIT";
+	public static final String C_SKIN_TONE = "SKIN_TONE";
 	
 }
