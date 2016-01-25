@@ -239,7 +239,7 @@ public class Rikishi {
 		updates.add( dnaUpdate );
 		
 		//appearence
-		String appUpdate = "INSERT INTO" + DatabaseConstants.LOOK_BASE + suffix + " SET ";
+		String appUpdate = "INSERT INTO " + DatabaseConstants.LOOK_BASE + suffix + " SET ";
 		appUpdate += DatabaseConstants.C_MAWASHI_COLOR + "='" + getAppearenceMap().colorToString( getAppearenceMap().getMawashiColor() ) + "',";
 		appUpdate += DatabaseConstants.C_MAWASHI_TXT + "='" + getAppearenceMap().getMawashiTxt() + "',";
 		appUpdate += DatabaseConstants.C_MAWASHI_MODEL + "='" + getAppearenceMap().getMawashiModel() + "',";
@@ -257,6 +257,13 @@ public class Rikishi {
 			DatabaseConstants.C_RIKISHI_ID + '=' + getRikishiInfo().getId();
 		
 		updates.add( appUpdate );
+		
+		//animations
+		String animUpdate = "INSERT INTO " + DatabaseConstants.ANIMATION_BASE + suffix + " SET ";
+		animUpdate += DatabaseConstants.C_ANIMATIONS + "='" + getAnimationMap().toString() + "' WHERE " +
+			DatabaseConstants.C_RIKISHI_ID + "=" + getRikishiInfo().getId();
+		
+		updates.add( animUpdate );
 		
 		return updates;
 	}

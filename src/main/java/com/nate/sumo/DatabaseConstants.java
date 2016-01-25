@@ -108,4 +108,5 @@ public class DatabaseConstants
 	public static final String C_PORTRAIT = "PORTRAIT";
 	public static final String C_SKIN_TONE = "SKIN_TONE";
 	
+	public static final String C_ANIMATIONS = "ANIMATIONS";
 }
