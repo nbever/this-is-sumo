@@ -13,9 +13,9 @@ public enum Kimarite {
 	SHITATENAGE( new Name( "Shitatenage", "下手投げ"), Type.NAGE ),
 	SUKUINAGE( new Name( "Sukuinage", "掬い投げ"), Type.NAGE ),
 	HATAKIKOMI( new Name( "Hatakikomi", "叩き込み"), Type.HIKU ),
-	HANSOKU( new Name( "Hansoku", "反則"), null ),
-	FUSENSHO( new Name( "Fusensho", ""), null ),
-	FUSEN( new Name( "Fusen", ""), null ),
+	HANSOKU( new Name( "Hansoku", "反則"), Type.NON_LOSING ),
+	FUSENSHO( new Name( "Fusensho", ""), Type.NON_LOSING ),
+	FUSEN( new Name( "Fusen", ""), Type.NON_LOSING ),
 	SOTOGAKE( new Name( "Sotogake", "外掛け"), Type.GAKE ),
 	UCHIGAKE( new Name( "Uchigake", "内掛け"), Type.GAKE ),
 	TSUKIOTOSHI( new Name( "Tsukiotoshi", "突き落とし"), Type.TSUKI ),
@@ -89,11 +89,11 @@ public enum Kimarite {
 	USHIROMOTARE( new Name( "Ushiromotare", "後ろもたれ"), Type.OSHI ),
 	WARIDASHI( new Name( "Waridashi", "割り出し"), Type.SPECIAL ),
 	YOBIMODOSHI( new Name( "Yobimodoshi", "呼び戻し"), Type.HIKU ),
-	FUMIDASHI( new Name( "Fumidashi", "踏み出し"), null),
-	ISAMIASHI( new Name( "Isamiashi", "勇み足"), null),
-	KOSHIKUDAKE( new Name( "Koshikudake", "腰砕け"), null),
-	TSUKIHIZA( new Name( "Tsukihiza", "つきひざ"), null),
-	TSUKITE( new Name( "Tsukite", "つき手"), null);
+	FUMIDASHI( new Name( "Fumidashi", "踏み出し"), Type.NON_LOSING),
+	ISAMIASHI( new Name( "Isamiashi", "勇み足"), Type.NON_LOSING),
+	KOSHIKUDAKE( new Name( "Koshikudake", "腰砕け"), Type.NON_LOSING),
+	TSUKIHIZA( new Name( "Tsukihiza", "つきひざ"), Type.NON_LOSING),
+	TSUKITE( new Name( "Tsukite", "つき手"), Type.NON_LOSING);
 	
 	public enum Type {
 		YOTSU,
@@ -103,7 +103,8 @@ public enum Kimarite {
 		GAKE,
 		HIKU,
 		SPECIAL,
-		DEFENSE
+		DEFENSE,
+		NON_LOSING
 	};
 	
 	private Name name;

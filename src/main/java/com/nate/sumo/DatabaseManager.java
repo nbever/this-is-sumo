@@ -58,12 +58,19 @@ public class DatabaseManager {
 			logger.info( "Creating tables..." );
 			URL resourceUrl = DatabaseManager.class.getResource( "/sumo.ddl" );
 			loadSql( new File( resourceUrl.getFile() ) ); 
-
-			logger.info( "Loading necessary SQL into the database..." );
+		}
+		
+		if ( !tableExists( "LOCATIONS" ) ){
 			logger.info( "Adding locations..." );
 			loadSql( new File( DatabaseManager.class.getResource( "/locations.sql" ).getFile() ) );
+		}
+		
+		if ( !tableExists( "ICHIMON" ) ){
 			logger.info(  "Adding ichimon..." );
 			loadSql( new File( DatabaseManager.class.getResource( "/ichimon.sql" ).getFile() ) );
+		}
+		
+		if ( !tableExists( "HEYA" ) ){
 			logger.info( "Adding heya..." );
 			loadSql( new File( DatabaseManager.class.getResource( "/heya.sql" ).getFile() ) );
 		}

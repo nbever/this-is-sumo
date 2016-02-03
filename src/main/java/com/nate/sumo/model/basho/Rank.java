@@ -159,14 +159,28 @@ public class Rank {
 	}
 	
 	public RankClass getRankClass(){
+		if ( this.rankClass == null ){
+			this.rankClass = RankClass.BANZUKE_GAI;
+		}
+		
 		return this.rankClass;
 	}
 	
 	public RankSide getRankSide(){
+		
+		if ( this.rankSide == null ){
+			this.rankSide = RankSide.EAST;
+		}
+		
 		return this.rankSide;
 	}
 	
 	public Integer getRankNumber(){
+		
+		if ( this.rankNumber == null ){
+			this.rankNumber = 1;
+		}
+		
 		return this.rankNumber;
 	}
 	

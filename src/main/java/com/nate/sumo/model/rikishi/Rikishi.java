@@ -105,6 +105,12 @@ public class Rikishi {
 			hometown = getRikishiInfo().getHometown().getId();
 		}
 		
+		Long heya = -1L;
+		
+		if ( getRikishiInfo().getHeya() != null ){
+			heya = getRikishiInfo().getHeya().getId();
+		}
+		
 		String updateRinf = "UPDATE " + DatabaseConstants.BANZUKE_BASE + suffix + " SET " +
 			DatabaseConstants.C_EN_FIRST_NAME + "='" + getRikishiInfo().getRealName().getFirstName_en() + "'," +
 			DatabaseConstants.C_EN_LAST_NAME + "='" + getRikishiInfo().getRealName().getLastName_en() + "'," +
@@ -127,7 +133,7 @@ public class Rikishi {
 			DatabaseConstants.C_KJ_UNIVERSITY + "='" + getRikishiInfo().getUniversity().getFirstName_kanji() + "',";
 		}
 		
-		updateRinf += DatabaseConstants.C_HEYA_ID + "=" + getRikishiInfo().getHeya().getId() + "," +
+		updateRinf += DatabaseConstants.C_HEYA_ID + "=" + heya + "," +
 			DatabaseConstants.C_HOMETOWN + "=" + hometown + "," +
 			DatabaseConstants.C_HEIGHT + "=" + getRikishiInfo().getHeight().getValue() + "," +
 			DatabaseConstants.C_WEIGHT + "=" + getRikishiInfo().getWeight().getValue() + "," +
@@ -258,12 +264,16 @@ public class Rikishi {
 		
 		updates.add( appUpdate );
 		
-		//animations
-		String animUpdate = "INSERT INTO " + DatabaseConstants.ANIMATION_BASE + suffix + " SET ";
-		animUpdate += DatabaseConstants.C_ANIMATIONS + "='" + getAnimationMap().toString() + "' WHERE " +
-			DatabaseConstants.C_RIKISHI_ID + "=" + getRikishiInfo().getId();
 		
-		updates.add( animUpdate );
+		if ( getAnimationMap() != null ){
+			//animations
+			String animUpdate = "INSERT INTO " + DatabaseConstants.ANIMATION_BASE + suffix + " SET ";
+			animUpdate += DatabaseConstants.C_ANIMATIONS + "='" + getAnimationMap().toString() + "' WHERE " +
+				DatabaseConstants.C_RIKISHI_ID + "=" + getRikishiInfo().getId();
+			
+			updates.add( animUpdate );
+			
+		}
 		
 		return updates;
 	}

@@ -90,30 +90,13 @@ public class BanzukeBuilder
 		}
 		
 		DatabaseManager.getInstance();
-//		String tableName = "APP.BANZUKE_" + year + "_" + month;
-//		boolean exists = true;//checkForExistence( tableName );
-//				
-//		if ( exists == true ){
-//			System.out.println( "Banzuke for " + month + "." + year + " already exists.  Do you want to delete it? [y|n]");
-//			
-//			char answer = (char)System.in.read();
-//			
-//			if ( answer != 'y' ){
-//				return;
-//			}
-//			else {
-//				DatabaseManager.getInstance().execute( "DROP TABLE BANZUKE_" + month + "_" + year );
-//			}
-//		}
-//		
-//		createBanzukeTable( tableName );
 		
 		Document engPage = Jsoup.connect( ENGLISH_QUERY + YEAR + year + "&" + MONTH + month ).timeout( 30000 ).get();
 		
 		Elements enElms = engPage.select( "table.record>tbody>tr" );
 		
 		// starts at 2
-		for ( int i = 2; i < enElms.size(); i++ ){
+		for ( int i = 649; i < enElms.size(); i++ ){
 			
 			Element enTr = enElms.get( i );
 			
@@ -167,9 +150,6 @@ public class BanzukeBuilder
 			List<List<MatchResult>> bashoResults = buildBashoResults( bashoUrls );
 			
 			writeRecord( i, year, month, rInfo, bashoResults );
-			
-//			RikishiStats stats = buildRikishiStats( bashoResults );
-//			RikishiTemperment temperment = buildRikishiTemperment( bashoResults );
 		}
 	}
 	
@@ -207,6 +187,11 @@ public class BanzukeBuilder
 		
 		// there's an intai... have to add one to career
 		if ( enTrs.select( "td:matches(Intai)" ).size() > 0 ){
+			CAREER++;
+		}
+		
+		// there's a kabu... have to add one to career
+		if ( enTrs.select( "td:matches(Kabu)" ).size() > 0 ){
 			CAREER++;
 		}
 		

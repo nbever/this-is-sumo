@@ -19,6 +19,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+
+import org.reflections.Reflections;
 
 import com.nate.sumo.DatabaseManager;
 import com.nate.sumo.model.appearence.AppearenceMap;
@@ -34,6 +38,7 @@ import com.nate.sumo.model.common.Record;
 import com.nate.sumo.model.common.Weight;
 import com.nate.sumo.model.fight.FightAction;
 import com.nate.sumo.model.fight.GRIP;
+import com.nate.sumo.model.fight.TachiAiAction;
 import com.nate.sumo.model.fight.actions.DashiNage;
 import com.nate.sumo.model.fight.actions.Defense;
 import com.nate.sumo.model.fight.actions.Gake;
@@ -49,6 +54,8 @@ import com.nate.sumo.model.fight.actions.tachiai.Henka;
 import com.nate.sumo.model.fight.actions.tachiai.Kachiage;
 import com.nate.sumo.model.fight.actions.tachiai.Nodowa;
 import com.nate.sumo.model.fight.actions.tachiai.Ketaguri;
+import com.nate.sumo.model.fight.scenario.SCENARIOS;
+import com.nate.sumo.model.fight.scenario.Scenario;
 import com.nate.sumo.model.rikishi.Heya;
 import com.nate.sumo.model.rikishi.Rikishi;
 import com.nate.sumo.model.rikishi.RikishiInfo;
@@ -63,10 +70,12 @@ public class SkillCreator
 	
 	public static void main( String[] args )
 	{
+		Scanner scanner = new Scanner( System.in );
+		
 		System.out.println( "Year: ");
-		int year = Integer.parseInt( System.console().readLine() );
+		int year = Integer.parseInt( scanner.next() );
 		System.out.println( "Month: " );
-		int month = Integer.parseInt( System.console().readLine() );
+		int month = Integer.parseInt( scanner.next() );
 		
 		File crunchFile = new File( year + "-" + month + ".crunch" );
 		
@@ -100,6 +109,7 @@ public class SkillCreator
 		spread.put( RankClass.JONIDAN, new Integer[]{150, 150} );
 		spread.put( RankClass.JONOKUCHI, new Integer[]{50, 200} );
 		spread.put( RankClass.MAE_ZUMO, new Integer[]{0, 400} );
+		spread.put( RankClass.BANZUKE_GAI, new Integer[]{0, 250} );
 	}
 	
 	public void createSkills(  File crunchFile, Integer year, Integer month ) throws FileNotFoundException, IOException{
@@ -115,6 +125,10 @@ public class SkillCreator
 				// break it into pieces
 				String[] firstBreak = line.split( "-_-" );
 				String info = firstBreak[0];
+				
+				if ( firstBreak.length < 2 ){
+					continue;
+				}
 				
 				String[] bashos = firstBreak[1].split("\\*\\*\\*");
 				
@@ -393,6 +407,12 @@ public class SkillCreator
 		
 		Map<Kimarite, Integer> winMap = new HashMap<Kimarite, Integer>();
 		Map<Kimarite, Integer> lossMap = new HashMap<Kimarite, Integer>();
+		
+		for ( Kimarite k : Kimarite.values() ){
+			winMap.put( k, 0 );
+			lossMap.put( k, 0 );
+		}
+		
 		Integer wins = 0;
 		Integer loses = 0;
 		Integer matches = 0;
@@ -430,7 +450,14 @@ public class SkillCreator
 		Map<Class<? extends FightAction>, Integer> losingMap = generateScenarioMap();
 		Map<Class<? extends FightAction>, Integer> edgeLosingMap = generateScenarioMap();
 		Map<Class<? extends FightAction>, Integer> edgeWinningMap = generateScenarioMap();
-		Map<Class<? extends FightAction>, Integer> tachiAiMap = new HashMap<Class<? extends FightAction>, Integer>();
+		final Map<Class<? extends FightAction>, Integer> tachiAiMap = new HashMap<Class<? extends FightAction>, Integer>();
+		
+		Reflections reflects = new Reflections( "com.nate.sumo.model.fight.actions.tachiai" );
+		Set<Class<? extends TachiAiAction>> tachiAiClasses = reflects.getSubTypesOf( TachiAiAction.class );
+		
+		tachiAiClasses.stream().forEach( clazz -> {
+			tachiAiMap.put( clazz, 0 );
+		});
 		
 		Iterator<Kimarite> wIt = winMap.keySet().iterator();
 		Iterator<Kimarite> lIt = lossMap.keySet().iterator();
@@ -438,6 +465,7 @@ public class SkillCreator
 		// go through the wins
 		while ( wIt.hasNext() ){
 			Kimarite k = wIt.next();
+			
 			Integer val = winMap.get( k );
 			Integer value = (int)(((double)val / (double)wins) * 100.0);
 			
@@ -558,6 +586,12 @@ public class SkillCreator
 				edgeWinningMap.put( clazz, winningMap.get( clazz ) );
 			}
 		});
+		
+		trends.getTendencies().put( SCENARIOS.WINNING.getScenario(), winningMap );
+		trends.getTendencies().put( SCENARIOS.LOSING.getScenario(), losingMap );
+		trends.getTendencies().put( SCENARIOS.TACHI_AI.getScenario(), tachiAiMap );
+		trends.getTendencies().put( SCENARIOS.EDGE_DANGER.getScenario(), edgeLosingMap );
+		trends.getTendencies().put( SCENARIOS.EDGE_VICTORY.getScenario(), edgeWinningMap );
 	}
 	
 	/**
@@ -865,6 +899,10 @@ public class SkillCreator
 			lowRank = myRank;
 		}
 		
+		if ( lowRank.getRankSide() == null ){
+			lowRank = new Rank( lowRank.getRankClass(), RankSide.EAST, 1 );
+		}
+		
 		Rank rankIndex = new Rank( lowRank.getRankClass(), lowRank.getRankSide(), lowRank.getRankNumber() );
 		int difference = 0;
 		
@@ -1022,7 +1060,7 @@ public class SkillCreator
 		
 		// assumes peak age of 28
 		Integer[] skillVals = spread.get( currentRank.getRankClass() );
-		
+		System.out.println( skillVals );
 		// figure what our range is given our status.
 		Double perSpot = ((skillVals[1]/2.0) / (currentRank.getRankClass().getPreferred()*2));
 		Integer peak = skillVals[0] + skillVals[1]/2;  
@@ -1063,11 +1101,6 @@ public class SkillCreator
 		
 		rinf.setRealName( realName );
 		
-		RankClass currentClass = RankClass.valueOf( strIt.next() );
-		RankSide currentSide = RankSide.valueOf( strIt.next() );
-		Integer currentNumber = Integer.parseInt( strIt.next() );
-		rinf.setCurrentRank( new Rank( currentClass, currentSide, currentNumber ) );
-		
 		Name shikona = new Name();
 		shikona.setFirstName_en( strIt.next() );
 		shikona.setFirstName_jp( strIt.next() );
@@ -1078,6 +1111,11 @@ public class SkillCreator
 		
 		rinf.setShikona( shikona );
 		
+		RankClass currentClass = RankClass.valueOf( strIt.next() );
+		RankSide currentSide = RankSide.valueOf( strIt.next() );
+		Integer currentNumber = Integer.parseInt( strIt.next() );
+		rinf.setCurrentRank( new Rank( currentClass, currentSide, currentNumber ) );
+	
 		Name university = new Name();
 		
 		university.setFirstName_en( strIt.next() );
@@ -1158,6 +1196,10 @@ public class SkillCreator
 			List<MatchResult> matchList = new ArrayList<MatchResult>();
 			
 			for ( String match : matches ){
+				
+				if ( match.trim().equals( "" ) ){
+					continue;
+				}
 				
 				Iterator<String> mIt = Arrays.asList( match.split( "," ) ).iterator();
 				
