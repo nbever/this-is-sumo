@@ -233,7 +233,7 @@ public class Rikishi {
 		
 		updates.add( updateRinf );
 		
-		String dnaUpdate = "INSERT INTO " + DatabaseConstants.DNA_BASE + suffix + " SET ";
+		String dnaUpdate = "UPDATE " + DatabaseConstants.DNA_BASE + suffix + " SET ";
 		dnaUpdate += DatabaseConstants.C_WINNING + "='" + getRikishiTendencies().convertScenarioToString( SCENARIOS.WINNING.getScenario() ) + "',";
 		dnaUpdate += DatabaseConstants.C_LOSING + "='" + getRikishiTendencies().convertScenarioToString( SCENARIOS.LOSING.getScenario() ) + "',";
 		dnaUpdate += DatabaseConstants.C_EDGE_WINNING + "='" + getRikishiTendencies().convertScenarioToString( SCENARIOS.EDGE_VICTORY.getScenario() ) + "',";
@@ -245,7 +245,7 @@ public class Rikishi {
 		updates.add( dnaUpdate );
 		
 		//appearence
-		String appUpdate = "INSERT INTO " + DatabaseConstants.LOOK_BASE + suffix + " SET ";
+		String appUpdate = "UPDATE " + DatabaseConstants.LOOK_BASE + suffix + " SET ";
 		appUpdate += DatabaseConstants.C_MAWASHI_COLOR + "='" + getAppearenceMap().colorToString( getAppearenceMap().getMawashiColor() ) + "',";
 		appUpdate += DatabaseConstants.C_MAWASHI_TXT + "='" + getAppearenceMap().getMawashiTxt() + "',";
 		appUpdate += DatabaseConstants.C_MAWASHI_MODEL + "='" + getAppearenceMap().getMawashiModel() + "',";
@@ -255,7 +255,7 @@ public class Rikishi {
 		appUpdate += DatabaseConstants.C_HEAD_TXT + "='" + getAppearenceMap().getHeadTxt() + "',";
 		appUpdate += DatabaseConstants.C_HAIR_COLOR + "='" + getAppearenceMap().colorToString( getAppearenceMap().getHairColor() ) + "',";
 		appUpdate += DatabaseConstants.C_HAIR_TXT + "='" + getAppearenceMap().getHairTxt() + "',";
-		appUpdate += DatabaseConstants.C_HAIR_MODEL + "='" + getAppearenceMap().getHairModel() + ",'";
+		appUpdate += DatabaseConstants.C_HAIR_MODEL + "='" + getAppearenceMap().getHairModel() + "',";
 		appUpdate += DatabaseConstants.C_KESHO_MODEL + "='" + getAppearenceMap().getKeshoModel() + "',";
 		appUpdate += DatabaseConstants.C_KESHO_TXT + "='" + getAppearenceMap().getKeshoTxt() + "',";
 		appUpdate += DatabaseConstants.C_PORTRAIT + "='" + getAppearenceMap().getPortrait() + "',";
@@ -267,7 +267,7 @@ public class Rikishi {
 		
 		if ( getAnimationMap() != null ){
 			//animations
-			String animUpdate = "INSERT INTO " + DatabaseConstants.ANIMATION_BASE + suffix + " SET ";
+			String animUpdate = "UPDATE " + DatabaseConstants.ANIMATION_BASE + suffix + " SET ";
 			animUpdate += DatabaseConstants.C_ANIMATIONS + "='" + getAnimationMap().toString() + "' WHERE " +
 				DatabaseConstants.C_RIKISHI_ID + "=" + getRikishiInfo().getId();
 			

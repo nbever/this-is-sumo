@@ -134,6 +134,8 @@ public class SkillCreator
 				
 				RikishiInfo rinf = buildRikishiInfo( info );
 				
+				System.out.println( "Working on: " + rinf.getShikona().getFirstName_kanji() + " " + rinf.getShikona().getLastName_kanji() );
+				
 				List<List<MatchResult>> bashoResults = convertToList( bashos );
 				
 				RikishiStats stats = getStartingStats( rinf, year, month );
@@ -155,6 +157,8 @@ public class SkillCreator
 				storeBanzuke( banzukeFile, rikishi, year, month );
 			}
 		}
+		
+		System.out.println( "Finished." );
 	}
 	
 	/**
@@ -175,7 +179,7 @@ public class SkillCreator
 		
 		// create a temporary ddl
 		File masterDdl = new File( DatabaseManager.class.getResource( "/banzuke.ddl" ).getFile() );
-		File tempDdl = new File( "temp_" + year + "_" + month + ".ddl" );
+		File tempDdl = new File( "roster_" + year + "_" + month + ".ddl" );
 		tempDdl.createNewFile();
 		
 		try (
@@ -223,7 +227,7 @@ public class SkillCreator
 			sqls.addAll( rikishi.getUpdateSql( year, month ) );
 			
 			for ( String sql : sqls ){
-				writer.write( sql );
+				writer.write( sql + ";" );
 				writer.newLine();
 			}
 			
@@ -1060,7 +1064,7 @@ public class SkillCreator
 		
 		// assumes peak age of 28
 		Integer[] skillVals = spread.get( currentRank.getRankClass() );
-		System.out.println( skillVals );
+		
 		// figure what our range is given our status.
 		Double perSpot = ((skillVals[1]/2.0) / (currentRank.getRankClass().getPreferred()*2));
 		Integer peak = skillVals[0] + skillVals[1]/2;  

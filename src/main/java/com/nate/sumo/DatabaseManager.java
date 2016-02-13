@@ -23,8 +23,12 @@ import org.apache.logging.log4j.Logger;
 import com.nate.sumo.display.fonts.JapaneseFontTranslator;
 
 public class DatabaseManager {
+	
+	private static int year = 0;
+	private static int month = 0;
 
 	private static DatabaseManager instance;
+	private List<String> rostersAvailable;
 	
 	private static Logger logger = LogManager.getLogger();
 	
@@ -49,17 +53,13 @@ public class DatabaseManager {
 		return instance;
 	}
 	
+	public static int getYear(){ return year; }
+	public static int getMonth(){ return month; }
+	
 	private void init() throws IOException, SQLException{
 		
 		JapaneseFontTranslator.generateJapaneseSqlMap();
-		
-		if ( !tableExists( "RIKISHI_INFO" ) ){
 			
-			logger.info( "Creating tables..." );
-			URL resourceUrl = DatabaseManager.class.getResource( "/sumo.ddl" );
-			loadSql( new File( resourceUrl.getFile() ) ); 
-		}
-		
 		if ( !tableExists( "LOCATIONS" ) ){
 			logger.info( "Adding locations..." );
 			loadSql( new File( DatabaseManager.class.getResource( "/locations.sql" ).getFile() ) );
@@ -73,6 +73,63 @@ public class DatabaseManager {
 		if ( !tableExists( "HEYA" ) ){
 			logger.info( "Adding heya..." );
 			loadSql( new File( DatabaseManager.class.getResource( "/heya.sql" ).getFile() ) );
+		}
+		
+		// load the known rosters into databases
+		File rosterFile = new File( DatabaseManager.class.getResource( "/rosters" ).getFile() );
+		File[] rosterFiles = rosterFile.listFiles();
+		
+		// go through each, check for the table and build it if it's not there.
+		for ( File rFile : rosterFiles ){
+			
+			String tableString = "BANZUKE_" + rFile.getName().substring( 7, rFile.getName().indexOf( "." ) );
+			
+			if ( !tableExists( tableString ) ){
+				loadSql( rFile );
+			}
+		}
+		
+		try{
+			loadAvailableRosters();
+		}
+		catch( Exception e ){
+			logger.error( "Error occurred trying to find roster tables", e );
+		}
+	}
+	
+	/**
+	 * Go through the tables and make a list of roster tables the user can choose from
+	 * @throws SQLException 
+	 */
+	private void loadAvailableRosters() throws SQLException{
+		ResultSet set = getConnection().getMetaData().getTables( "APP", null, null, new String[]{"TABLE"} );
+		List<List<Object>> results = parseResults( set );
+		rostersAvailable = getAvailableRosters();
+		
+		for ( List<Object> row : results ){
+			
+			String foundName = row.get( 2 ).toString();
+			if ( foundName.startsWith( "BANZUKE_" ) ){
+				rostersAvailable.add( foundName );
+			}
+		}
+		
+		// now that we have them.  Let's set the starting roster to
+		// the latest date.  Later on we may want to remember which was
+		// loaded but this is good for now.
+		for ( String roster : rostersAvailable ){
+			int year = Integer.parseInt( roster.split("_")[1] );
+			int month = Integer.parseInt( roster.split("_")[2] );
+			
+			if ( year == this.year ){
+				if ( month > this.month ){
+					this.month = month;
+				}
+			}
+			else if ( year > this.year ){
+				this.year = year;
+				this.month = month;
+			}
 		}
 	}
 	
@@ -100,6 +157,15 @@ public class DatabaseManager {
 		
 		return true;
 		
+	}
+	
+	public List<String> getAvailableRosters(){
+		
+		if ( rostersAvailable == null ){
+			rostersAvailable = new ArrayList<String>();
+		}
+		
+		return rostersAvailable;
 	}
 	
 	public List<List<Object>> query( String sql ) {

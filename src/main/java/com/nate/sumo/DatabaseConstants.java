@@ -18,12 +18,12 @@ public class DatabaseConstants
 	public static final String C_EN_LAST_NAME = "EN_LAST_NAME";
 	public static final String C_KJ_FIRST_NAME = "KJ_FIRST_NAME";
 	public static final String C_KJ_LAST_NAME = "KJ_LAST_NAME";
-	public static final String C_EN_SHIKONA_FIRST = "EN_SHIKONA_FIRST";
-	public static final String C_EN_SHIKONA_LAST = "EN_SHIKONA_LAST";
-	public static final String C_JP_SHIKONA_FIRST = "JP_SHIKONA_FIRST";
-	public static final String C_JP_SHIKONA_LAST = "JP_SHIKONA_LAST";
-	public static final String C_KJ_SHIKONA_FIRST = "KJ_SHIKONA_FIRST";
-	public static final String C_KJ_SHIKONA_LAST = "KJ_SHIKONA_LAST";
+	public static final String C_EN_SHIKONA_FIRST = "EN_FIRST_SHIKONA";
+	public static final String C_EN_SHIKONA_LAST = "EN_LAST_SHIKONA";
+	public static final String C_JP_SHIKONA_FIRST = "JP_FIRST_SHIKONA";
+	public static final String C_JP_SHIKONA_LAST = "JP_LAST_SHIKONA";
+	public static final String C_KJ_SHIKONA_FIRST = "KJ_FIRST_SHIKONA";
+	public static final String C_KJ_SHIKONA_LAST = "KJ_LAST_SHIKONA";
 	public static final String C_EN_UNIVERSITY = "EN_UNIVERSITY";
 	public static final String C_KJ_UNIVERSITY = "KJ_UNIVERSITY";
 	public static final String C_HEYA_ID = "HEYA_ID";
@@ -52,7 +52,7 @@ public class DatabaseConstants
 	public static final String C_JONIDAN_YUSHO = "JONIDAN_YUSHO";
 	public static final String C_JONIDAN_JUN_YUSHO = "JONIDAN_JUN_YUSHO";
 	public static final String C_JONOKUCHI_YUSHO = "JONOKUCHI_YUSHO";
-	public static final String C_JONOKUCHI_JUN_YUSHO = "JONOKUCHI_JU_YUSHO";
+	public static final String C_JONOKUCHI_JUN_YUSHO = "JONOKUCHI_JUN_YUSHO";
 	public static final String C_MAE_ZUMO_YUSHO = "MAE_ZUMO_YUSHO";
 	public static final String C_CAREER_WINS = "CAREER_WINS";
 	public static final String C_CAREER_LOSES = "CAREER_LOSES";
