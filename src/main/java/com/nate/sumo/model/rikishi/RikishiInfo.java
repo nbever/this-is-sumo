@@ -1,5 +1,6 @@
 package com.nate.sumo.model.rikishi;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -330,6 +331,11 @@ public class RikishiInfo {
 	}
 	
 	public List<Injury> getInjuries(){
+		
+		if ( injuries == null ){
+			injuries = new ArrayList<Injury>();
+		}
+		
 		return injuries;
 	}
 	

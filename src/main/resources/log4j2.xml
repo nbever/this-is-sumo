@@ -19,8 +19,9 @@
 <!--     <Logger name="persistence" level="info" additivity="false">
         <AppenderRef ref="rolling.file"/>
     </Logger> -->
-    <Root level="info">
+    <Root level="error">
       <AppenderRef ref="rolling.file"/>
+      <AppenderRef ref="Console" />
     </Root>
   </Loggers>
 </Configuration>

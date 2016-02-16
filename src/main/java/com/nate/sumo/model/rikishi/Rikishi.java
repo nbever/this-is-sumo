@@ -1,11 +1,22 @@
 package com.nate.sumo.model.rikishi;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.nate.sumo.DatabaseConstants;
+import com.nate.sumo.DatabaseManager;
 import com.nate.sumo.model.animation.AnimationMap;
 import com.nate.sumo.model.appearence.AppearenceMap;
+import com.nate.sumo.model.basho.Rank;
+import com.nate.sumo.model.basho.Rank.RankClass;
+import com.nate.sumo.model.basho.Rank.RankSide;
+import com.nate.sumo.model.common.Height;
+import com.nate.sumo.model.common.Location;
+import com.nate.sumo.model.common.Name;
+import com.nate.sumo.model.common.Record;
+import com.nate.sumo.model.common.Weight;
+import com.nate.sumo.model.fight.GRIP;
 import com.nate.sumo.model.fight.scenario.SCENARIOS;
 
 public class Rikishi {
@@ -276,5 +287,275 @@ public class Rikishi {
 		}
 		
 		return updates;
+	}
+	
+	public static List<Rikishi> findAll(){
+		List<Rikishi> list = new ArrayList<Rikishi>();
+		String suffix = "_" + DatabaseManager.getInstance().getYear() + "_" + DatabaseManager.getInstance().getMonth();
+		
+		String sql = "SELECT " + 
+			DatabaseConstants.C_RIKISHI_ID + ", " +
+			DatabaseConstants.C_EN_FIRST_NAME + ", " + 
+			DatabaseConstants.C_EN_LAST_NAME + ", " +
+			DatabaseConstants.C_KJ_FIRST_NAME + ", " +
+			DatabaseConstants.C_KJ_LAST_NAME + ", " +
+			DatabaseConstants.C_EN_SHIKONA_FIRST + ", " +
+			DatabaseConstants.C_EN_SHIKONA_LAST + ", " +
+			DatabaseConstants.C_JP_SHIKONA_FIRST + ", " +
+			DatabaseConstants.C_JP_SHIKONA_LAST  + ", " +
+			DatabaseConstants.C_KJ_SHIKONA_FIRST + ", " +
+			DatabaseConstants.C_KJ_SHIKONA_LAST + ", " +
+			DatabaseConstants.C_EN_UNIVERSITY + ", " +
+			DatabaseConstants.C_KJ_UNIVERSITY + ", " +
+			DatabaseConstants.C_HEYA_ID + ", " +
+			DatabaseConstants.C_HOMETOWN + ", " +
+			DatabaseConstants.C_HEIGHT + ", " +
+			DatabaseConstants.C_WEIGHT + ", " +
+			DatabaseConstants.C_BIRTHDAY + ", " +
+			DatabaseConstants.C_HATSU_BASHO + ", " +
+			DatabaseConstants.C_CURRENT_RANK + ", " +
+			DatabaseConstants.C_CURRENT_SIDE + ", " +
+			DatabaseConstants.C_CURRENT_NUMBER + ", " +
+			DatabaseConstants.C_HIGHEST_RANK + ", " +
+			DatabaseConstants.C_HIGHEST_SIDE + ", " +
+			DatabaseConstants.C_HIGHEST_NUMBER + ", " +
+			DatabaseConstants.C_MAKUUCHI_YUSHO + ", " +
+			DatabaseConstants.C_MAKUUCHI_JUN_YUSHO + ", " +
+			DatabaseConstants.C_GINO_SHO + ", " +
+			DatabaseConstants.C_SHUKUN_SHO + ", " +
+			DatabaseConstants.C_KANTO_SHO + ", " +
+			DatabaseConstants.C_JURYO_YUSHO + ", " +
+			DatabaseConstants.C_JURYO_JUN_YUSHO + ", " +
+			DatabaseConstants.C_MAKUSHITA_YUSHO + ", " +
+			DatabaseConstants.C_MAKUSHITA_JUN_YUSHO + ", " +
+			DatabaseConstants.C_SANDANME_YUSHO + ", " +
+			DatabaseConstants.C_SANDANME_JUN_YUSHO + ", " +
+			DatabaseConstants.C_JONIDAN_YUSHO + ", " +
+			DatabaseConstants.C_JONIDAN_JUN_YUSHO + ", " +
+			DatabaseConstants.C_JONOKUCHI_YUSHO + ", " +
+			DatabaseConstants.C_JONOKUCHI_JUN_YUSHO + ", " +
+			DatabaseConstants.C_MAE_ZUMO_YUSHO + ", " +
+			DatabaseConstants.C_CAREER_WINS + ", " +
+			DatabaseConstants.C_CAREER_LOSES + ", " +
+			DatabaseConstants.C_CAREER_FORFEITS + ", " +
+			DatabaseConstants.C_OSHI + ", " +
+			DatabaseConstants.C_GAKE + ", " +
+			DatabaseConstants.C_YOTSU + ", " +
+			DatabaseConstants.C_NAGE + ", " +
+			DatabaseConstants.C_TSUKI + ", " +
+			DatabaseConstants.C_HIKU + ", " +
+			DatabaseConstants.C_DEFENSE + ", " +
+			DatabaseConstants.C_OVERALL_SKILL + ", " +
+			DatabaseConstants.C_TACHI_AI + ", " +
+			DatabaseConstants.C_LEFT_ARM + ", " +
+			DatabaseConstants.C_RIGHT_ARM + ", " +
+			DatabaseConstants.C_UPPER_BODY + ", " +
+			DatabaseConstants.C_LOWER_BODY + ", " +
+			DatabaseConstants.C_RIGHT_LEG + ", " +
+			DatabaseConstants.C_LEFT_LEG + ", " +
+			DatabaseConstants.C_QUICKNESS + ", " +
+			DatabaseConstants.C_EDGE_TECHNIQUE + ", " +
+			DatabaseConstants.C_GRIP_BREAK + ", " +
+			DatabaseConstants.C_GRIP_STRENGTH + ", " +
+			DatabaseConstants.C_SECONDARY_GRIP_STRENGTH + ", " +
+			DatabaseConstants.C_PREFERRED_GRIP + ", " +
+			DatabaseConstants.C_BALANCE_CONTROL + ", " +
+			DatabaseConstants.C_RECOVERY + ", " +
+				" FROM " + DatabaseConstants.BANZUKE_BASE + suffix; 
+		
+		List<List<Object>> results = DatabaseManager.getInstance().query( sql );
+		
+		for ( List<Object> rawRikishi : results ){
+			list.add( Rikishi.convertFromVector( rawRikishi ) );
+		}
+		
+		return list;
+	}
+	
+	public static Rikishi convertFromVector( List<Object> results ){
+		
+		Rikishi r = new Rikishi();
+		
+		RikishiInfo info = new RikishiInfo();
+		
+		info.setId( (Long)results.get( 0 ) );
+		Name enName = new Name( results.get( 1 ).toString(),
+				null, 
+				results.get( 2 ).toString(),
+				null,
+				results.get( 3 ).toString(),
+				results.get( 4 ).toString() );
+		info.setRealName( enName );
+		
+		Name shikona = new Name( results.get( 5 ).toString(), 
+			results.get( 7 ).toString(),
+			results.get( 6 ).toString(),
+			results.get( 8 ).toString(),
+			results.get( 9 ).toString(),
+			results.get( 10 ).toString() );
+		
+		info.setShikona( shikona );
+		
+		Name university = new Name( results.get( 11 ).toString(),
+			null, null, null, results.get( 12 ).toString(), null );
+		
+		info.setUniversity( university );
+		
+		Heya heya = Heya.getById( (Long)results.get( 13 ) );
+		info.setHeya( heya );
+		
+		Location loc = Location.getById( (Long)results.get( 14 ) );
+		info.setHometown( loc );
+		
+		Height height = new Height( (Integer)results.get( 15 ) );
+		info.setHeight( height );
+		
+		Weight weight = new Weight( (Integer)results.get( 16 ) );
+		info.setWeight( weight );
+		
+		Date bday = new Date( (Long)results.get( 17 ) );
+		info.setBirthday( bday );
+		
+		Date hatsu = new Date( (Long)results.get( 18 ) );
+		info.setHatsuBasho( hatsu );
+		
+		RankClass rankClass = RankClass.valueOf( results.get( 19 ).toString() );
+		RankSide rankSide = RankSide.valueOf( results.get( 20 ).toString() );
+		Integer rankNumber = (Integer)results.get( 21 );
+		Rank rank = new Rank( rankClass, rankSide, rankNumber );
+		
+		info.setCurrentRank( rank );
+		
+		rankClass = RankClass.valueOf( results.get( 22 ).toString() );
+		rankSide = RankSide.valueOf( results.get( 23 ).toString() );
+		rankNumber = (Integer)results.get( 24 );
+		
+		Rank highRank = new Rank( rankClass, rankSide, rankNumber );
+		info.setHighestRank( highRank );
+		
+		Integer makuuchiYusho = (Integer)results.get( 25 );
+		Integer makuuchiJunYusho = (Integer)results.get( 26 );
+		Integer ginoSho = (Integer)results.get( 27 );
+		Integer shukunSho = (Integer)results.get( 28 );
+		Integer kantoSho = (Integer)results.get( 29 );
+		Integer juryoYusho = (Integer)results.get( 30 );
+		Integer juryoJunYusho = (Integer)results.get( 31 );
+		Integer makushitaYusho = (Integer)results.get( 32 );
+		Integer makushitaJunYusho = (Integer)results.get( 33 );
+		Integer sandanmeYusho = (Integer)results.get( 34 );
+		Integer sandanmeJunYusho = (Integer)results.get( 35 );
+		Integer jonidanYusho = (Integer)results.get( 36 );
+		Integer jonidanJunYusho = (Integer)results.get( 37 );
+		Integer jonokuchiYusho = (Integer)results.get( 38 );
+		Integer jonokuchiJunYusho = (Integer)results.get( 39 );
+		Integer maezumoYusho = (Integer)results.get( 40 );
+		Integer careerWins = (Integer)results.get( 41 );
+		Integer careerLoses = (Integer)results.get( 42 );
+		Integer careerForfeits = (Integer)results.get( 43 );
+		
+		info.setMakuuchiYusho(makuuchiYusho);
+		info.setMakuuchiJunYusho(makuuchiJunYusho);
+		info.setGinoSho(ginoSho);
+		info.setShukunSho(shukunSho);
+		info.setKantoSho(kantoSho);
+		info.setJuryoYusho(juryoYusho);
+		info.setJuryoJunYusho(juryoJunYusho);
+		info.setMakushitaYusho(makushitaYusho);
+		info.setMakushitaJunYusho(makushitaJunYusho);
+		info.setSandanmeYusho(sandanmeYusho);
+		info.setSandanmeJunYusho(sandanmeJunYusho);
+		info.setJonidanYusho(jonidanYusho);
+		info.setJonidanJunYusho(jonidanJunYusho);
+		info.setJonokuchiYusho(jonokuchiYusho);
+		info.setJonokuchiJunYusho(jonokuchiJunYusho);
+		info.setMaeZumoYusho(maezumoYusho);
+		
+		Record careerRecord = new Record( careerWins, careerLoses, careerForfeits );
+		info.setCareerRecord( careerRecord );
+		
+		String injuries = results.get( 73 ).toString();
+		String[] listOfInjuries = injuries.split(",");
+		
+		for ( String injury : listOfInjuries ){
+			
+			Injury realInjury = Injury.convertFromString( injury );
+			info.getInjuries().add( realInjury );
+		}
+		
+		r.setRikishiInfo( info );
+		
+		// skills portion
+		RikishiStats stats = new RikishiStats();
+		
+		Double oshi = (Double)results.get( 44 );
+		Double gake = (Double)results.get( 45 );
+		Double yotsu = (Double)results.get( 46 );
+		Double nage = (Double)results.get( 47 );
+		Double tsuki = (Double)results.get( 48 );
+		Double hiku = (Double)results.get( 49 );
+		Double defense = (Double)results.get( 50 );
+		Double overall = (Double)results.get( 51 );
+		Double tachiai = (Double)results.get( 52 );
+		Double leftArm = (Double)results.get( 53 );
+		Double rightArm = (Double)results.get( 54 );
+		Double upperBody = (Double)results.get( 55 );
+		Double lowerBody = (Double)results.get( 56 );
+		Double rightLeg = (Double)results.get( 57 );
+		Double leftLeg = (Double)results.get( 58 );
+		Double quickness = (Double)results.get( 59 );
+		Double edge = (Double)results.get( 60 );
+		Double gripBreak = (Double)results.get( 61 );
+		Double gripStrength = (Double)results.get( 62 );
+		Double secondaryStrength = (Double)results.get( 63 );
+		GRIP preferredGrip = GRIP.valueOf( results.get( 64 ).toString() );
+		Double balance = (Double)results.get( 65 );
+		Double recovery = (Double)results.get( 66 );
+		Double potential = (Double)results.get( 67 );
+		
+		stats.setOshi(oshi);
+		stats.setGake(gake);
+		stats.setYotsu(yotsu);
+		stats.setNage(nage);
+		stats.setTsuki(tsuki);
+		stats.setHiku(hiku);
+		stats.setDefense(defense);
+		stats.setOverallSkill(overall);
+		stats.setTachiAi(tachiai);
+		stats.setLeftArm(leftArm);
+		stats.setRightArm(rightArm);
+		stats.setUpperBody(upperBody);
+		stats.setLowerBody(lowerBody);
+		stats.setRightLeg(rightLeg);
+		stats.setLeftLeg(leftLeg);
+		stats.setQuickness(quickness);
+		stats.setEdgeTechnique(edge);
+		stats.setGripBreak(gripBreak);
+		stats.setGripAbility(gripStrength);
+		stats.setSecondaryGripAbility(secondaryStrength);
+		stats.setPreferredGrip(preferredGrip);
+		stats.setBalanceControl(balance);
+		stats.setRecovery(recovery);
+		stats.setPotential(potential);
+		
+		r.setRikishiStats( stats );
+		
+		// mental portion
+		RikishiTemperment temp = new RikishiTemperment();
+		
+		Double focus = (Double)results.get( 68 );
+		Double anger = (Double)results.get( 69 );
+		Double iq = (Double)results.get( 71 );
+		Double emotions = (Double)results.get( 72 );
+		Double drive = (Double)results.get( 70 );
+		
+		temp.setAnger(anger);
+		temp.setDrive(drive);
+		temp.setEmotions(emotions);
+		temp.setIq(iq);
+		temp.setFocus(focus);
+		
+		r.setRikishiTemperment( temp );
+		
+		return r;
 	}
 }

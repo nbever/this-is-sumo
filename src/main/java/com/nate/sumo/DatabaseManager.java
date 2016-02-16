@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,22 +12,23 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.nate.sumo.display.fonts.JapaneseFontTranslator;
+import com.nate.sumo.model.basho.Banzuke;
+import com.nate.sumo.model.rikishi.Rikishi;
 
 public class DatabaseManager {
 	
-	private static int year = 0;
-	private static int month = 0;
+	private int year = 0;
+	private int month = 0;
 
 	private static DatabaseManager instance;
 	private List<String> rostersAvailable;
+	private RikishiCache rikishiCache;
 	
 	private static Logger logger = LogManager.getLogger();
 	
@@ -53,8 +53,16 @@ public class DatabaseManager {
 		return instance;
 	}
 	
-	public static int getYear(){ return year; }
-	public static int getMonth(){ return month; }
+	public int getYear(){ return year; }
+	public int getMonth(){ return month; }
+	
+	public void changeBanzuke( int year, int month ){
+		
+		this.year = year;
+		this.month = month;
+		
+		getRikishiCache().clearCache();
+	}
 	
 	private void init() throws IOException, SQLException{
 		
@@ -168,6 +176,15 @@ public class DatabaseManager {
 		return rostersAvailable;
 	}
 	
+	public Banzuke getCurrentBanzuke(){
+		
+		return getRikishiCache().getBanzuke();
+	}
+	
+	public Rikishi getRikishi( Long id ){
+		return getRikishiCache().getRikishi( id );
+	}
+	
 	public List<List<Object>> query( String sql ) {
 		
 		List<List<Object>> typedResults = new ArrayList<List<Object>>();
@@ -203,6 +220,9 @@ public class DatabaseManager {
 				switch( type ){
 					case Types.INTEGER:
 						row.add( results.getInt( i ) );
+						break;
+					case Types.BIGINT:
+						row.add( results.getLong( i ) );
 						break;
 					case Types.DOUBLE:
 						row.add( results.getDouble( i ) );
@@ -322,5 +342,13 @@ public class DatabaseManager {
 				reader.close();
 			}
 		}
+	}
+	
+	private RikishiCache getRikishiCache(){
+		if ( rikishiCache == null ){
+			rikishiCache = new RikishiCache();
+		}
+		
+		return rikishiCache;
 	}
 }

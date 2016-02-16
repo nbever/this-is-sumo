@@ -31,4 +31,21 @@ public enum Division {
 	public List<RankClass> getClassesIncluded(){
 		return rankClasses;
 	}
+	
+	public Boolean hasRank( RankClass rank ){
+		
+		return getClassesIncluded().contains( rank );
+	}
+	
+	public static Division getDivisionForRank( RankClass clazz ){
+		
+		for ( Division division : Division.values() ){
+			
+			if ( division.hasRank( clazz ) ){
+				return division;
+			}
+		}
+	
+		return null;
+	}
 }

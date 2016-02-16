@@ -49,7 +49,7 @@ public class Injury
 		return st;
 	}
 	
-	public Injury convertFromString( String str ){
+	public static Injury convertFromString( String str ){
 		
 		String[] tokens = str.split( "|" );
 		
