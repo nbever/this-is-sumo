@@ -30,7 +30,7 @@ public class FontTestScreen extends SwipeScreen
 		glScalef( 2.0f, 2.0f, 2.0f );
 		
 //		Font.JAPANESE_CALI.drawString( new char[]{65, 133, 120, 83, 100} );
-		Font.JAPANESE_CALI.drawJapaneseString( "白鵬はすごい　やった".toCharArray() );
+		Font.JAPANESE_CALI.drawJapaneseString( "鉛筆".toCharArray() );
 		glPopMatrix();
 		
 		glDisable( GL_BLEND );

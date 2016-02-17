@@ -86,6 +86,15 @@ public class JapaneseFontTranslator
 	private static Map<Integer, Integer> getCharacterMap(){
 		if ( characterMap == null ){
 			characterMap = new HashMap<Integer, Integer>();
+			try
+			{
+				JapaneseFontTranslator.generateJapaneseSqlMap();
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		return characterMap;

@@ -80,7 +80,7 @@ public class BanzukeSelector extends Widget
 				glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 				Division cDiv = Division.values()[currentDivision];
 				int chars = cDiv.getName().getFirstName_kanji().length();
-				float totalWidth = chars * 0.14f;
+				float totalWidth = chars * 0.12f;
 				float startingSpot = (0.6f / 2.0f) - (totalWidth / 2.0f);
 				
 				glPushMatrix();

@@ -4,7 +4,7 @@ public enum Font
 {
 	ZENZAI( new GlFont(  "zenzai_itacha/Zenzai_Itachi.ttf", 128 )),
 	MADE_IN_CHINA( new GlFont( "made-in-china/MadeInChina.ttf", 24)),
-	JAPANESE_CALI( new GlFont( "japanese_cali/japanese_cali.ttf", 64));
+	JAPANESE_CALI( new GlFont( "japanese_cali/japanese_cali.ttf", 48));
 	
 	private GlFont realFont;
 	

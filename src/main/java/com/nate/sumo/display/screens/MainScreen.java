@@ -50,7 +50,7 @@ public class MainScreen extends SwipeScreen
 			glTranslatef( -1.0f, 0.5f, -0.2f );
 			
 			glColor4f( 0.7f, 0.1f, 0.1f, 1.0f );
-			glScalef( 2.5f, 3.5f, 2.5f );
+			glScalef( 3.5f, 4.5f, 2.5f );
 			Font.JAPANESE_CALI.drawJapaneseString( "これは大相撲" );
 			
 			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
