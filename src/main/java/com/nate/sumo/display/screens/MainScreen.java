@@ -14,13 +14,14 @@ import com.nate.sumo.display.widgets.menu.MenuItem;
 public class MainScreen extends SwipeScreen
 {
 	private Menu menu;
+	private MenuItem practiceMenu;
 	
 	public MainScreen(){
 		
 		menu = new Menu( Arrays.asList( new MenuItem( "Quick Match" ),
 									    new MenuItem( "Play Tournament" ),
 									    new MenuItem( "Start Career" ),
-									    new MenuItem( "Practice"), 
+									    getPracticeMenu(), 
 									    new MenuItem( "Load Game" )) );
 
 
@@ -103,6 +104,14 @@ public class MainScreen extends SwipeScreen
 	private Menu getMenu(){
 		return menu;
 	}
+	
+	private MenuItem getPracticeMenu(){
+		if ( practiceMenu == null ){
+			practiceMenu = new MenuItem( "Practice" );
+		}
+		
+		return practiceMenu;
+	}
 
 	@Override
 	public List<String> getTextureNames(){
@@ -117,7 +126,14 @@ public class MainScreen extends SwipeScreen
 	@Override
 	public ScreenInitData getNextScreenData()
 	{
-		ScreenInitData data = new ScreenInitData( FontTestScreen.class );
+		ScreenInitData data = null;
+		
+		if ( getMenu().getSelectedMenuItem().equals( getPracticeMenu() ) ){
+			data = new ScreenInitData( PracticePlayerSelect.class );
+		}
+		else {
+			data = new ScreenInitData( FontTestScreen.class );
+		}
 //		ScreenInitData data = new ScreenInitData( DohyoScreen.class );
 		return data;
 	}

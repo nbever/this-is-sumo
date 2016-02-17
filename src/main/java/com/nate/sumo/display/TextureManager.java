@@ -16,12 +16,15 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class TextureManager
 {
 	private static TextureManager textureManager;
-	private List<Integer> textures;
+	private Map<String, Integer> textures;
 	
 	private TextureManager(){
 		
@@ -36,6 +39,13 @@ public class TextureManager
 	}
 	
 	public Integer loadTexture( String resourceName ) throws IOException, URISyntaxException{
+		
+		// if we've already loaded it why do it again?
+		Integer textureId = getTextureIds().get( resourceName );
+		
+		if ( textureId != null ){
+			return textureId;
+		}
 		
 		ByteBuffer byteBuffer;
 		URL fileUrl = TextureManager.class.getResource( "/" + resourceName );
@@ -82,22 +92,54 @@ public class TextureManager
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w.get( 0 ), h.get( 0 ), 0, GL_RGBA, GL_UNSIGNED_BYTE, image );
 		}
 		
-		getTextureIds().add( texId );
+		getTextureIds().put( resourceName, texId );
 		
 		return texId;
 	}
 	
 	public void releaseTexture( Integer textureId ){
 		
-		glDeleteTextures( textureId );
-		getTextureIds().remove( textureId );
+		Iterator<String> keyIt = getTextureIds().keySet().iterator();
+		
+		while( keyIt.hasNext() ){
+			String key = keyIt.next();
+			Integer anId = getTextureIds().get( key );
+			
+			if ( anId == textureId ){
+				getTextureIds().remove( key );
+				glDeleteTextures( textureId );
+				break;
+			}
+		}
 	}
 	
-	private List<Integer> getTextureIds(){
+	public void releaseTexture( String resourceName ){
+		
+		Integer textureId = getTextureIds().get( resourceName );
+		
+		if ( textureId != null ){
+			glDeleteTextures( textureId );
+			getTextureIds().remove( resourceName );
+			return;
+		}
+	}
+	
+	private Map<String, Integer> getTextureIds(){
 		if ( textures == null ){
-			textures = new ArrayList<Integer>();
+			textures = new HashMap<String, Integer>();
 		}
 		
 		return textures;
+	}
+	
+	public Integer getTextureId( String resourceName ){
+		
+		Integer id = getTextureIds().get( resourceName );
+		
+		if ( id == null ){
+			id = -1;
+		}
+		
+		return id;
 	}
 }

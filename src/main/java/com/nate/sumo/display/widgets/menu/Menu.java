@@ -88,7 +88,7 @@ public class Menu implements Drawable, KeyHandler
 		return menuItems;
 	}
 	
-	private MenuItem getSelectedMenuItem(){
+	public MenuItem getSelectedMenuItem(){
 		return selectedItem;
 	}
 

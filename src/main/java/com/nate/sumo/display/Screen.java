@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.nate.model.Vector3f;
 import com.nate.sumo.display.screens.ScreenInitData;
 
 public abstract class Screen implements Drawable, KeyHandler
