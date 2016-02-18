@@ -69,14 +69,6 @@ public class BanzukeSelector extends Widget
 				glTranslatef( 0.19f, 0.0f, 0.0f );
 				
 				glDisable( GL_TEXTURE_2D );
-//				glColor3f( 1.0f, 0.0f, 0.0f );
-//				glBegin( GL_QUADS );
-//				glVertex3f( 0.0f, 0.0f, 0.0f );
-//				glVertex3f( 0.6f, 0.0f, 0.0f );
-//				glVertex3f( 0.6f, 0.09f, 0.0f );
-//				glVertex3f( 0.0f, 0.09f, 0.0f );
-//				glEnd();
-				
 				glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 				Division cDiv = Division.values()[currentDivision];
 				int chars = cDiv.getName().getFirstName_kanji().length();
