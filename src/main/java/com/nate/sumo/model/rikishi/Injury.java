@@ -54,6 +54,11 @@ public class Injury
 		String[] tokens = str.split( "|" );
 		
 		Injury injury = new Injury();
+		
+		if ( tokens.length != 5 ){
+			return null;
+		}
+		
 		injury.setLocation( PART.valueOf( tokens[0] ) );
 		injury.setOccurrence( Integer.parseInt( tokens[1] ) );
 		injury.setDescription( tokens[2] );

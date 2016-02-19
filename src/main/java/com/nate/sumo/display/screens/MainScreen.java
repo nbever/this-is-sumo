@@ -6,6 +6,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import java.util.Arrays;
 import java.util.List;
 
+import com.nate.sumo.DatabaseManager;
 import com.nate.sumo.display.TextureNames;
 import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.display.widgets.menu.Menu;
@@ -30,7 +31,7 @@ public class MainScreen extends SwipeScreen
 	@Override
 	public void handleKey( int key, int scanCode, int action, int mods )
 	{
-		if ( key == GLFW_KEY_ENTER && action == GLFW_PRESS && mods == GLFW_MOD_SHIFT ){
+		if ( key == GLFW_KEY_ENTER && action == GLFW_PRESS ){
 			close();
 		}
 		else {
@@ -130,6 +131,7 @@ public class MainScreen extends SwipeScreen
 		
 		if ( getMenu().getSelectedMenuItem().equals( getPracticeMenu() ) ){
 			data = new ScreenInitData( PracticePlayerSelect.class );
+			data.getInitData().put( PlayerSelectScreen.PLAYER_LIST, DatabaseManager.getInstance().getCurrentBanzuke() );
 		}
 		else {
 			data = new ScreenInitData( FontTestScreen.class );

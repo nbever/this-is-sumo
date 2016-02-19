@@ -361,6 +361,13 @@ public class Rikishi {
 			DatabaseConstants.C_PREFERRED_GRIP + ", " +
 			DatabaseConstants.C_BALANCE_CONTROL + ", " +
 			DatabaseConstants.C_RECOVERY + ", " +
+			DatabaseConstants.C_POTENTIAL + ", " +
+			DatabaseConstants.C_FOCUS + ", " +
+			DatabaseConstants.C_ANGER + ", " +
+			DatabaseConstants.C_DRIVE + ", " +
+			DatabaseConstants.C_IQ + ", " +
+			DatabaseConstants.C_EMOTIONS + ", " +
+			DatabaseConstants.C_INJURIES +
 				" FROM " + DatabaseConstants.BANZUKE_BASE + suffix; 
 		
 		List<List<Object>> results = DatabaseManager.getInstance().query( sql );
@@ -487,30 +494,30 @@ public class Rikishi {
 		// skills portion
 		RikishiStats stats = new RikishiStats();
 		
-		Double oshi = (Double)results.get( 44 );
-		Double gake = (Double)results.get( 45 );
-		Double yotsu = (Double)results.get( 46 );
-		Double nage = (Double)results.get( 47 );
-		Double tsuki = (Double)results.get( 48 );
-		Double hiku = (Double)results.get( 49 );
-		Double defense = (Double)results.get( 50 );
-		Double overall = (Double)results.get( 51 );
-		Double tachiai = (Double)results.get( 52 );
-		Double leftArm = (Double)results.get( 53 );
-		Double rightArm = (Double)results.get( 54 );
-		Double upperBody = (Double)results.get( 55 );
-		Double lowerBody = (Double)results.get( 56 );
-		Double rightLeg = (Double)results.get( 57 );
-		Double leftLeg = (Double)results.get( 58 );
-		Double quickness = (Double)results.get( 59 );
-		Double edge = (Double)results.get( 60 );
-		Double gripBreak = (Double)results.get( 61 );
-		Double gripStrength = (Double)results.get( 62 );
-		Double secondaryStrength = (Double)results.get( 63 );
+		Double oshi = ((Integer)results.get( 44 )).doubleValue();
+		Double gake = ((Integer)results.get( 45 )).doubleValue();
+		Double yotsu = ((Integer)results.get( 46 )).doubleValue();
+		Double nage = ((Integer)results.get( 47 )).doubleValue();
+		Double tsuki = ((Integer)results.get( 48 )).doubleValue();
+		Double hiku = ((Integer)results.get( 49 )).doubleValue();
+		Double defense = ((Integer)results.get( 50 )).doubleValue();
+		Double overall = ((Integer)results.get( 51 )).doubleValue();
+		Double tachiai = ((Integer)results.get( 52 )).doubleValue();
+		Double leftArm = ((Integer)results.get( 53 )).doubleValue();
+		Double rightArm = ((Integer)results.get( 54 )).doubleValue();
+		Double upperBody = ((Integer)results.get( 55 )).doubleValue();
+		Double lowerBody = ((Integer)results.get( 56 )).doubleValue();
+		Double rightLeg = ((Integer)results.get( 57 )).doubleValue();
+		Double leftLeg = ((Integer)results.get( 58 )).doubleValue();
+		Double quickness = ((Integer)results.get( 59 )).doubleValue();
+		Double edge = ((Integer)results.get( 60 )).doubleValue();
+		Double gripBreak = ((Integer)results.get( 61 )).doubleValue();
+		Double gripStrength = ((Integer)results.get( 62 )).doubleValue();
+		Double secondaryStrength = ((Integer)results.get( 63 )).doubleValue();
 		GRIP preferredGrip = GRIP.valueOf( results.get( 64 ).toString() );
-		Double balance = (Double)results.get( 65 );
-		Double recovery = (Double)results.get( 66 );
-		Double potential = (Double)results.get( 67 );
+		Double balance = ((Integer)results.get( 65 )).doubleValue();
+		Double recovery = ((Integer)results.get( 66 )).doubleValue();
+		Double potential = ((Integer)results.get( 67 )).doubleValue();
 		
 		stats.setOshi(oshi);
 		stats.setGake(gake);
@@ -542,11 +549,11 @@ public class Rikishi {
 		// mental portion
 		RikishiTemperment temp = new RikishiTemperment();
 		
-		Double focus = (Double)results.get( 68 );
-		Double anger = (Double)results.get( 69 );
-		Double iq = (Double)results.get( 71 );
-		Double emotions = (Double)results.get( 72 );
-		Double drive = (Double)results.get( 70 );
+		Double focus = ((Integer)results.get( 68 )).doubleValue();
+		Double anger = ((Integer)results.get( 69 )).doubleValue();
+		Double iq = ((Integer)results.get( 71 )).doubleValue();
+		Double emotions = ((Integer)results.get( 72 )).doubleValue();
+		Double drive = ((Integer)results.get( 70 )).doubleValue();
 		
 		temp.setAnger(anger);
 		temp.setDrive(drive);

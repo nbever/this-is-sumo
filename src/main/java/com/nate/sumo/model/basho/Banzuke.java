@@ -3,6 +3,7 @@ package com.nate.sumo.model.basho;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.nate.sumo.model.rikishi.Rikishi;
 
@@ -16,6 +17,29 @@ public class Banzuke {
 		}
 		
 		return fullBanzuke;
+	}
+	
+	public Rikishi getByRank( Division division, Rank rank ){
+		
+		Map<Rank, Rikishi> rankMap = getFullBanzuke().get( division );
+		
+		Optional<Rank> fRank = rankMap.keySet().stream().filter( rankKey -> {
+			Boolean match = rankKey.equals( rank );
+			Rikishi mR = null;
+			
+			if ( match == Boolean.TRUE ){
+				mR = rankMap.get( rankKey );
+			}
+			return match;
+		}).findFirst();
+		
+		if ( !fRank.isPresent() ){
+			return null;
+		}
+		
+		Rikishi rikishi = rankMap.get( fRank.get() );
+		
+		return rikishi;
 	}
 	
 	public static Banzuke build( Collection<Rikishi> rikishiList ){

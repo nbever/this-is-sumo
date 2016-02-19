@@ -1,11 +1,13 @@
 package com.nate.sumo.display.screens;
 
+import java.util.Map;
+
 public class PracticePlayerSelect extends PlayerSelectScreen
 {
 
-	public PracticePlayerSelect()
+	public PracticePlayerSelect( Map<String, Object> initData )
 	{
-		// TODO Auto-generated constructor stub
+		super( initData );
 	}
 	
 	@Override
