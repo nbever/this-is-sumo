@@ -20,8 +20,18 @@ public class ScreenHelper
 	}
 	
 	public void drawSquare( float width, float height, boolean texture ){
+		this.drawSquare( width, height, texture, true, 0.0f );
+	}
+	
+	public void drawSquare( float width, float height, boolean texture, boolean fill, float lineWidth ){
 		
-		glBegin( GL_QUADS );
+		if ( fill ){
+			glBegin( GL_QUADS );
+		}
+		else {
+			glLineWidth(  lineWidth );
+			glBegin( GL_LINE_STRIP ); 
+		}
 	
 		if ( texture )
 			glTexCoord2f( 0.0f, 0.0f );
@@ -36,6 +46,9 @@ public class ScreenHelper
 			glTexCoord2f( 0.0f, 1.0f );
 		glVertex3f( 0.0f, 0.0f, 0.0f );
 
+		if ( !fill ){
+			glVertex3f( 0.0f, height, 0.0f );
+		}
 		
 		glEnd();
 	}
