@@ -5,6 +5,9 @@ import static org.lwjgl.opengl.GL11.*;
 public class ScreenHelper
 {
 
+	public static final float SCREEN_DEPTH = -0.01f;
+	public static final float DIALOG_DEPTH = -0.009f;
+	
 	private static ScreenHelper instance;
 	
 	private ScreenHelper(){

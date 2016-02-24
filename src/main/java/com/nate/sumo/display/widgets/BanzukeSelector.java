@@ -20,6 +20,7 @@ import com.nate.sumo.model.basho.Rank;
 import com.nate.sumo.model.basho.Rank.RankClass;
 import com.nate.sumo.model.basho.Rank.RankSide;
 import com.nate.sumo.model.rikishi.Rikishi;
+import com.nate.util.MathHelper;
 
 public class BanzukeSelector extends Widget
 {
@@ -37,6 +38,7 @@ public class BanzukeSelector extends Widget
 	private final float BUTTON_WIDTH = 0.17f;
 	private final float BUTTON_BUMPER = 0.02f;
 	private final float DIV_TEXT_WIDTH = 0.6f;
+	private final float SPINNER_HEIGHT = 0.09f;
 	private final float B_WIDTH = BUTTON_BUMPER*2 + BUTTON_WIDTH*2 + DIV_TEXT_WIDTH;
 	
 	private final float titleHeight = 0.12f;
@@ -77,11 +79,13 @@ public class BanzukeSelector extends Widget
 			case GLFW_KEY_COMMA:
 				currentDivision--;
 				selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
+				fixDivision();
 				higashiRikishi = getCurrentTopRikishi();
 				break;
 			case GLFW_KEY_PERIOD:
 				currentDivision++;
 				selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
+				fixDivision();
 				higashiRikishi = getCurrentTopRikishi();
 				break;
 			case GLFW_KEY_DOWN:
@@ -92,6 +96,7 @@ public class BanzukeSelector extends Widget
 			case GLFW_KEY_UP:
 				moveSelectorUp( rank, cDiv );
 				getSelectorAnimation().start();
+				getTableAnimation().start();
 				break;
 			case GLFW_KEY_RIGHT:
 				moveSelectorRight( rank, cDiv );
@@ -104,6 +109,11 @@ public class BanzukeSelector extends Widget
 			default:
 				break;
 		}
+		
+
+	}
+	
+	private void fixDivision(){
 		
 		if ( currentDivision >= Division.values().length ){
 			currentDivision = 0;
@@ -138,10 +148,14 @@ public class BanzukeSelector extends Widget
 		
 		if ( getSelectorAnimation().getEndingValue().getY() <= -0.9f ){
 			
-			tableAnimation = new Animation( getTableAnimation().getEndingValue(),
-				new Vector3f( getTableAnimation().getEndingValue().getX(),
-					getTableAnimation().getEndingValue().getY() + -1.0f*goDown,
-					getTableAnimation().getEndingValue().getZ() ), SCREEN_MOVE_FRAMES );
+			if ( cDiv.getClassesIncluded().get(  cDiv.getClassesIncluded().size() - 1 ) != rank.getRankClass() ||
+				getHighRankNumberMap().get( rank.getRankClass() ) - rank.getRankNumber() > 4){
+			
+				tableAnimation = new Animation( getTableAnimation().getEndingValue(),
+					new Vector3f( getTableAnimation().getEndingValue().getX(),
+						getTableAnimation().getEndingValue().getY() + -1.0f*goDown,
+						getTableAnimation().getEndingValue().getZ() ), SCREEN_MOVE_FRAMES );
+			}
 		}
 		
 		Rank newRank = null;
@@ -172,7 +186,7 @@ public class BanzukeSelector extends Widget
 		if ( rank.getRankNumber() == 1 ){
 		
 			// if it's at the top we can't go up anymore
-			if ( getSelectorAnimation().getEndingValue() == INITIAL_SELECTOR ){
+			if ( MathHelper.equalsf( getSelectorAnimation().getEndingValue().getY(), INITIAL_SELECTOR.getY() ) ){
 				return;
 			}
 			
@@ -185,6 +199,18 @@ public class BanzukeSelector extends Widget
 				new Vector3f( getSelectorAnimation().getEndingValue().getX(),
 					getSelectorAnimation().getEndingValue().getY() + goUp, 
 					getSelectorAnimation().getEndingValue().getZ() ), SCREEN_MOVE_FRAMES );
+		
+		if ( getSelectorAnimation().getEndingValue().getY() <= -0.6f ){
+			
+			if ( cDiv.getClassesIncluded().get(  cDiv.getClassesIncluded().size() - 1 ) != rank.getRankClass() ||
+				getHighRankNumberMap().get( rank.getRankClass() ) - rank.getRankNumber() > 3){
+			
+				tableAnimation = new Animation( getTableAnimation().getEndingValue(),
+					new Vector3f( getTableAnimation().getEndingValue().getX(),
+						getTableAnimation().getEndingValue().getY() + -1.0f*goUp,
+						getTableAnimation().getEndingValue().getZ() ), SCREEN_MOVE_FRAMES );
+			}
+		}
 		
 		// get the rikishi
 		Rank newRank2 = null;
@@ -296,14 +322,15 @@ public class BanzukeSelector extends Widget
 		
 			// draw the division spinner
 			glPushMatrix();
+			
 				glDisable( GL_TEXTURE_2D );
 				glColor4f( 0.0f, 0.0f, 0.0f, 0.7f );
-				ScreenHelper.getInstance().drawSquare( 0.17f + 0.17f + 0.6f, 0.09f, false );
+				ScreenHelper.getInstance().drawSquare( (2*BUTTON_WIDTH) + DIV_TEXT_WIDTH, SPINNER_HEIGHT, false );
 			
 				glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 				glEnable( GL_TEXTURE_2D );
 				glBindTexture( GL_TEXTURE_2D, TextureManager.getInstance().getTextureId( TextureNames.CTL_LB ) );
-				ScreenHelper.getInstance().drawSquare( 0.17f, 0.09f, true );
+				ScreenHelper.getInstance().drawSquare( BUTTON_WIDTH, SPINNER_HEIGHT, true );
 				
 				glTranslatef( 0.19f, 0.0f, 0.0f );
 				
@@ -312,7 +339,7 @@ public class BanzukeSelector extends Widget
 
 				int chars = cDiv.getName().getFirstName_kanji().length();
 				float totalWidth = chars * 0.12f;
-				float startingSpot = (0.6f / 2.0f) - (totalWidth / 2.0f);
+				float startingSpot = (DIV_TEXT_WIDTH / 2.0f) - (totalWidth / 2.0f);
 				
 				glPushMatrix();
 				glTranslatef( startingSpot, 0.0f, 0.0f );
@@ -323,7 +350,7 @@ public class BanzukeSelector extends Widget
 				glEnable( GL_TEXTURE_2D );
 				glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 				glBindTexture( GL_TEXTURE_2D, TextureManager.getInstance().getTextureId( TextureNames.CTL_RB ) );
-				ScreenHelper.getInstance().drawSquare( 0.17f, 0.09f, true );
+				ScreenHelper.getInstance().drawSquare( BUTTON_WIDTH, SPINNER_HEIGHT, true );
 			
 			glPopMatrix();
 			

@@ -18,8 +18,8 @@ import org.lwjgl.stb.STBTTAlignedQuad;
 
 public class GlFont
 {
-	private static final int BITMAP_W = 1024;
-	private static final int BITMAP_H = 1024;
+	private static final int BITMAP_W = 1536;
+	private static final int BITMAP_H = 1536;
 	
 	private ByteBuffer chardata;
 	private Integer fontTex;

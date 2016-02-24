@@ -34,8 +34,8 @@ public class Main
 	private GLFWErrorCallback errorCallback;
 	private GLFWKeyCallback keyCallback;
 
-	float WIDTH = 800;
-	float HEIGHT = 600;
+	float WIDTH = 1200;
+	float HEIGHT = 900;
 	int backgroundTexture;
 
 	// The window handle
