@@ -32,6 +32,9 @@ public class BanzukeSelector extends Widget
 	private Rikishi nishiRikishi;
 	private Rikishi higashiRikishi;
 	
+	private boolean higashiSelected = false;
+	private boolean nishiSelected = false;
+	
 	private Animation selectorAnimation;
 	private Animation tableAnimation;
 	
@@ -55,7 +58,7 @@ public class BanzukeSelector extends Widget
 		this.banzuke = banzuke;
 		
 		Rank y1 = new Rank( RankClass.YOKOZUNA, RankSide.EAST, 1 );
-		higashiRikishi = this.banzuke.getByRank( Division.values()[0], y1 );
+		setRikishi( this.banzuke.getByRank( Division.values()[0], y1 ) );
 		
 		selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, 0 );
 		tableAnimation = new Animation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
@@ -73,20 +76,20 @@ public class BanzukeSelector extends Widget
 		}
 		
 		Division cDiv = Division.values()[currentDivision];
-		Rank rank = getHigashiRikishi().getRikishiInfo().getCurrentRank();
+		Rank rank = getRikishi().getRikishiInfo().getCurrentRank();
 		
 		switch( key ){
 			case GLFW_KEY_COMMA:
 				currentDivision--;
 				selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
 				fixDivision();
-				higashiRikishi = getCurrentTopRikishi();
+				setRikishi( getCurrentTopRikishi() );
 				break;
 			case GLFW_KEY_PERIOD:
 				currentDivision++;
 				selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
 				fixDivision();
-				higashiRikishi = getCurrentTopRikishi();
+				setRikishi( getCurrentTopRikishi() );
 				break;
 			case GLFW_KEY_DOWN:
 				moveSelectorDown( rank, cDiv );
@@ -105,6 +108,26 @@ public class BanzukeSelector extends Widget
 			case GLFW_KEY_LEFT:
 				moveSelectorLeft( rank, cDiv );
 				getSelectorAnimation().start();
+				break;
+			case GLFW_KEY_ENTER:
+				if ( !isHigashiSelected() ){
+					higashiSelected = true;
+					setRikishi( getCurrentTopRikishi() );
+					tableAnimation = new Animation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
+					selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
+				}
+				else {
+					nishiSelected = true;
+				}
+				break;
+			case GLFW_KEY_BACKSPACE:
+				if ( isNishiSelected() ){
+					nishiSelected = false;
+				}
+				else {
+					higashiSelected = false;
+					nishiRikishi = null;
+				}
 				break;
 			default:
 				break;
@@ -173,7 +196,7 @@ public class BanzukeSelector extends Widget
 		Rikishi r = getBanzuke().getByRank( cDiv, newRank );
 		
 		if ( r != null ){
-			higashiRikishi = r;
+			setRikishi( r );
 		}
 		else {
 			moveSelectorDown( newRank, cDiv );
@@ -228,7 +251,7 @@ public class BanzukeSelector extends Widget
 		Rikishi r = getBanzuke().getByRank( cDiv, newRank2 );
 		
 		if ( r != null ){
-			higashiRikishi = r;
+			setRikishi( r );
 		}
 		else {
 			moveSelectorUp( newRank2, cDiv );
@@ -248,7 +271,7 @@ public class BanzukeSelector extends Widget
 			return;
 		}
 		
-		higashiRikishi = r;
+		setRikishi( r );
 		
 		selectorAnimation = new Animation( getSelectorAnimation().getEndingValue(),
 			new Vector3f( getSelectorAnimation().getEndingValue().getX() + rankColWidth + ((B_WIDTH - rankColWidth)/2.0f),
@@ -269,7 +292,7 @@ public class BanzukeSelector extends Widget
 			return;
 		}
 		
-		higashiRikishi = r;
+		setRikishi( r );
 		
 		selectorAnimation = new Animation( getSelectorAnimation().getEndingValue(),
 				new Vector3f( getSelectorAnimation().getEndingValue().getX() - (rankColWidth + ((B_WIDTH - rankColWidth)/2.0f)),
@@ -407,7 +430,7 @@ public class BanzukeSelector extends Widget
 			
 			float zBox = 0.8f;
 			
-			if ( getHigashiRikishi() != null && getHigashiRikishi().equals( rikishiE ) &&
+			if ( getRikishi() != null && getRikishi().equals( rikishiE ) &&
 				getSelectorAnimation() != null && !getSelectorAnimation().isRunning() ){
 				zBox = 1.0f;
 			}
@@ -419,7 +442,7 @@ public class BanzukeSelector extends Widget
 			
 				zBox = 0.8f;
 			
-				if ( getHigashiRikishi() != null && getHigashiRikishi().equals( rikishiW ) &&
+				if ( getRikishi() != null && getRikishi().equals( rikishiW ) &&
 					getSelectorAnimation() != null && !getSelectorAnimation().isRunning() ){
 					zBox = 1.0f;
 				}
@@ -479,12 +502,31 @@ public class BanzukeSelector extends Widget
 			getSelectorAnimation().getValue().getY(), 
 			getSelectorAnimation().getValue().getZ() );
 		
-		glColor4f( 0.0f, 0.0f, 0.9f, 0.8f );
+		if ( !isHigashiSelected() ){
+			glColor4f( 0.0f, 0.0f, 0.9f, 0.8f );
+		}
+		else {
+			glColor4f( 0.9f, 0.0f, 0.0f, 0.8f );
+		}
+		
 		ScreenHelper.getInstance().drawSquare( (B_WIDTH - rankColWidth)/2.0f, titleHeight, false, false, 10.0f );
 		
-		glTranslatef( 0.005f, titleHeight - 0.05f, 0.0f );
+		if ( !isHigashiSelected() ){
+			glTranslatef( 0.005f, titleHeight - 0.05f, 0.0f );
+		}
+		else {
+			glTranslatef( ((B_WIDTH - rankColWidth)/2.0f) - 0.15f, titleHeight - 0.05f, 0.0f );
+		}
+		
 		glScalef( 0.5f, 0.5f, 0.0f );
-		Font.JAPANESE_CALI.drawJapaneseString( "東力士" );
+		
+		String selectionText = "東力士";
+		
+		if ( isHigashiSelected() ){
+			selectionText = "西力士";
+		}
+		
+		Font.JAPANESE_CALI.drawJapaneseString( selectionText );
 	}
 
 	private float forCenteredText( String text, float width, float scale ){
@@ -561,6 +603,33 @@ public class BanzukeSelector extends Widget
 	
 	private Banzuke getBanzuke(){
 		return banzuke;
+	}
+	
+	private void setRikishi( Rikishi rikishi ){
+		
+		if ( isHigashiSelected() ){
+			nishiRikishi = rikishi;
+		}
+		else {
+			higashiRikishi = rikishi;
+		}
+	}
+	
+	private Rikishi getRikishi(){
+		if ( isHigashiSelected() ){
+			return nishiRikishi;
+		}
+		else {
+			return higashiRikishi;
+		}
+	}
+	
+	public Boolean isHigashiSelected(){
+		return higashiSelected;
+	}
+	
+	public Boolean isNishiSelected(){
+		return nishiSelected;
 	}
 	
 	public Rikishi getNishiRikishi(){

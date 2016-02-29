@@ -38,4 +38,10 @@ public class Record
 	public void setForfeits( Integer forfeits ){
 		this.forfeits = forfeits;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return getWins() + "-" + getLoses() + " (" + getForfeits() + ")";
+	}
 }
