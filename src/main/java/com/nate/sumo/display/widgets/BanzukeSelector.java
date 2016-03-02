@@ -78,6 +78,24 @@ public class BanzukeSelector extends Widget
 		Division cDiv = Division.values()[currentDivision];
 		Rank rank = getRikishi().getRikishiInfo().getCurrentRank();
 		
+		if ( key == GLFW_KEY_BACKSPACE ){
+			if ( isNishiSelected() ){
+				nishiSelected = false;
+			}
+			else {
+				higashiSelected = false;
+				nishiRikishi = null;
+			}
+			
+			setRikishi( getCurrentTopRikishi() );
+			selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
+			tableAnimation = new Animation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
+		}
+		
+		if ( isHigashiSelected() && isNishiSelected() ){
+			return;
+		}
+		
 		switch( key ){
 			case GLFW_KEY_COMMA:
 				currentDivision--;
@@ -118,15 +136,6 @@ public class BanzukeSelector extends Widget
 				}
 				else {
 					nishiSelected = true;
-				}
-				break;
-			case GLFW_KEY_BACKSPACE:
-				if ( isNishiSelected() ){
-					nishiSelected = false;
-				}
-				else {
-					higashiSelected = false;
-					nishiRikishi = null;
 				}
 				break;
 			default:
@@ -377,10 +386,43 @@ public class BanzukeSelector extends Widget
 			
 			glPopMatrix();
 			
+			glPushMatrix();
+				drawControlHelp();
+			glPopMatrix();
+			
 			glDisable( GL_TEXTURE_2D );
 			glDisable( GL_BLEND );
 		
 		glPopMatrix();
+	}
+	
+	private void drawControlHelp(){
+		
+		glTranslatef( 0.0f, -2.31f, 0.0f );
+		
+		glDisable( GL_TEXTURE_2D );
+		
+		glColor4f( 0.0f, 0.0f, 0.0f, 0.7f );
+		ScreenHelper.getInstance().drawSquare( B_WIDTH, SPINNER_HEIGHT + 0.03f, false );
+		
+		glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+		glTranslatef( 0.0f, 0.01f, 0.0f );
+		glEnable( GL_TEXTURE_2D );
+		glBindTexture( GL_TEXTURE_2D, TextureManager.getInstance().getTextureId( TextureNames.CTL_B ) );
+		ScreenHelper.getInstance().drawSquare( 0.09f, 0.1f, true );
+		
+		glTranslatef( 0.12f, 0.03f, 0.0f );
+		Font.TIMES_NEW_ROMAN.drawString( "Back" );
+		
+		glTranslatef( 0.25f, -0.03f, 0.0f );
+		glBindTexture( GL_TEXTURE_2D, TextureManager.getInstance().getTextureId( TextureNames.CTL_A ) );
+		ScreenHelper.getInstance().drawSquare( 0.09f, 0.1f, true );
+		
+		glTranslatef( 0.12f, 0.03f, 0.0f );
+		Font.TIMES_NEW_ROMAN.drawString( "Select" );
+		
+		glDisable( GL_TEXTURE_2D );
+		glDisable( GL_BLEND );
 	}
 	
 	private void drawRankBox( RankClass clazz ){
@@ -555,7 +597,8 @@ public class BanzukeSelector extends Widget
 	public List<String> getTextureNames()
 	{
 		if ( textureNames == null ){
-			textureNames = Arrays.asList( TextureNames.CTL_LB, TextureNames.CTL_RB );
+			textureNames = Arrays.asList( TextureNames.CTL_LB, TextureNames.CTL_RB, TextureNames.CTL_A, TextureNames.CTL_B,
+				TextureNames.CTL_X, TextureNames.CTL_Y );
 		}
 		
 		return textureNames;

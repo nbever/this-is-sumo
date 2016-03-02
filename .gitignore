@@ -5,5 +5,5 @@ derby.log
 target/
 db/**
 logs/
-/.DS_Store
+.DS_Store
 

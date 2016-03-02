@@ -14,12 +14,9 @@ import org.lwjgl.opengl.GLContext;
 
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureManager;
-import com.nate.sumo.display.TextureNames;
 import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.display.widgets.BanzukeSelector;
 import com.nate.sumo.model.basho.Banzuke;
-import com.nate.sumo.model.basho.Division;
-import com.nate.sumo.model.basho.Rank.RankClass;
 import com.nate.sumo.model.rikishi.Rikishi;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -31,7 +28,7 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 
 	private final Integer QUEUE_LIMIT = 10;
 	private final float IMAGE_HEIGHT = 0.6f;
-	private final float IMAGE_WIDTH = 0.4f;
+	private final float IMAGE_WIDTH = 0.32f;
 	
 	private Map<Rikishi, Integer> textureMap;
 	private List<Rikishi> textureQueue;
@@ -88,9 +85,11 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 			
 			Font.JAPANESE_CALI.drawJapaneseString( side );
 			
+			glDisable( GL_TEXTURE_2D );
 			glTranslatef( 0.0f, -1.0f*IMAGE_HEIGHT, 0.0f );
 			
 			if ( getTextureMap().get( rikishi ) != null && getTextureMap().get( rikishi ) != -1 ){
+				glEnable( GL_TEXTURE_2D );
 				glBindTexture( GL_TEXTURE_2D, getTextureMap().get( rikishi ) );
 			}
 			
