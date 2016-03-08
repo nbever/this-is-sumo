@@ -1,19 +1,14 @@
 package com.nate.sumo.display.screens;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-
-import org.lwjgl.opengl.GLContext;
 
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureManager;
+import com.nate.sumo.display.TextureNames;
 import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.display.widgets.BanzukeSelector;
 import com.nate.sumo.model.basho.Banzuke;
@@ -35,6 +30,8 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 	private BanzukeSelector banzukeSelector;
 	
 	private Long stayFrame = 0L;
+	
+	public abstract void allUnselected();
 	
 	public PlayerSelectScreen(Map<String, Object> initData) {
 		super( initData );
@@ -151,15 +148,25 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 	@Override
 	public void handleKey( int key, int scanCode, int action, int mods )
 	{
+		if ( action != GLFW_PRESS ){
+			return;
+		}
+		
 		if ( key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT ||
 			key == GLFW_KEY_UP || key == GLFW_KEY_DOWN ){
 			stayFrame = 0L;
+		}
+		else if ( key == GLFW_KEY_BACKSPACE ){
+			if ( !getBanzukeSelector().isHigashiSelected() ){
+				allUnselected();
+				return;
+			}
 		}
 		
 		getBanzukeSelector().handleKey(key, scanCode, action, mods);
 	}
 	
-	private BanzukeSelector getBanzukeSelector(){
+	protected BanzukeSelector getBanzukeSelector(){
 		
 		if ( banzukeSelector == null ){
 			banzukeSelector = new BanzukeSelector( (Banzuke)getInitData().get( PLAYER_LIST ));

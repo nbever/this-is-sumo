@@ -1,11 +1,14 @@
 package com.nate.sumo.model.rikishi;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.nate.sumo.DatabaseConstants;
 import com.nate.sumo.DatabaseManager;
+import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.model.animation.AnimationMap;
 import com.nate.sumo.model.appearence.AppearenceMap;
 import com.nate.sumo.model.basho.Rank;
@@ -489,6 +492,8 @@ public class Rikishi {
 			info.getInjuries().add( realInjury );
 		}
 		
+		String portraitString = getPortrait( info );
+		
 		r.setRikishiInfo( info );
 		
 		// skills portion
@@ -563,6 +568,31 @@ public class Rikishi {
 		
 		r.setRikishiTemperment( temp );
 		
+		AppearenceMap appearence = new AppearenceMap();
+		appearence.setPortrait( portraitString );
+		
 		return r;
+	}
+	
+	private static String getPortrait( RikishiInfo info ){
+		
+		String portrait =  info.getShikona().getFirstName_kanji() + "_" + 
+			info.getShikona().getLastName_kanji() + ".jpg";
+		
+		String base = "portraits/";
+		
+		try {
+			URL fileUrl = TextureManager.class.getResource( "/" + base + portrait );
+			File file = new File( fileUrl.toURI() );
+			
+			if ( !file.exists() ){
+				portrait = base + "no_image.jpg";
+			}
+		}
+		catch( Exception e ){
+			return base + "no_image.jpg";
+		}
+		
+		return portrait;
 	}
 }

@@ -79,17 +79,7 @@ public class BanzukeSelector extends Widget
 		Rank rank = getRikishi().getRikishiInfo().getCurrentRank();
 		
 		if ( key == GLFW_KEY_BACKSPACE ){
-			if ( isNishiSelected() ){
-				nishiSelected = false;
-			}
-			else {
-				higashiSelected = false;
-				nishiRikishi = null;
-			}
-			
-			setRikishi( getCurrentTopRikishi() );
-			selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
-			tableAnimation = new Animation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
+			deselectLast();
 		}
 		
 		if ( isHigashiSelected() && isNishiSelected() ){
@@ -141,8 +131,21 @@ public class BanzukeSelector extends Widget
 			default:
 				break;
 		}
+	}
+	
+	public void deselectLast(){
 		
-
+		if ( isNishiSelected() ){
+			nishiSelected = false;
+		}
+		else {
+			higashiSelected = false;
+			nishiRikishi = null;
+		}
+		
+		setRikishi( getCurrentTopRikishi() );
+		selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
+		tableAnimation = new Animation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
 	}
 	
 	private void fixDivision(){

@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
 
+import com.nate.sumo.display.TextureManager;
+
 public class AppearenceMap {
 
 	public static final String HAIR_1 = "hair_1.md5";

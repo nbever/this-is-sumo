@@ -11,4 +11,7 @@ public class TextureNames
 	public static final String CTL_B = "controls/b2.png";
 	public static final String CTL_X = "controls/x2.png";
 	public static final String CTL_Y = "controls/y2.png";
+	
+	public static final String DIALOG_BKG = "dialog.jpg";
+	public static final String BUTTON_BKG = "controls/button-bg.jpg";
 }

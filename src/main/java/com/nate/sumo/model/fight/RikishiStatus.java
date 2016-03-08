@@ -17,4 +17,12 @@ public class RikishiStatus {
 	private FightAction currentAction;
 	
 	private List<FightAction> actionHistory;
+	
+	public RikishiStatus( Rikishi rikishi ){
+		this.rikishi = rikishi;
+	}
+	
+	public Rikishi getRikishi(){
+		return rikishi;
+	}
 }
