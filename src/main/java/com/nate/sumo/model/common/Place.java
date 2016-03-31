@@ -3,9 +3,9 @@ package com.nate.sumo.model.common;
 public class Place {
 	
 	// constant places
-	public static final Place KOKUGIKAN = new Place( null, null );
-	public static final Place AICHI_PREFECTURAL_GYMNASIUM = new Place( null, null );
-	public static final Place FUKUOKA_CENTER = new Place( null, null );
+	public static final Place KOKUGIKAN = new Place( null, new Name( "Kokugikan", "" ) );
+	public static final Place AICHI_PREFECTURAL_GYMNASIUM = new Place( null, new Name( "Aichi Prefectural Gymnasium", "" ) );
+	public static final Place FUKUOKA_CENTER = new Place( null, new Name( "Fukuoka Center", "" ) );
 
 	private Location location;
 	private Name name;
@@ -31,5 +31,9 @@ public class Place {
 		this.name = name;
 	}
 	
-	
+	@Override
+	public String toString() {
+		
+		return getName().getFirstName_en();
+	}
 }

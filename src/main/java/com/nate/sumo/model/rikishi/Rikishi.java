@@ -411,7 +411,7 @@ public class Rikishi {
 		
 		info.setUniversity( university );
 		
-		Heya heya = Heya.getById( (Long)results.get( 13 ) );
+		Heya heya = Heya.getKnownHeyaById().get( (Long)results.get( 13 ) );
 		info.setHeya( heya );
 		
 		Location loc = Location.getById( (Long)results.get( 14 ) );
@@ -492,7 +492,9 @@ public class Rikishi {
 			info.getInjuries().add( realInjury );
 		}
 		
-		String portraitString = getPortrait( info );
+		AppearenceMap map = new AppearenceMap();
+		map.setPortrait( getPortrait( info ) );
+		r.setAppearenceMap( map );
 		
 		r.setRikishiInfo( info );
 		
@@ -567,22 +569,20 @@ public class Rikishi {
 		temp.setFocus(focus);
 		
 		r.setRikishiTemperment( temp );
-		
-		AppearenceMap appearence = new AppearenceMap();
-		appearence.setPortrait( portraitString );
-		
+
 		return r;
 	}
 	
 	private static String getPortrait( RikishiInfo info ){
-		
-		String portrait =  info.getShikona().getFirstName_kanji() + "_" + 
-			info.getShikona().getLastName_kanji() + ".jpg";
-		
+	
 		String base = "portraits/";
 		
+		String portrait =  base + info.getShikona().getFirstName_kanji() + "_" + 
+			info.getShikona().getLastName_kanji() + ".jpg";
+		
 		try {
-			URL fileUrl = TextureManager.class.getResource( "/" + base + portrait );
+			
+			URL fileUrl = TextureManager.class.getResource( "/" + portrait );
 			File file = new File( fileUrl.toURI() );
 			
 			if ( !file.exists() ){

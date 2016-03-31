@@ -256,7 +256,7 @@ public class BanzukeBuilder
 		// heya name
 		String heyaKey = enTrs.get( HEYA ).select( "td" ).get( 1 ).text();
 		
-		Heya heya = Heya.getKnownHeya().get( heyaKey );
+		Heya heya = Heya.getKnownHeyaByName().get( heyaKey );
 		rinf.setHeya( heya );
 		
 		// university

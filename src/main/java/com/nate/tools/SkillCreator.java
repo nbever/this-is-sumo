@@ -26,6 +26,7 @@ import org.reflections.Reflections;
 
 import com.nate.sumo.DatabaseManager;
 import com.nate.sumo.model.appearence.AppearenceMap;
+import com.nate.sumo.model.appearence.AppearenceMapConstants;
 import com.nate.sumo.model.basho.Kimarite;
 import com.nate.sumo.model.basho.Kimarite.Type;
 import com.nate.sumo.model.basho.Rank;
@@ -55,7 +56,6 @@ import com.nate.sumo.model.fight.actions.tachiai.Kachiage;
 import com.nate.sumo.model.fight.actions.tachiai.Nodowa;
 import com.nate.sumo.model.fight.actions.tachiai.Ketaguri;
 import com.nate.sumo.model.fight.scenario.SCENARIOS;
-import com.nate.sumo.model.fight.scenario.Scenario;
 import com.nate.sumo.model.rikishi.Heya;
 import com.nate.sumo.model.rikishi.Rikishi;
 import com.nate.sumo.model.rikishi.RikishiInfo;
@@ -70,6 +70,7 @@ public class SkillCreator
 	
 	public static void main( String[] args )
 	{
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner( System.in );
 		
 		System.out.println( "Year: ");
@@ -272,17 +273,17 @@ public class SkillCreator
 			info.getHometown().getArea().getFirstName_en() != "Hawaii" ){
 			
 			if ( info.getHometown().getCountry().getFirstName_en().equalsIgnoreCase( "Mongolia" ) ){
-				map.setHeadModel( AppearenceMap.MONGOLIAN_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.MONGOLIAN_HEAD_MODELS.size() ) ) );
-				map.setHeadTxt( AppearenceMap.MONGOLIAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.MONGOLIAN_HEAD_TXTS.size() ) ) );
-				map.setHairColor( AppearenceMap.MONGOLIAN_HAIR_COLORS.get( (int)(Math.random() * AppearenceMap.MONGOLIAN_HAIR_COLORS.size() ) ) );
+				map.setHeadModel( AppearenceMapConstants.MONGOLIAN_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMapConstants.MONGOLIAN_HEAD_MODELS.size() ) ) );
+				map.setHeadTxt( AppearenceMapConstants.MONGOLIAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMapConstants.MONGOLIAN_HEAD_TXTS.size() ) ) );
+				map.setHairColor( AppearenceMapConstants.MONGOLIAN_HAIR_COLORS.get( (int)(Math.random() * AppearenceMapConstants.MONGOLIAN_HAIR_COLORS.size() ) ) );
 				
 				colorFactor = (int)(Math.random()*70 );
 			}
 			// european
 			else {
-				map.setHeadModel( AppearenceMap.EUROPEAN_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.EUROPEAN_HEAD_MODELS.size() ) ) );
-				map.setHeadTxt( AppearenceMap.EUROPEAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.EUROPEAN_HEAD_TXTS.size() ) ) );
-				map.setHairColor( AppearenceMap.EUROPEAN_HAIR_COLORS.get( (int)(Math.random() * AppearenceMap.EUROPEAN_HAIR_COLORS.size() ) ) );
+				map.setHeadModel( AppearenceMapConstants.EUROPEAN_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMapConstants.EUROPEAN_HEAD_MODELS.size() ) ) );
+				map.setHeadTxt( AppearenceMapConstants.EUROPEAN_HEAD_TXTS.get( (int)(Math.random() * AppearenceMapConstants.EUROPEAN_HEAD_TXTS.size() ) ) );
+				map.setHairColor( AppearenceMapConstants.EUROPEAN_HAIR_COLORS.get( (int)(Math.random() * AppearenceMapConstants.EUROPEAN_HAIR_COLORS.size() ) ) );
 				
 				colorFactor = (int)(Math.random() * 40 );
 			}
@@ -290,9 +291,9 @@ public class SkillCreator
 		// Japanese
 		else {
 			
-			map.setHeadModel( AppearenceMap.JAPANESE_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMap.JAPANESE_HEAD_MODELS.size() ) ) );
-			map.setHeadTxt( AppearenceMap.JAPANESE_HEAD_TXTS.get( (int)(Math.random() * AppearenceMap.JAPANESE_HEAD_TXTS.size() ) ) );
-			map.setHairColor( AppearenceMap.JAPANESE_HAIR_COLORS.get( (int)(Math.random() * AppearenceMap.JAPANESE_HAIR_COLORS.size() ) ) );
+			map.setHeadModel( AppearenceMapConstants.JAPANESE_HEAD_MODELS.get(  (int)(Math.random() * AppearenceMapConstants.JAPANESE_HEAD_MODELS.size() ) ) );
+			map.setHeadTxt( AppearenceMapConstants.JAPANESE_HEAD_TXTS.get( (int)(Math.random() * AppearenceMapConstants.JAPANESE_HEAD_TXTS.size() ) ) );
+			map.setHairColor( AppearenceMapConstants.JAPANESE_HAIR_COLORS.get( (int)(Math.random() * AppearenceMapConstants.JAPANESE_HAIR_COLORS.size() ) ) );
 			
 			colorFactor = (int)(Math.random() * 100 );
 		}
@@ -301,19 +302,19 @@ public class SkillCreator
 		
 		map.setSkinTone( new Color( colorFactor, colorFactor, colorFactor ));
 		
-		int model = (int)(Math.random() * AppearenceMap.BODY_W1_MODELS.size());
-		map.setBodyModel( AppearenceMap.BODY_MODELS.get( weightClass ).get( model ) );
-		int bodyTxt = (int)(Math.random() * AppearenceMap.BODY_TXT_W1.size() );
-		map.setBodyTxt( AppearenceMap.BODY_TXTS.get( weightClass ).get( bodyTxt ) );
-		map.setMawashiModel( AppearenceMap.MAWASHI_MODELS.get( weightClass ) );
+		int model = (int)(Math.random() * AppearenceMapConstants.BODY_W1_MODELS.size());
+		map.setBodyModel( AppearenceMapConstants.BODY_MODELS.get( weightClass ).get( model ) );
+		int bodyTxt = (int)(Math.random() * AppearenceMapConstants.BODY_TXT_W1.size() );
+		map.setBodyTxt( AppearenceMapConstants.BODY_TXTS.get( weightClass ).get( bodyTxt ) );
+		map.setMawashiModel( AppearenceMapConstants.MAWASHI_MODELS.get( weightClass ) );
 		
 		Color mColor = new Color( (int)(Math.random()*255), (int)(Math.random()*255), (int)(Math.random()*255) );
 		map.setMawashiColor( mColor );
 		
-		map.setHairModel( AppearenceMap.HAIR_MODELS.get( (int)(Math.random()*AppearenceMap.HAIR_MODELS.size() ) ) );
-		map.setHairTxt( AppearenceMap.HAIR_TEXTS.get( (int)(Math.random()*AppearenceMap.HAIR_TEXTS.size() ) ) );
-		map.setKeshoModel( AppearenceMap.KESHO_MODELS.get( weightClass ) );
-		map.setKeshoTxt( AppearenceMap.KESHO_TXTS.get( (int)(Math.random()*AppearenceMap.KESHO_TXTS.size() ) ) );
+		map.setHairModel( AppearenceMapConstants.HAIR_MODELS.get( (int)(Math.random()*AppearenceMapConstants.HAIR_MODELS.size() ) ) );
+		map.setHairTxt( AppearenceMapConstants.HAIR_TEXTS.get( (int)(Math.random()*AppearenceMapConstants.HAIR_TEXTS.size() ) ) );
+		map.setKeshoModel( AppearenceMapConstants.KESHO_MODELS.get( weightClass ) );
+		map.setKeshoTxt( AppearenceMapConstants.KESHO_TXTS.get( (int)(Math.random()*AppearenceMapConstants.KESHO_TXTS.size() ) ) );
 		
 		return map;
 	}
@@ -1011,7 +1012,7 @@ public class SkillCreator
 	}
 	
 	// set up the base line.
-	private RikishiStats getStartingStats( RikishiInfo info, Integer year, Integer month ){
+	protected RikishiStats getStartingStats( RikishiInfo info, Integer year, Integer month ){
 		
 		Integer age = getAge( info.getBirthday(), year, month ); 
 		
@@ -1143,7 +1144,7 @@ public class SkillCreator
 			rinf.setHeya( null );
 		}
 		else {
-			rinf.setHeya( Heya.getKnownHeya().get( heyaId ) );
+			rinf.setHeya( Heya.getKnownHeyaById().get( heyaId ) );
 		}
 		
 		Long locationId = Long.parseLong( strIt.next() );

@@ -12,22 +12,35 @@ import com.nate.sumo.display.TextureManager;
 public abstract class Widget implements Drawable, KeyHandler
 {
 
+	private boolean selected = false;
 	private static final Logger logger = LogManager.getLogger();
 	protected List<String> textureNames;
 	
 	public Widget(){
 		
-		getTextureNames().stream().forEach( tn -> {
-			
-			try
-			{
-				TextureManager.getInstance().loadTexture( tn );
-			}
-			catch (Exception e)
-			{
-				logger.error( "Could not load the widget texture: " + tn );
-			}
-		});
+		List<String> tNames = getTextureNames();
+		
+		if ( tNames != null ){
+			tNames.stream().forEach( tn -> {
+				
+				try
+				{
+					TextureManager.getInstance().loadTexture( tn );
+				}
+				catch (Exception e)
+				{
+					logger.error( "Could not load the widget texture: " + tn );
+				}
+			});
+		}
+	}
+	
+	public boolean isSelected(){
+		return selected;
+	}
+	
+	public void setSelected( boolean selected ){
+		this.selected = selected;
 	}
 	
 	public void cleanUp(){
@@ -38,4 +51,5 @@ public abstract class Widget implements Drawable, KeyHandler
 	}
 	
 	public abstract List<String> getTextureNames();
+	
 }

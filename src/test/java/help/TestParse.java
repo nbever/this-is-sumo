@@ -3,8 +3,10 @@ package help;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Test;
@@ -34,5 +36,12 @@ public class TestParse {
 		System.out.println( new Date( c.getTimeInMillis() ) );
 		
 		int x = 0;
+	}
+	
+	@Test
+	public void testMod(){
+		
+		System.out.println( 11 % 12 );
+		System.out.println( 10 % 2 );
 	}
 }

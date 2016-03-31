@@ -15,46 +15,64 @@ public class Heya extends Entity<Heya>{
 	private Location location;
 	private Name prefix;
 	private int prefixLiklihood;
-	private static Map<String, Heya> knownHeya;
+	private static Map<String, Heya> knownHeyaByName;
+	private static Map<Long, Heya> knownHeyaById;
 	
 	public Heya(){}
 
-	public static Map<String, Heya> getKnownHeya(){
+	public static Map<Long, Heya> getKnownHeyaById(){
 		
-		if ( knownHeya == null ){
-			knownHeya = new HashMap<String, Heya>();
-			
-			List<List<Object>> results = DatabaseManager.getInstance().query( "SELECT ID, EN_NAME, JP_NAME, LOCATION, EN_COMMON_PREFIX, JP_COMMON_PREFIX, KJ_COMMON_PREFIX, STRICTNESS FROM APP.HEYA" );
-			
-			for ( List<Object> result : results ){
-				Heya heya = new Heya();
-				heya.setId( Long.parseLong( result.get( 0 ).toString() ) );
-				
-				Name name = new Name();
-				name.setFirstName_en( result.get( 1 ).toString() );
-				name.setFirstName_kanji( result.get( 2 ).toString() );
-				heya.setHeyaName( name );
-				
-				Long locationId = Long.parseLong( result.get( 3 ).toString() );
-				heya.setLocation( Location.getById( locationId ) );
-				
-				Name prefix = new Name();
-				
-				if ( result.get( 4 ) != null && result.get( 5 ) != null && result.get( 6 ) != null ){
-					prefix.setFirstName_en( result.get( 4 ).toString() );
-					prefix.setFirstName_jp( result.get( 5 ).toString() );
-					prefix.setFirstName_kanji( result.get( 6 ).toString () );
-				}
-				
-				heya.setPrefix( prefix );
-				
-				heya.setPrefixLiklihood( Integer.parseInt( result.get( 7 ).toString () ) );
-				
-				knownHeya.put( heya.getHeyaName().getFirstName_en(), heya );
-			}
+		if ( knownHeyaById == null ){
+			buildKnownHeya();
 		}
 		
-		return knownHeya;
+		return knownHeyaById;
+	}
+	
+	public static Map<String, Heya> getKnownHeyaByName(){
+		
+		if ( knownHeyaByName == null ){
+			buildKnownHeya();
+		}
+		
+		return knownHeyaByName;
+	}
+	
+	private static void buildKnownHeya(){
+	
+		knownHeyaByName = new HashMap<String, Heya>();
+		knownHeyaById = new HashMap<Long, Heya>();
+		
+		List<List<Object>> results = DatabaseManager.getInstance().query( "SELECT ID, EN_NAME, JP_NAME, LOCATION, EN_COMMON_PREFIX, JP_COMMON_PREFIX, KJ_COMMON_PREFIX, STRICTNESS FROM APP.HEYA" );
+		
+		for ( List<Object> result : results ){
+			Heya heya = new Heya();
+			heya.setId( Long.parseLong( result.get( 0 ).toString() ) );
+			
+			Name name = new Name();
+			name.setFirstName_en( result.get( 1 ).toString() );
+			name.setFirstName_kanji( result.get( 2 ).toString() );
+			heya.setHeyaName( name );
+			
+			Long locationId = Long.parseLong( result.get( 3 ).toString() );
+			heya.setLocation( Location.getById( locationId ) );
+			
+			Name prefix = new Name();
+			
+			if ( result.get( 4 ) != null && result.get( 5 ) != null && result.get( 6 ) != null ){
+				prefix.setFirstName_en( result.get( 4 ).toString() );
+				prefix.setFirstName_jp( result.get( 5 ).toString() );
+				prefix.setFirstName_kanji( result.get( 6 ).toString () );
+			}
+			
+			heya.setPrefix( prefix );
+			
+			heya.setPrefixLiklihood( Integer.parseInt( result.get( 7 ).toString () ) );
+			
+			knownHeyaByName.put( heya.getHeyaName().getFirstName_en(), heya );
+			knownHeyaById.put( heya.getId(), heya );
+		}
+	
 	}
 	
 	public Name getHeyaName() {
@@ -88,10 +106,10 @@ public class Heya extends Entity<Heya>{
 	public void setPrefixLiklihood( Integer liklihood ){
 		this.prefixLiklihood = liklihood;
 	}
-
-	public static Heya getById( Long id )
-	{
-		// TODO Auto-generated method stub
-		return null;
+	
+	@Override
+	public String toString() {
+	
+		return getHeyaName().getFirstName_en();
 	}
 }

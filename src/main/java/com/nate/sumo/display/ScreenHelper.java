@@ -2,6 +2,8 @@ package com.nate.sumo.display;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import com.jme3.math.Vector4f;
+
 public class ScreenHelper
 {
 
@@ -52,6 +54,50 @@ public class ScreenHelper
 		if ( !fill ){
 			glVertex3f( 0.0f, height, 0.0f );
 		}
+		
+		glEnd();
+	}
+	
+	public void drawCircleBurst( float width, float height, Vector4f color ){
+		
+//		glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+//		drawSquare( width, height, false );
+		
+		glBegin( GL_QUADS );
+		
+		// upper left
+		glColor4f( 0.0f, 0.0f, 0.0f, 0.0f );
+		glVertex3f( 0.0f, height, 0.0f );
+		glVertex3f( width/2.0f, height, 0.0f );
+		glColor4f( color.getX(), color.getY(), color.getZ(), color.getW() );
+		glVertex3f( width/2.0f, height/2.0f, 0.0f );
+		glColor4f( 0.0f, 0.0f, 0.0f, 0.0f );
+		glVertex3f( 0.0f, height/2.0f, 0.0f );
+		
+		//upper right
+		glColor4f( 0.0f, 0.0f, 0.0f, 0.0f );
+		glVertex3f( width/2.0f, height, 0.0f );
+		glVertex3f( width, height, 0.0f );
+		glVertex3f( width, height/2.0f, 0.0f );
+		glColor4f( color.getX(), color.getY(), color.getZ(), color.getW() );
+		glVertex3f( width/2.0f, height/2.0f, 0.0f );
+		
+		// lower left
+		glColor4f( 0.0f, 0.0f, 0.0f, 0.0f );
+		glVertex3f( 0.0f, height/2.0f, 0.0f );
+		glColor4f( color.getX(), color.getY(), color.getZ(), color.getW() );
+		glVertex3f( width/2.0f, height/2.0f, 0.0f );
+		glColor4f( 0.0f, 0.0f, 0.0f, 0.0f );
+		glVertex3f( width/2.0f, 0.0f, 0.0f );
+		glVertex3f( 0.0f, 0.0f, 0.0f );
+		
+		// lowe	r right
+		glColor4f( color.getX(), color.getY(), color.getZ(), color.getW() );
+		glVertex3f( width/2.0f, height/2.0f, 0.0f );
+		glColor4f( 0.0f, 0.0f, 0.0f, 0.0f );
+		glVertex3f( width, height/2.0f, 0.0f );
+		glVertex3f( width, 0.0f, 0.0f );
+		glVertex3f( width/2.0f, 0.0f, 0.0f );
 		
 		glEnd();
 	}

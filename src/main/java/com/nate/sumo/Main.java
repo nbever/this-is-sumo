@@ -4,6 +4,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.macosx.Unistd.getpid;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -25,7 +26,7 @@ public class Main
 	public static void main( String[] args )
 	{
 		SharedLibraryLoader.load();
-		DatabaseManager.getInstance().getCurrentBanzuke();
+
 		Main main = new Main();
 		main.run();
 	}
@@ -42,11 +43,17 @@ public class Main
 	private long window;
 	
 	public void run() {
+		
 		System.out.println("Hello LWJGL " + Sys.getVersion() + "!");
-	
+		System.out.println( getpid() );
+		System.out.println("Running on thread: " + (System.getenv().get("JAVA_STARTED_ON_FIRST_THREAD_" + getpid())));
+		
 		try {
 
 			init();
+
+			DatabaseManager.getInstance().getCurrentBanzuke();
+			
 			loop();
 
 			// Release window and window callbacks

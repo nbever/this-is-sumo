@@ -125,4 +125,30 @@ public class TestSkillCreator
 		System.out.println( stats.toString() );
 	}
 
+	@Test
+	public void testStartingStats(){
+		
+		RikishiInfo info = new RikishiInfo();
+		
+		Calendar c = Calendar.getInstance();
+		c.add( Calendar.YEAR, -23 );
+		c.set( Calendar.MONTH, 0 );
+		c.set( Calendar.DAY_OF_MONTH, 1 );
+		
+		info.setBirthday( c.getTime() );
+		info.setCurrentRank( new Rank( RankClass.MAKUSHITA, RankSide.EAST, 52 ) );
+		
+		RikishiStats stats = sc.getStartingStats( info, 2016, 3 );
+		
+		assertTrue( stats.getOverallSkill() == 223.5 );
+		assertTrue( stats.getPotential() >= 722 && stats.getPotential() < 723 );
+		
+		info.setCurrentRank( new Rank( RankClass.OZEKI, RankSide.WEST, 2 ) );
+		
+		stats = sc.getStartingStats( info, 2016, 3 );
+		
+		assertTrue( stats.getOverallSkill() == 223.5 );
+		assertTrue( stats.getPotential() >= 722 && stats.getPotential() < 723 );
+		
+	}
 }

@@ -139,8 +139,9 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 				glTranslatef( 0.0f, -0.06f, 0.0f );
 			});
 			
-			glTranslatef( 0.0f, 0.30f, 0.0f);
-			Font.JAPANESE_CALI.drawString( heyaNameJp );
+			glTranslatef( 0.0f, 0.24f, 0.0f);
+			glScalef( 0.6f, 0.6f, 0.0f );
+			Font.JAPANESE_CALI.drawJapaneseString( heyaNameJp );
 		
 		glPopMatrix();
 	}
@@ -231,7 +232,7 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 				Integer ref = -1;
 				
 				try {
-					ref = TextureManager.getInstance().loadTexture( "portraits/" + portrait );
+					ref = TextureManager.getInstance().loadTexture( portrait );
 				}
 				catch( Exception e ){
 					try

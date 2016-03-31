@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.FileChannel;
@@ -49,6 +50,7 @@ public class TextureManager
 		
 		ByteBuffer byteBuffer;
 		URL fileUrl = TextureManager.class.getResource( "/" + resourceName );
+		
 		File file = new File( fileUrl.toURI() );
 		
 		if ( !file.exists() ){

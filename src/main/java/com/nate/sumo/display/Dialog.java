@@ -88,8 +88,6 @@ public class Dialog extends Widget implements ActionHandler{
 	}
 	
 	public void close(){
-		unloadTextures();
-		show = false;
 		
 		if ( getUpstreamHandler() != null ){
 			
@@ -106,6 +104,9 @@ public class Dialog extends Widget implements ActionHandler{
 			
 			getUpstreamHandler().actionPerformed( action );
 		}
+		
+		unloadTextures();
+		show = false;
 	}
 
 

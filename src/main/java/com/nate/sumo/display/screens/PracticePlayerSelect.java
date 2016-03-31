@@ -62,7 +62,7 @@ public class PracticePlayerSelect extends PlayerSelectScreen implements ActionHa
 	
 	private Dialog getConfirmDialog(){
 		if ( confirmDialog == null ){
-			confirmDialog = new Dialog( Type.CONFIRM, "Take these two rikishi into the practice ring?" );
+			confirmDialog = new Dialog( Type.CONFIRM, "Take these two rikishi into the practice ring?", this );
 		}
 		
 		return confirmDialog;
