@@ -43,15 +43,19 @@ public class TestSkillCreator
 		
 		Integer yPeak = sc.computePeakValue( rank );
 		
-		assertTrue( yPeak == 850 );
+		assertTrue( "Expected peak to be 700 but was " + yPeak, yPeak == 700 );
+		
+		Rank ozekiRank = new Rank( RankClass.OZEKI, RankSide.WEST, 2 );
+		Integer oPeak = sc.computePeakValue( ozekiRank );
+		assertTrue( "Expected peak to be 493 but was " + oPeak, oPeak == 493 );
 		
 		Rank maegashiraRank = new Rank( RankClass.MAEGASHIRA, RankSide.WEST, 11 );
 		Integer mPeak = sc.computePeakValue( maegashiraRank );
-		assertTrue( mPeak == 450 );
+		assertTrue( "Expected peak to be 381 but was " + mPeak, mPeak == 381 );
 		
 		Rank jonidanRank = new Rank( RankClass.JONIDAN, RankSide.EAST, 31 );
 		Integer jPeak = sc.computePeakValue( jonidanRank );
-		assertTrue( jPeak == 225 );
+		assertTrue( "Expected peak to be 275 but was " + jPeak, jPeak == 275 );
 	}
 	
 	@Test
@@ -75,6 +79,39 @@ public class TestSkillCreator
 		
 		diff = sc.determineRelativeRank( myRank, theirRank );
 		assertTrue( diff == -4 );
+	}
+	
+	@Test
+	public void testTheDiffPointCalculator(){
+		//should go from 0,0 to 30,20
+		
+		Double none = sc.getOpponentDiffValue( 0 );
+		assertTrue( "(0,0) but got (0," + none + ")", none == 0.0 );
+		Double max = sc.getOpponentDiffValue( 30 );
+		assertTrue( "(30,20) but got (30," + max + ")", max < 20.01 && max > 19.6 );
+	}
+	
+	@Test
+	public void testMatchPointTally(){
+		
+		MatchResult match = new MatchResult( 9L, Boolean.TRUE );
+		Double pointsToEarn = sc.getMatchPointTally( match, 0, 0, 1, 2 );
+		
+		assertTrue( "Expected 1.088 but got " + pointsToEarn, pointsToEarn == 1.088 );
+		
+		pointsToEarn = sc.getMatchPointTally( match, 0, 0, 1, 30 );
+		assertTrue( "Expoected 20 but got " + pointsToEarn, pointsToEarn < 21.0 && pointsToEarn >20.6 );
+		
+		pointsToEarn = sc.getMatchPointTally( match, 14, 0, 15, 5 );
+		assertTrue( "Expoected 20 but got " + pointsToEarn, pointsToEarn < 19.0 && pointsToEarn > 18.8 );
+		
+		pointsToEarn = sc.getMatchPointTally( match, 14, 0, 10, 5 );
+		assertTrue( "Expoected 20 but got " + pointsToEarn, pointsToEarn == 8.55 );
+		
+		match.setWin( false );
+		pointsToEarn = sc.getMatchPointTally( match, 0, 14, 15, 5 );
+		assertTrue( "Expoected 20 but got " + pointsToEarn, pointsToEarn < 19.0 && pointsToEarn > 18.8 );
+		
 	}
 	
 	@Test
@@ -140,14 +177,14 @@ public class TestSkillCreator
 		
 		RikishiStats stats = sc.getStartingStats( info, 2016, 3 );
 		
-		assertTrue( stats.getOverallSkill() == 223.5 );
+		assertTrue( "Expected overall to be 238.5 but was " + stats.getOverallSkill(), stats.getOverallSkill() == 238.5 );
 		assertTrue( stats.getPotential() >= 722 && stats.getPotential() < 723 );
 		
 		info.setCurrentRank( new Rank( RankClass.OZEKI, RankSide.WEST, 2 ) );
 		
 		stats = sc.getStartingStats( info, 2016, 3 );
 		
-		assertTrue( stats.getOverallSkill() == 223.5 );
+		assertTrue( "Expected overall to be 455.5 but was " + stats.getOverallSkill(), stats.getOverallSkill() == 455.5 );
 		assertTrue( stats.getPotential() >= 722 && stats.getPotential() < 723 );
 		
 	}

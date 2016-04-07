@@ -19,7 +19,7 @@ import com.nate.sumo.display.widgets.ButtonInstructions;
 import com.nate.sumo.display.widgets.ControllerSelector;
 import com.nate.sumo.display.widgets.Spinner;
 import com.nate.sumo.display.widgets.Widget;
-import com.nate.sumo.model.animation.Animation;
+import com.nate.sumo.model.animation.VectorAnimation;
 import com.nate.sumo.model.common.Place;
 import com.nate.sumo.model.fight.FightStatus;
 import com.nate.sumo.model.rikishi.Heya;

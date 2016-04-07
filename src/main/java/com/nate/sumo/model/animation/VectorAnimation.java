@@ -2,7 +2,7 @@ package com.nate.sumo.model.animation;
 
 import com.nate.model.Vector3f;
 
-public class Animation {
+public class VectorAnimation {
 
 	private Vector3f startingValue;
 	private Vector3f endingValue;
@@ -13,7 +13,7 @@ public class Animation {
 	private boolean running = false;
 	private boolean stopped = true;
 	
-	public Animation( Vector3f aStartingValue, Vector3f anEndingValue, int numFrames ){
+	public VectorAnimation( Vector3f aStartingValue, Vector3f anEndingValue, int numFrames ){
 		this.startingValue = aStartingValue;
 		this.endingValue = anEndingValue;
 		this.value = this.startingValue;

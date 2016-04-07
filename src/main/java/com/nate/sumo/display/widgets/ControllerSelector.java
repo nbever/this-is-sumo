@@ -11,7 +11,7 @@ import com.nate.model.Vector3f;
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.display.TextureNames;
-import com.nate.sumo.model.animation.Animation;
+import com.nate.sumo.model.animation.VectorAnimation;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -24,7 +24,7 @@ public class ControllerSelector extends Widget{
 	private final float C_HEIGHT = 0.2f;
 	private final float C_WIDTH = 0.25f;
 	
-	private Animation animation;
+	private VectorAnimation animation;
 	private List<Vector3f> positionMap;
 	private int selection;
 	private Vector4f color;
@@ -115,7 +115,7 @@ public class ControllerSelector extends Widget{
 			return;
 		}
 		
-		animation = new Animation( getPositionMap().get( getSelection() ), 
+		animation = new VectorAnimation( getPositionMap().get( getSelection() ), 
 			getPositionMap().get( index ), 10 );
 		
 		selection = index;
@@ -129,7 +129,7 @@ public class ControllerSelector extends Widget{
 		return Arrays.asList( TextureNames.CTL_CONTROLLER );
 	}
 	
-	private Animation getAnimation(){
+	private VectorAnimation getAnimation(){
 		return animation;
 	}
 	

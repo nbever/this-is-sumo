@@ -13,7 +13,7 @@ import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.display.TextureNames;
 import com.nate.sumo.display.fonts.Font;
-import com.nate.sumo.model.animation.Animation;
+import com.nate.sumo.model.animation.VectorAnimation;
 import com.nate.sumo.model.basho.Banzuke;
 import com.nate.sumo.model.basho.Division;
 import com.nate.sumo.model.basho.Rank;
@@ -35,8 +35,8 @@ public class BanzukeSelector extends Widget
 	private boolean higashiSelected = false;
 	private boolean nishiSelected = false;
 	
-	private Animation selectorAnimation;
-	private Animation tableAnimation;
+	private VectorAnimation selectorAnimation;
+	private VectorAnimation tableAnimation;
 	
 	private final float BUTTON_WIDTH = 0.17f;
 	private final float BUTTON_BUMPER = 0.02f;
@@ -60,8 +60,8 @@ public class BanzukeSelector extends Widget
 		Rank y1 = new Rank( RankClass.YOKOZUNA, RankSide.EAST, 1 );
 		setRikishi( this.banzuke.getByRank( Division.values()[0], y1 ) );
 		
-		selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, 0 );
-		tableAnimation = new Animation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
+		selectorAnimation = new VectorAnimation( INITIAL_SELECTOR, INITIAL_SELECTOR, 0 );
+		tableAnimation = new VectorAnimation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
 	}
 	
 	@Override
@@ -89,13 +89,13 @@ public class BanzukeSelector extends Widget
 		switch( key ){
 			case GLFW_KEY_COMMA:
 				currentDivision--;
-				selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
+				selectorAnimation = new VectorAnimation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
 				fixDivision();
 				setRikishi( getCurrentTopRikishi() );
 				break;
 			case GLFW_KEY_PERIOD:
 				currentDivision++;
-				selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
+				selectorAnimation = new VectorAnimation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
 				fixDivision();
 				setRikishi( getCurrentTopRikishi() );
 				break;
@@ -121,8 +121,8 @@ public class BanzukeSelector extends Widget
 				if ( !isHigashiSelected() ){
 					higashiSelected = true;
 					setRikishi( getCurrentTopRikishi() );
-					tableAnimation = new Animation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
-					selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
+					tableAnimation = new VectorAnimation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
+					selectorAnimation = new VectorAnimation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
 				}
 				else {
 					nishiSelected = true;
@@ -144,8 +144,8 @@ public class BanzukeSelector extends Widget
 		}
 		
 		setRikishi( getCurrentTopRikishi() );
-		selectorAnimation = new Animation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
-		tableAnimation = new Animation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
+		selectorAnimation = new VectorAnimation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
+		tableAnimation = new VectorAnimation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
 	}
 	
 	private void fixDivision(){
@@ -176,7 +176,7 @@ public class BanzukeSelector extends Widget
 		
 		goDown -= (titleHeight + BUTTON_BUMPER);
 		
-		selectorAnimation = new Animation( getSelectorAnimation().getEndingValue(), 
+		selectorAnimation = new VectorAnimation( getSelectorAnimation().getEndingValue(), 
 				new Vector3f( getSelectorAnimation().getEndingValue().getX(),
 					getSelectorAnimation().getEndingValue().getY() + goDown, 
 					getSelectorAnimation().getEndingValue().getZ() ), SCREEN_MOVE_FRAMES );
@@ -186,7 +186,7 @@ public class BanzukeSelector extends Widget
 			if ( cDiv.getClassesIncluded().get(  cDiv.getClassesIncluded().size() - 1 ) != rank.getRankClass() ||
 				getHighRankNumberMap().get( rank.getRankClass() ) - rank.getRankNumber() > 4){
 			
-				tableAnimation = new Animation( getTableAnimation().getEndingValue(),
+				tableAnimation = new VectorAnimation( getTableAnimation().getEndingValue(),
 					new Vector3f( getTableAnimation().getEndingValue().getX(),
 						getTableAnimation().getEndingValue().getY() + -1.0f*goDown,
 						getTableAnimation().getEndingValue().getZ() ), SCREEN_MOVE_FRAMES );
@@ -230,7 +230,7 @@ public class BanzukeSelector extends Widget
 		
 		goUp += titleHeight + BUTTON_BUMPER;
 		
-		selectorAnimation = new Animation( getSelectorAnimation().getEndingValue(), 
+		selectorAnimation = new VectorAnimation( getSelectorAnimation().getEndingValue(), 
 				new Vector3f( getSelectorAnimation().getEndingValue().getX(),
 					getSelectorAnimation().getEndingValue().getY() + goUp, 
 					getSelectorAnimation().getEndingValue().getZ() ), SCREEN_MOVE_FRAMES );
@@ -240,7 +240,7 @@ public class BanzukeSelector extends Widget
 			if ( cDiv.getClassesIncluded().get(  cDiv.getClassesIncluded().size() - 1 ) != rank.getRankClass() ||
 				getHighRankNumberMap().get( rank.getRankClass() ) - rank.getRankNumber() > 3){
 			
-				tableAnimation = new Animation( getTableAnimation().getEndingValue(),
+				tableAnimation = new VectorAnimation( getTableAnimation().getEndingValue(),
 					new Vector3f( getTableAnimation().getEndingValue().getX(),
 						getTableAnimation().getEndingValue().getY() + -1.0f*goUp,
 						getTableAnimation().getEndingValue().getZ() ), SCREEN_MOVE_FRAMES );
@@ -285,7 +285,7 @@ public class BanzukeSelector extends Widget
 		
 		setRikishi( r );
 		
-		selectorAnimation = new Animation( getSelectorAnimation().getEndingValue(),
+		selectorAnimation = new VectorAnimation( getSelectorAnimation().getEndingValue(),
 			new Vector3f( getSelectorAnimation().getEndingValue().getX() + rankColWidth + ((B_WIDTH - rankColWidth)/2.0f),
 					getSelectorAnimation().getEndingValue().getY(),
 					getSelectorAnimation().getEndingValue().getZ() ), SCREEN_MOVE_FRAMES );
@@ -306,7 +306,7 @@ public class BanzukeSelector extends Widget
 		
 		setRikishi( r );
 		
-		selectorAnimation = new Animation( getSelectorAnimation().getEndingValue(),
+		selectorAnimation = new VectorAnimation( getSelectorAnimation().getEndingValue(),
 				new Vector3f( getSelectorAnimation().getEndingValue().getX() - (rankColWidth + ((B_WIDTH - rankColWidth)/2.0f)),
 						getSelectorAnimation().getEndingValue().getY(),
 						getSelectorAnimation().getEndingValue().getZ() ), SCREEN_MOVE_FRAMES );
@@ -686,11 +686,11 @@ public class BanzukeSelector extends Widget
 		return higashiRikishi;
 	}
 	
-	private Animation getSelectorAnimation(){
+	private VectorAnimation getSelectorAnimation(){
 		return selectorAnimation;
 	}
 	
-	private Animation getTableAnimation(){
+	private VectorAnimation getTableAnimation(){
 		return tableAnimation;
 	}
 

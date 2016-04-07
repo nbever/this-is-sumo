@@ -99,15 +99,15 @@ public class SkillCreator
 	
 	public SkillCreator() throws IOException{
 		
-		spread.put( RankClass.YOKOZUNA, new Integer[]{700, 300} );
-		spread.put( RankClass.OZEKI, new Integer[]{600, 300} );
-		spread.put( RankClass.SEKIWAKE, new Integer[]{550, 200} );
-		spread.put( RankClass.KOMUSUBI, new Integer[]{500, 200} );
-		spread.put( RankClass.MAEGASHIRA, new Integer[]{400, 250} );
-		spread.put( RankClass.JURYO, new Integer[]{350, 150} );
-		spread.put( RankClass.MAKUSHITA, new Integer[]{250, 150} );
-		spread.put( RankClass.SANDANME, new Integer[]{200, 150} );
-		spread.put( RankClass.JONIDAN, new Integer[]{150, 150} );
+		spread.put( RankClass.YOKOZUNA, new Integer[]{500, 1000} );
+		spread.put( RankClass.OZEKI, new Integer[]{400, 750} );
+		spread.put( RankClass.SEKIWAKE, new Integer[]{350, 550} );
+		spread.put( RankClass.KOMUSUBI, new Integer[]{320, 500} );
+		spread.put( RankClass.MAEGASHIRA, new Integer[]{300, 400} );
+		spread.put( RankClass.JURYO, new Integer[]{200, 350} );
+		spread.put( RankClass.MAKUSHITA, new Integer[]{250, 350} );
+		spread.put( RankClass.SANDANME, new Integer[]{200, 250} );
+		spread.put( RankClass.JONIDAN, new Integer[]{150, 250} );
 		spread.put( RankClass.JONOKUCHI, new Integer[]{50, 200} );
 		spread.put( RankClass.MAE_ZUMO, new Integer[]{0, 400} );
 		spread.put( RankClass.BANZUKE_GAI, new Integer[]{0, 250} );
@@ -346,7 +346,7 @@ public class SkillCreator
 			for ( MatchResult match : matches ){
 				
 				int opponentRankPosition = determineRelativeRank( rinf.getCurrentRank(), match.getOpponentRank() );
-				Double pointTally = getMatchPointTally( rinf, match, consecutiveWins, consecutiveLoses, day, opponentRankPosition );
+				Double pointTally = getMatchPointTally( match, consecutiveWins, consecutiveLoses, day, opponentRankPosition );
 				int c = consecutiveLoses;
 				
 				// how much we lose on defense is based on rikishi difference (2, 0.1)  (-20, 1.0)
@@ -670,7 +670,7 @@ public class SkillCreator
 	 * @param opponentRankPosition
 	 * @return
 	 */
-	protected Double getMatchPointTally( RikishiInfo rinf, MatchResult match, int consecutiveWins, int consecutiveLoses, int day, Integer opponentRankPosition ){
+	protected Double getMatchPointTally( MatchResult match, int consecutiveWins, int consecutiveLoses, int day, Integer opponentRankPosition ){
 		
 		Double pointTally = 1.0;
 		
@@ -869,7 +869,7 @@ public class SkillCreator
 	 * @return
 	 */
 	protected Double getOpponentDiffValue( int opponentRankPosition ){
-		return (10.196)*Math.pow( (double)Math.abs( opponentRankPosition ), 2.0);
+		return (0.022)*Math.pow( (double)Math.abs( opponentRankPosition ), 2.0);
 	}
 	
 	/**
@@ -1068,11 +1068,16 @@ public class SkillCreator
 		
 		// figure what our range is given our status.
 		Double perSpot = ((skillVals[1]/2.0) / (currentRank.getRankClass().getPreferred()*2));
-		Integer peak = skillVals[0] + skillVals[1]/2;  
+		Integer peak = (int)(skillVals[0] + ((skillVals[1] - skillVals[0])*0.4));  
 		
 		if ( currentRank.getRankClass().getPreferred() != Rank.UNLIMITED && currentRank.getRankNumber() != 0 ){
 			
 			Integer myNumber = (currentRank.getRankClass().getMax() - currentRank.getRankNumber()) * 2;
+			
+			// like Ozeki or Sekiwake for instance...
+			if ( currentRank.getRankClass().getMax() == Rank.UNLIMITED ){
+				myNumber = (2 - currentRank.getRankNumber()) * 2;
+			}
 			
 			if ( currentRank.getRankSide().equals( RankSide.EAST ) ){
 				myNumber += 2;
