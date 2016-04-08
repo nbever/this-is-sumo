@@ -64,10 +64,6 @@ public abstract class Screen implements Drawable, KeyHandler
 	
 	private void unloadTextures(){
 		
-//		getTextures().values().stream().forEach( ( texId ) -> {
-//			glDeleteTextures( texId );
-//		});
-		
 		getTextures().keySet().stream().forEach( resource -> {
 			TextureManager.getInstance().releaseTexture( resource );
 		});

@@ -94,6 +94,8 @@ public class ScreenManager implements Drawable, KeyHandler
 		getCurrentScreen().draw();
 		
 		if ( getCurrentScreen().isDone() ){
+			// draw one last time so it picks up the completion
+			getCurrentScreen().draw();
 			currentScreen = nextScreen;
 			nextScreen = null;
 		}

@@ -96,11 +96,13 @@ public class TextureManager
 		
 		getTextureIds().put( resourceName, texId );
 		
+		stbi_image_free( image );
+		
 		return texId;
 	}
 	
 	public void releaseTexture( Integer textureId ){
-		
+
 		Iterator<String> keyIt = getTextureIds().keySet().iterator();
 		
 		while( keyIt.hasNext() ){

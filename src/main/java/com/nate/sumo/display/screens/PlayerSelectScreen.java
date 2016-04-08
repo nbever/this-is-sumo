@@ -214,6 +214,7 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 			unloadTexture();
 		}
 		
+		getRikishiTextureQueue().add( r );
 		getTextureMap().put( r, -1 );
 		
 //		// load the new texture
