@@ -55,7 +55,7 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 		}
 		
 		glPushMatrix();
-			glTranslatef( -0.95f, 0.9f, ScreenHelper.SCREEN_DEPTH );
+			glTranslatef( -1.0f, 1.0f, ScreenHelper.SCREEN_DEPTH );
 			glScalef( 0.8f, 0.8f, 0.0f );
 			getBanzukeSelector().draw();
 		glPopMatrix();
@@ -65,7 +65,7 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 			drawRikishiSelection( getBanzukeSelector().getHigashiRikishi(), "東" );
 			
 			if ( getBanzukeSelector().getNishiRikishi() != null ){
-				glTranslatef( 0.0f, -0.9f, ScreenHelper.SCREEN_DEPTH );
+				glTranslatef( 0.0f, -0.9f, 0.0f );
 				drawRikishiSelection( getBanzukeSelector().getNishiRikishi(), "西" );
 			}
 		glPopMatrix();

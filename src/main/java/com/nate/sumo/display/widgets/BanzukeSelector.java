@@ -401,7 +401,7 @@ public class BanzukeSelector extends Widget
 	
 	private void drawControlHelp(){
 		
-		glTranslatef( 0.0f, -2.31f, 0.0f );
+		glTranslatef( -0.2f, -2.6f, 0.0f );
 		
 		glDisable( GL_TEXTURE_2D );
 		

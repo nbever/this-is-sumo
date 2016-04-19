@@ -19,7 +19,7 @@ public class ScreenManager implements Drawable, KeyHandler
 	
 	private Screen currentScreen;
 	private Screen nextScreen;
-	private int backgroundTexture;
+	private int backgroundTexture = -1;
 	
 	private ScreenManager(){}
 	
@@ -43,24 +43,28 @@ public class ScreenManager implements Drawable, KeyHandler
 		
 		glPushMatrix();
 		
-		glEnable( GL_TEXTURE_2D );
-		glBindTexture(GL_TEXTURE_2D, backgroundTexture);
-		
-		glBegin( GL_QUADS );
+		if ( backgroundTexture != -1 ){
+			glEnable( GL_TEXTURE_2D );
+			glBindTexture(GL_TEXTURE_2D, backgroundTexture);
 			
-			glColor4f( 1.0f, 1.0f, 1.0f, 0.8f );
-			glTexCoord2f( 0.0f, 0.0f );
-			glVertex3f( -1.3f, 1.3f, -0.1f );
-			glTexCoord2f( 1.0f, 0.0f );
-			glVertex3f( 1.3f, 1.3f, -0.1f );
-			glTexCoord2f( 1.0f, 1.0f );
-			glVertex3f( 1.3f, -1.3f, -0.1f );
-			glTexCoord2f( 0.0f, 1.0f );
-			glVertex3f( -1.3f, -1.3f, -0.1f );
-		
-		glEnd();
-		
-		glDisable( GL_TEXTURE_2D );
+			glTranslatef( 0.0f, 0.0f, ScreenHelper.SCREEN_DEPTH );
+			
+			glBegin( GL_QUADS );
+				
+				glColor4f( 1.0f, 1.0f, 1.0f, 0.8f );
+				glTexCoord2f( 0.0f, 0.0f );
+				glVertex3f( -1.3f, 1.3f, 0.0f );
+				glTexCoord2f( 1.0f, 0.0f );
+				glVertex3f( 1.3f, 1.3f, 0.0f );
+				glTexCoord2f( 1.0f, 1.0f );
+				glVertex3f( 1.3f, -1.3f, 0.0f );
+				glTexCoord2f( 0.0f, 1.0f );
+				glVertex3f( -1.3f, -1.3f, 0.0f );
+			
+			glEnd();
+			
+			glDisable( GL_TEXTURE_2D );
+		}
 		glPopMatrix();
 		
 		// closing so we should draw the next screen
@@ -116,7 +120,17 @@ public class ScreenManager implements Drawable, KeyHandler
 		return nextScreen;
 	}
 	
-	private void setBackgroundTexture( String resource ) throws IOException, URISyntaxException{
+	public void setBackgroundTexture( String resource ) throws IOException, URISyntaxException{
+		
+		if ( backgroundTexture != -1 ){
+			TextureManager.getInstance().releaseTexture( backgroundTexture );
+			backgroundTexture = -1;
+		}
+		
+		if ( resource == null ){
+			return;
+		}
+		
 		backgroundTexture = TextureManager.getInstance().loadTexture( resource );
 	}
 }

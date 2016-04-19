@@ -164,7 +164,7 @@ public class Dialog extends Widget implements ActionHandler{
 			glPushMatrix();
 				glTranslatef( -1.1f, -1.1f, ScreenHelper.DIALOG_DEPTH );
 				glColor4f( 0.0f, 0.0f, 0.0f, 0.7f );
-				ScreenHelper.getInstance().drawSquare( 2.2f, 2.2f, false );
+				ScreenHelper.getInstance().drawSquare( 2.5f, 2.5f, false );
 			glPopMatrix();
 		
 			glEnable( GL_TEXTURE_2D );

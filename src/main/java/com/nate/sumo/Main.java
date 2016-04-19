@@ -179,11 +179,11 @@ public class Main
 
 		float aspect = width / height;
 		
-		glFrustum( -1.0f * aspect, aspect, -1.0f, 1.0f, 1.0, 10.0f );
+		glFrustum( -1.0f * aspect, aspect, -1.0f, 1.0f, 6.0, 100.0f );
 //		glFrustum( -12.0f, 12.0f, -1.0f, 1.0f, 1.0, 10.0f );
 		
 		glMatrixMode( GL_MODELVIEW );
-		glPolygonMode( GL_FRONT_AND_BACK, GL11.GL_FILL);
+		glPolygonMode( GL_FRONT, GL11.GL_FILL );
 
 			
 //			glScalef( 0.5f, 0.5f, 0.5f );

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.nate.sumo.DatabaseManager;
+import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureNames;
 import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.display.widgets.menu.Menu;
@@ -42,13 +43,16 @@ public class MainScreen extends SwipeScreen
 	@Override
 	public void drawScreen()
 	{
+		glPushMatrix();
+		
+		glTranslatef( 0.0f, 0.0f, ScreenHelper.SCREEN_DEPTH );
 		
 		glEnable( GL_TEXTURE_2D );
 		glEnable( GL_BLEND );
 		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 		
 		glPushMatrix();
-			glTranslatef( -1.0f, 0.5f, -0.2f );
+			glTranslatef( -1.0f, 0.5f, 0.0f );
 			
 			glColor4f( 0.7f, 0.1f, 0.1f, 1.0f );
 			glScalef( 3.5f, 4.5f, 2.5f );
@@ -62,7 +66,7 @@ public class MainScreen extends SwipeScreen
 		
 		
 		glPushMatrix();
-			glTranslatef( -1.1f, -0.3f, -0.2f );
+			glTranslatef( -1.1f, -0.3f, 0.0f );
 			glColor3f( 1.0f, 1.0f, 1.0f );
 //			Font.ZENZAI.drawString( "Hello" );
 			
@@ -74,7 +78,7 @@ public class MainScreen extends SwipeScreen
 
 			glBindTexture( GL_TEXTURE_2D, getTextures().get( TextureNames.HAKUHO_SALT ) );
 		
-			glTranslatef( 0.6f, -0.6f, -0.2f );
+			glTranslatef( 0.6f, -0.6f, 0.0f );
 			glScalef( 0.6f, 0.6f, 0.6f );
 		
 			glBegin( GL_QUADS );
@@ -95,6 +99,8 @@ public class MainScreen extends SwipeScreen
 		
 		glDisable( GL_TEXTURE_2D );
 		glDisable( GL_BLEND );
+		
+		glPopMatrix();
 	}
 	
 	@Override

@@ -205,7 +205,63 @@ public class ObjImpScene
 	  } 
 
 	
-	
+	public void drawWithExternalTextureMap()
+	{
+		
+	    // If the list is compiled and everything is ok, render
+	    if( _callListID > 0 && _callListCompiled )
+	    {
+	    	glCallList( _callListID );
+	    	
+	    	return;
+	    } 
+
+	    if( _callListID > 0 && !_callListCompiled )
+	    {
+	        //_callListID = glGenLists( 1 ); 
+	        glNewList( _callListID, GL_COMPILE );  
+	    }
+		
+		
+	    // Render all scene
+	    for( int i=0; i<_meshList.size(); i++ )
+	    {
+	    	ObjImpMesh m = _meshList.get( i );
+	      
+	      // render triangles.. this is too basic. should be optimized
+	      glBegin( GL_TRIANGLES );
+	      
+	      //if( m._material._texId > 0 )
+	    	  //glColor4f( 1, 1, 1, 1 );
+	      //else
+//	      if( m._material != null )glColor4f( m._material._diffuse[0], m._material._diffuse[1], m._material._diffuse[2], 1.0f );
+	      for( int fi=0; fi<m._faceList.size(); fi++ )
+//	      for( int fi = m._faceList.size()-1; fi >= 0; fi-- )
+	      {
+	        ObjImpFace f = (ObjImpFace)m._faceList.get( fi );
+
+	        glNormal3f( _normalList.get(f._na)[0], _normalList.get(f._na)[1], _normalList.get(f._na)[2] );
+	        glTexCoord2f( _texcoordList.get(f._ta)[0], _texcoordList.get(f._ta)[1] );
+	        glVertex3f( _vertexList.get(f._a)[0], _vertexList.get(f._a)[1], _vertexList.get(f._a)[2] );
+
+	        glNormal3f( _normalList.get(f._nb)[0], _normalList.get(f._nb)[1], _normalList.get(f._nb)[2] );
+	        glTexCoord2f( _texcoordList.get(f._tb)[0], _texcoordList.get(f._tb)[1] );
+	        glVertex3f( _vertexList.get(f._b)[0], _vertexList.get(f._b)[1], _vertexList.get(f._b)[2] );
+	        
+	        glNormal3f( _normalList.get(f._nc)[0], _normalList.get(f._nc)[1], _normalList.get(f._nc)[2] );
+	        glTexCoord2f( _texcoordList.get(f._tc)[0], _texcoordList.get(f._tc)[1] );
+	        glVertex3f( _vertexList.get(f._c)[0], _vertexList.get(f._c)[1], _vertexList.get(f._c)[2] );
+	      }
+	      
+	      glEnd();
+	    }
+
+		if( _callListID > 0 && !_callListCompiled )
+		{
+		  glEndList();
+		  _callListCompiled = true;
+		}     	    
+	}	
 	  
 	public void draw()
 	{

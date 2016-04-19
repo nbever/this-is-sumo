@@ -7,8 +7,8 @@ import com.jme3.math.Vector4f;
 public class ScreenHelper
 {
 
-	public static final float SCREEN_DEPTH = -0.01f;
-	public static final float DIALOG_DEPTH = -0.009f;
+	public static final float SCREEN_DEPTH = -6.01f;
+	public static final float DIALOG_DEPTH = -6.009f;
 	
 	private static ScreenHelper instance;
 	

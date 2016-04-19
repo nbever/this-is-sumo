@@ -159,7 +159,7 @@ public class MatchSetupScreen extends SwipeScreen {
 			glPopMatrix();
 			
 			glPushMatrix();
-				glTranslatef( -0.9f, -0.95f, 0.0f );
+				glTranslatef( -1.1f, -1.1f, 0.0f );
 				getButtonInstructions().draw();
 			glPopMatrix();
 				
@@ -204,6 +204,13 @@ public class MatchSetupScreen extends SwipeScreen {
 				ScreenInitData back = new ScreenInitData( PracticePlayerSelect.class );
 				back.getInitData().put( PlayerSelectScreen.PLAYER_LIST, DatabaseManager.getInstance().getCurrentBanzuke() );
 				setNextScreenData( back );
+				close();
+			}
+			else if ( key == GLFW_KEY_ENTER ){
+				FightStatus fightStatus = (FightStatus)getInitData().get( FightStatus.class.getSimpleName() );
+				ScreenInitData next = new ScreenInitData( FightScreen.class );
+				next.getInitData().put( FightStatus.class.getSimpleName(), fightStatus );
+				setNextScreenData( next );
 				close();
 			}
 		}
