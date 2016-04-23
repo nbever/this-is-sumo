@@ -2,6 +2,7 @@ package com.nate.sumo.model.fight;
 
 import java.util.List;
 
+import com.nate.sumo.model.fight.FightStatus.PHASE;
 import com.nate.sumo.model.rikishi.Rikishi;
 
 public class RikishiStatus {
@@ -24,5 +25,9 @@ public class RikishiStatus {
 	
 	public Rikishi getRikishi(){
 		return rikishi;
+	}
+	
+	public FightAction getCurrentAction(){
+		return currentAction;
 	}
 }

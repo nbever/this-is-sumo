@@ -11,11 +11,14 @@ import java.util.Map;
 import objimp.ObjImpMesh;
 import objimp.ObjImpScene;
 
+import com.nate.model.MD5Model;
 import com.nate.sumo.display.Screen;
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.ScreenManager;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.display.fonts.Font;
+import com.nate.sumo.model.animation.ModelAnimationInfo;
+import com.nate.sumo.model.fight.FightStatus;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -26,9 +29,14 @@ public class FightScreen extends Screen {
 	private float v_rot = 10.0f;
 	private float h_rot = 90.0f;
 	
+	private FightStatus fight;
+	private ModelAnimationInfo eastModel;
+	private ModelAnimationInfo westModel;
+	
 	public FightScreen(Map<String, Object> initData) {
 		super( initData );
-		// TODO Auto-generated constructor stub
+		
+		fight = (FightStatus)initData.get( FightStatus.class.getSimpleName() );
 	}
 
 	@Override
@@ -64,6 +72,10 @@ public class FightScreen extends Screen {
 				glBindTexture( GL_TEXTURE_2D, TextureManager.getInstance().getTextureId( "dohyo_tex.tga" ) );
 				dohyo.drawWithExternalTextureMap();
 				glDisable( GL_CULL_FACE );
+				
+//				glDisable( GL_TEXTURE_2D );
+				getEastModel().draw();
+				
 			glPopMatrix();
 			
 		glPopMatrix();
@@ -93,6 +105,10 @@ public class FightScreen extends Screen {
 			File file = new File( fileUrl.toURI() );
 			
 			dohyo.load( file.getAbsolutePath(), "dohyo_tex.tga" );
+
+			//appMap.loadstuff
+			eastModel = new ModelAnimationInfo( getFight().getEastStatus().getRikishi().getAppearenceMap() );
+			
 		}
 		catch( Exception e ){
 			e.printStackTrace();
@@ -127,6 +143,18 @@ public class FightScreen extends Screen {
 		else if ( key == GLFW_KEY_DOWN ){
 			v_rot -= 5.0f;
 		}
+	}
+	
+	private FightStatus getFight(){
+		return fight;
+	}
+	
+	private ModelAnimationInfo getEastModel(){
+		return eastModel; 
+	}
+	
+	private ModelAnimationInfo getWestModel(){
+		return westModel;
 	}
 
 }

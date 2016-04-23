@@ -3,6 +3,9 @@ package com.nate.sumo.model.fight;
 import java.time.Instant;
 import java.util.function.Function;
 
+import com.nate.model.MD5Animation;
+import com.nate.model.MD5AnimationInfo;
+
 public abstract class FightAction {
 
 	public enum STATUS {
@@ -36,6 +39,9 @@ public abstract class FightAction {
 	
 	private FightCoordinates startingSpot;
 	
+	private MD5Animation animation;
+	private MD5AnimationInfo animationInfo;
+	
 	private Function<Consequence, Void> callback;
 	
 	public FightAction( Float energy, Float medialBalance, Float lateralBalance, Function<Consequence, Void> callback ){
@@ -59,7 +65,15 @@ public abstract class FightAction {
 	protected abstract void advancePhase();
 	protected abstract PHASE_STATUS getPhaseStatus();
 	
-	// get/sets	
+	// get/sets
+	public MD5Animation getAnimation(){
+		return animation;
+	}
+	
+	public MD5AnimationInfo getAnimationInfo(){
+		return animationInfo;
+	}
+	
 	private Float getStartingMedialBalance() {
 		return startingMedialBalance;
 	}

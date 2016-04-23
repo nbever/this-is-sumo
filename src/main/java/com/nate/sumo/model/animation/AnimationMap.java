@@ -58,7 +58,7 @@ public class AnimationMap {
 	
 	private String getAnimation( String className, String key ){
 		
-		List<String> animations = rawMap.get( key );
+		List<String> animations = getRawMap().get( key );
 		
 		if ( animations == null || animations.isEmpty() ){
 		

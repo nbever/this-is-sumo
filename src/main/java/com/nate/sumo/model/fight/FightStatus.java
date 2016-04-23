@@ -10,6 +10,8 @@ public class FightStatus {
 	private RikishiStatus eastStatus;
 	private RikishiStatus westStatus;
 	
+	private PHASE phase;
+	
 	//location
 	
 	private long elapsedTime;
@@ -26,5 +28,13 @@ public class FightStatus {
 	
 	public RikishiStatus getWestStatus(){
 		return westStatus;
+	}
+	
+	public PHASE getPhase(){
+		return phase;
+	}
+	
+	public enum PHASE{
+		PRE_FIGHT, PREP, TACHI_AI, FIGHT, FINISH, POST_FIGHT;
 	}
 }
