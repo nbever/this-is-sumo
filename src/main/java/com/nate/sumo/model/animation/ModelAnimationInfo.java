@@ -53,10 +53,11 @@ public class ModelAnimationInfo implements Drawable{
 		glEnableClientState( GL_VERTEX_ARRAY );
 		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 		
+		glBindTexture( GL_TEXTURE_2D, TextureManager.getInstance().getTextureId( "default_sumo_tex.png" ) );
 		goThroughMeshes( getBodyModel(), getSkeleton() );
-		goThroughMeshes( getHeadModel(), getSkeleton() );
-		goThroughMeshes( getHairModel(), getSkeleton() );
-		goThroughMeshes( getMawashiModel(), getSkeleton() );
+//		goThroughMeshes( getHeadModel(), getSkeleton() );
+//		goThroughMeshes( getHairModel(), getSkeleton() );
+//		goThroughMeshes( getMawashiModel(), getSkeleton() );
 		
 		glDisableClientState( GL_VERTEX_ARRAY );
 		glDisableClientState( GL_TEXTURE_COORD_ARRAY );

@@ -45,8 +45,8 @@ public class Main
 	public void run() {
 		
 		System.out.println("Hello LWJGL " + Sys.getVersion() + "!");
-		System.out.println( getpid() );
-		System.out.println("Running on thread: " + (System.getenv().get("JAVA_STARTED_ON_FIRST_THREAD_" + getpid())));
+//		System.out.println( getpid() );
+//		System.out.println("Running on thread: " + (System.getenv().get("JAVA_STARTED_ON_FIRST_THREAD_" + getpid())));
 		
 		try {
 

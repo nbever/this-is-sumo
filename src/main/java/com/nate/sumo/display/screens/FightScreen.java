@@ -42,7 +42,7 @@ public class FightScreen extends Screen {
 	@Override
 	public List<String> getTextureNames() {
 		// TODO Auto-generated method stub
-		return Arrays.asList( "dohyo_tex.tga" );
+		return Arrays.asList( "dohyo_tex.tga", "default_sumo_tex.png" );
 	}
 
 	@Override
@@ -71,10 +71,12 @@ public class FightScreen extends Screen {
 			
 				glBindTexture( GL_TEXTURE_2D, TextureManager.getInstance().getTextureId( "dohyo_tex.tga" ) );
 				dohyo.drawWithExternalTextureMap();
-				glDisable( GL_CULL_FACE );
+				
 				
 //				glDisable( GL_TEXTURE_2D );
 				getEastModel().draw();
+				glDisable( GL_CULL_FACE );
+
 				
 			glPopMatrix();
 			
