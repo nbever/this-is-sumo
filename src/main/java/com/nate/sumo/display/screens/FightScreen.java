@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.derby.impl.sql.compile.GetCurrentConnectionNode;
+
 import objimp.ObjImpMesh;
 import objimp.ObjImpScene;
 
@@ -18,7 +20,7 @@ import com.nate.sumo.display.ScreenManager;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.model.animation.ModelAnimationInfo;
-import com.nate.sumo.model.fight.FightStatus;
+import com.nate.sumo.model.fight.Fight;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -29,14 +31,14 @@ public class FightScreen extends Screen {
 	private float v_rot = 10.0f;
 	private float h_rot = 90.0f;
 	
-	private FightStatus fight;
+	private Fight fight;
 	private ModelAnimationInfo eastModel;
 	private ModelAnimationInfo westModel;
 	
 	public FightScreen(Map<String, Object> initData) {
 		super( initData );
 		
-		fight = (FightStatus)initData.get( FightStatus.class.getSimpleName() );
+		fight = (Fight)initData.get( Fight.class.getSimpleName() );
 	}
 
 	@Override
@@ -51,6 +53,8 @@ public class FightScreen extends Screen {
 			
 			glEnable( GL_BLEND );
 			glEnable( GL_TEXTURE_2D );
+			glEnable( GL_DEPTH_TEST );
+			glClear( GL_DEPTH_BUFFER_BIT );
 			glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 			
 			glTranslatef( 0.0f, 0.0f, ScreenHelper.SCREEN_DEPTH );
@@ -64,7 +68,7 @@ public class FightScreen extends Screen {
 				glTranslatef( 0.0f, -1.0f, -3.0f );
 				glScalef( 0.55f, 0.55f, 0.55f );
 				glDisable( GL_BLEND );
-				glEnable( GL_CULL_FACE );
+//				glEnable( GL_CULL_FACE );
 				
 				glRotatef( v_rot, 1.0f, 0.0f, 0.0f );
 				glRotatef( h_rot, 0.0f, 1.0f, 0.0f );
@@ -73,12 +77,15 @@ public class FightScreen extends Screen {
 				dohyo.drawWithExternalTextureMap();
 				
 				
-//				glDisable( GL_TEXTURE_2D );
-				getEastModel().draw();
-				glDisable( GL_CULL_FACE );
+				glDisable( GL_TEXTURE_2D );
+//				getEastModel().update( getFight().getEastStatus().getCurrentAction().getElapsedTime() );
+				getFight().getEastStatus().getModelAnimationInfo().draw();
+//				glDisable( GL_CULL_FACE );
 
 				
 			glPopMatrix();
+			
+			glDisable( GL_DEPTH_TEST );
 			
 		glPopMatrix();
 	}
@@ -108,9 +115,7 @@ public class FightScreen extends Screen {
 			
 			dohyo.load( file.getAbsolutePath(), "dohyo_tex.tga" );
 
-			//appMap.loadstuff
-			eastModel = new ModelAnimationInfo( getFight().getEastStatus().getRikishi().getAppearenceMap() );
-			
+			getFight().getEastStatus().load();
 		}
 		catch( Exception e ){
 			e.printStackTrace();
@@ -147,7 +152,7 @@ public class FightScreen extends Screen {
 		}
 	}
 	
-	private FightStatus getFight(){
+	private Fight getFight(){
 		return fight;
 	}
 	

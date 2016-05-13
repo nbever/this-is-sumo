@@ -2,6 +2,7 @@ package com.nate.sumo.display;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.nate.model.MD5Mesh;
@@ -24,6 +25,10 @@ public class ModelManager {
 	}
 	
 	public MD5Model loadModel( String key ){
+		return loadModel( key, 0 );
+	}
+	
+	public MD5Model loadModel( String key, int texId ){
 		
 		MD5Model model = getModelMap().get( key );
 		
@@ -32,7 +37,7 @@ public class ModelManager {
 			String filePath = url.getFile();
 			
 			try {
-				model = MD5Model.loadModel( filePath );
+				model = MD5Model.loadModel( filePath, texId );
 				getModelMap().put( key, model );
 			} catch (Exception e) {
 				System.out.println( "Could not locate model " + key );
@@ -47,7 +52,7 @@ public class ModelManager {
 		MD5Model model = loadModel( key );
 		getModelMap().remove( key );
 		
-		MD5Mesh[] meshes = model.getMeshes();
+		List<MD5Mesh> meshes = model.getMeshes();
 		
 		for( MD5Mesh mesh : meshes ){
 			mesh.getIndexArray().clear();

@@ -1,14 +1,13 @@
 package com.nate.sumo.model.fight.actions.cut_scenes;
 
-import com.nate.sumo.model.fight.FightAction;
 import com.nate.sumo.model.fight.FightKnowledgeIf;
+import com.nate.sumo.model.fight.NonInteractionAction;
 import com.nate.sumo.model.fight.RikishiStatus;
 
-public class PrepAction extends FightAction {
+public class Stand extends NonInteractionAction {
 
-	public PrepAction( RikishiStatus myStatus, FightKnowledgeIf callback ) {
+	public Stand(RikishiStatus myStatus, FightKnowledgeIf callback) {
 		super( myStatus, callback );
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -16,4 +15,5 @@ public class PrepAction extends FightAction {
 		// TODO Auto-generated method stub
 
 	}
+
 }

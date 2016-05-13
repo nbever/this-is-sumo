@@ -7,7 +7,8 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jme3.util.BufferUtils;
+import org.lwjgl.BufferUtils;
+
 import com.nate.sumo.display.Drawable;
 import com.nate.sumo.display.KeyHandler;
 import com.nate.sumo.display.fonts.Font;

@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.function.Function;
 
 import com.nate.model.MD5Animation;
-import com.nate.model.MD5AnimationInfo;
 
 public abstract class FightAction {
 
@@ -12,13 +11,8 @@ public abstract class FightAction {
 		ATTEMPT,
 		EXECUTE,
 		RECOVER,
+		FAILURE,
 		NONE
-	}
-	
-	public enum PHASE_STATUS {
-		IN_PROGRESS,
-		SUCCESS,
-		FAILURE
 	}
 	
 	public enum DIRECTION {
@@ -28,10 +22,17 @@ public abstract class FightAction {
 		BACKWARD
 	}
 	
+	private RikishiStatus status;
+	private FightKnowledgeIf callback;
+	
 	private Float startingMedialBalance;
 	private Float startingLateralBalance;
 	private Float startingEnergy;
+	private Float startingMaxEnergy;
+	
 	private Long startTime;
+	private Long lastTime = 0L;
+	private Long currentTime = 0L;
 	private Long phaseStartTime;
 	
 	private STATUS currentStatus;
@@ -40,38 +41,95 @@ public abstract class FightAction {
 	private FightCoordinates startingSpot;
 	
 	private MD5Animation animation;
-	private MD5AnimationInfo animationInfo;
 	
-	private Function<Consequence, Void> callback;
-	
-	public FightAction( Float energy, Float medialBalance, Float lateralBalance, Function<Consequence, Void> callback ){
-		this.startingEnergy = new Float( energy );
-		this.startingLateralBalance = new Float( lateralBalance );
-		this.startingMedialBalance = new Float( medialBalance );
+	public FightAction( RikishiStatus myStatus, FightKnowledgeIf callback ){
+		this.status = myStatus;
+		this.callback = callback;
+		
+		this.startingEnergy = myStatus.getEnergy();
+		this.startingLateralBalance = myStatus.getLateralBalance();
+		this.startingMedialBalance = myStatus.getMedialBalance();
+		this.startingMaxEnergy = myStatus.getMaxEnergy();
 	}
 	
 	public void start(){
 		setStartTime();
+		setPhaseStartTime();
+		currentStatus = STATUS.ATTEMPT;
 	}
 	
 	public void stop(){
 		setCurrentStatus( STATUS.RECOVER );
 	}
 	
+	public long getElapsedTime(){
+		return currentTime - lastTime;
+	}
+	
+	public void advance(){
+		lastTime = currentTime;
+		currentTime = System.currentTimeMillis();
+		
+		if ( getCurrentStatus().equals( STATUS.ATTEMPT ) &&
+			getElapsedTime() > getTryTime() ){
+			boolean rez = doSuccessTest();
+			
+			if ( rez == true ){
+				getCallback().reportSuccess();
+				setCurrentStatus( STATUS.EXECUTE );
+			}
+			else {
+				setCurrentStatus( STATUS.FAILURE );
+			}
+		}
+		else if ( getCurrentStatus().equals( STATUS.EXECUTE ) &&
+			getElapsedTime() > getTryTime() + getActionTime() &&
+			!( this instanceof NonInteractionAction )){
+			setCurrentStatus( STATUS.RECOVER );
+		}
+	}
+	
 	private void done(){
 		
 	}
 	
+	/** Overwrite these ***/
+	
+	public long getTryTime(){
+		return 2000L;
+	}
+	
+	public long getActionTime(){
+		return 3000L;
+	}
+	
+	public long getRecoveryTime(){
+		return 1000L;
+	}
+	
+	/**
+	 * This is the effect in curred based on the time elapsed.
+	 * This value is in terms of differences from current.
+	 * @return
+	 */
+	public ActionResult getAttemptActionResult( long elapsedTime ){
+		return null;
+	}
+	
+	public ActionResult getSuccessfulActionResults( long elapsedTime ){
+		return null;
+	}
+	
+	
+	public boolean doSuccessTest(){
+		return true;
+	}
+	
 	protected abstract void advancePhase();
-	protected abstract PHASE_STATUS getPhaseStatus();
 	
 	// get/sets
 	public MD5Animation getAnimation(){
 		return animation;
-	}
-	
-	public MD5AnimationInfo getAnimationInfo(){
-		return animationInfo;
 	}
 	
 	private Float getStartingMedialBalance() {
@@ -119,14 +177,6 @@ public abstract class FightAction {
 		this.startingSpot = startingSpot;
 	}
 
-	private Function<Consequence, Void> getCallback() {
-		return callback;
-	}
-
-	private void setCallback(Function<Consequence, Void> callback) {
-		this.callback = callback;
-	}
-
 	public DIRECTION getActionDirection()
 	{
 		return actionDirection;
@@ -135,5 +185,9 @@ public abstract class FightAction {
 	public void setActionDirection( DIRECTION actionDirection )
 	{
 		this.actionDirection = actionDirection;
+	}
+	
+	public FightKnowledgeIf getCallback(){
+		return callback;
 	}
 }
