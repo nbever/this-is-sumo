@@ -5,27 +5,30 @@ import com.nate.sumo.display.AnimationManager;
 import com.nate.sumo.model.fight.FightKnowledgeIf;
 import com.nate.sumo.model.fight.NonInteractionAction;
 import com.nate.sumo.model.fight.RikishiStatus;
+import com.nate.sumo.model.fight.Route;
 
-public class Stand extends NonInteractionAction {
+public class SlowWalk extends NonInteractionAction{
 
-	public Stand(RikishiStatus myStatus, FightKnowledgeIf callback) {
+	private Route route;
+	
+	public SlowWalk(RikishiStatus myStatus, FightKnowledgeIf callback, Route route ) {
 		super( myStatus, callback );
-	}
-
-	@Override
-	protected void advancePhase() {
-		// TODO Auto-generated method stub
-
+		
+		this.route = route;
 	}
 	
 	@Override
 	public MD5Animation getAnimation() {
-		
+	
 		if ( animation == null ){
-			animation = AnimationManager.getInstance().loadAnimation( "sumo-idle1.md5anim" );
+			animation = AnimationManager.getInstance().loadAnimation( "slowwalk.md5anim" );
 		}
 		
 		return animation;
+	}
+	
+	private Route getRoute(){
+		return route;
 	}
 
 }

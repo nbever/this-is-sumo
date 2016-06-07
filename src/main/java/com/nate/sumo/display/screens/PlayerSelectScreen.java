@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.nate.sumo.KeyMapper;
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureManager;
-import com.nate.sumo.display.TextureNames;
 import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.display.widgets.BanzukeSelector;
 import com.nate.sumo.model.basho.Banzuke;
@@ -153,11 +153,7 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 			return;
 		}
 		
-		if ( key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT ||
-			key == GLFW_KEY_UP || key == GLFW_KEY_DOWN ){
-			stayFrame = 0L;
-		}
-		else if ( key == GLFW_KEY_BACKSPACE ){
+		if ( key == KeyMapper.B_BUTTON ){
 			if ( !getBanzukeSelector().isHigashiSelected() ){
 				allUnselected();
 				return;
@@ -166,6 +162,20 @@ public abstract class PlayerSelectScreen extends SwipeScreen
 		
 		getBanzukeSelector().handleKey(key, scanCode, action, mods);
 	}
+	
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		
+		if ( action != GLFW_PRESS ){
+			return;
+		}
+		
+		if ( lateral != 0.0f && vertical != 0.0f ){
+			stayFrame = 0L;
+		}
+		
+		getBanzukeSelector().handleDirections( lateral, vertical, action );
+	};
 	
 	protected BanzukeSelector getBanzukeSelector(){
 		

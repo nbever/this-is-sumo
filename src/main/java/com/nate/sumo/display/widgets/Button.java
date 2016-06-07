@@ -3,13 +3,13 @@ package com.nate.sumo.display.widgets;
 import java.util.Arrays;
 import java.util.List;
 
+import com.nate.sumo.KeyMapper;
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.display.TextureNames;
 import com.nate.sumo.display.fonts.Font;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.glfw.GLFW.*;
 
 public class Button extends Widget {
 
@@ -68,12 +68,19 @@ public class Button extends Widget {
 			return;
 		}
 		
-		if ( GLFW_KEY_ENTER == key ){
+		if ( KeyMapper.A_BUTTON == key ){
 			Action wAction = new Action();
 			wAction.setActionKey( getText() );
 			wAction.setSource( this );
 			getActionHandler().actionPerformed( wAction );
 		}
+	}
+	
+
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	private String getText(){
@@ -106,5 +113,4 @@ public class Button extends Widget {
 		
 		return textureNames;
 	}
-
 }

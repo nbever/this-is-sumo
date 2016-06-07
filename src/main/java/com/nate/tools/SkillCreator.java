@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
+import com.nate.model.Quaternarion;
 import com.nate.sumo.DatabaseManager;
 import com.nate.sumo.model.appearence.AppearenceMap;
 import com.nate.sumo.model.appearence.AppearenceMapConstants;
@@ -300,7 +301,7 @@ public class SkillCreator
 	
 		colorFactor = 255 - colorFactor;
 		
-		map.setSkinTone( new Color( colorFactor, colorFactor, colorFactor ));
+		map.setSkinTone( new Quaternarion( colorFactor, colorFactor, colorFactor, 1f ));
 		
 		int model = (int)(Math.random() * AppearenceMapConstants.BODY_W1_MODELS.size());
 		map.setBodyModel( AppearenceMapConstants.BODY_MODELS.get( weightClass ).get( model ) );
@@ -308,7 +309,7 @@ public class SkillCreator
 		map.setBodyTxt( AppearenceMapConstants.BODY_TXTS.get( weightClass ).get( bodyTxt ) );
 		map.setMawashiModel( AppearenceMapConstants.MAWASHI_MODELS.get( weightClass ) );
 		
-		Color mColor = new Color( (int)(Math.random()*255), (int)(Math.random()*255), (int)(Math.random()*255) );
+		Quaternarion mColor = new Quaternarion( (int)(Math.random()*255), (int)(Math.random()*255), (int)(Math.random()*255), 1f );
 		map.setMawashiColor( mColor );
 		
 		map.setHairModel( AppearenceMapConstants.HAIR_MODELS.get( (int)(Math.random()*AppearenceMapConstants.HAIR_MODELS.size() ) ) );

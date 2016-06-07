@@ -1,14 +1,11 @@
 package com.nate.sumo.display.screens;
 
-import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.display.widgets.menu.Menu;
-import com.nate.sumo.display.widgets.menu.MenuItem;
 
 public class FontTestScreen extends SwipeScreen
 {
@@ -39,10 +36,14 @@ public class FontTestScreen extends SwipeScreen
 	@Override
 	public void handleKey( int key, int scanCode, int action, int mods )
 	{
-		if ( key == GLFW_KEY_UP ){
+	}
+	
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		if ( vertical > 0 ){
 			character++;
 		}
-		else if ( key == GLFW_KEY_DOWN ){
+		else if ( vertical < 0 ){
 			character--;
 		}
 	}
@@ -67,5 +68,4 @@ public class FontTestScreen extends SwipeScreen
 		// TODO Auto-generated method stub
 		return new ScreenInitData( MainScreen.class );
 	}
-
 }

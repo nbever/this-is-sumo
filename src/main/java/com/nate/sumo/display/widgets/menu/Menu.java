@@ -56,13 +56,17 @@ public class Menu implements Drawable, KeyHandler
 	
 	public void handleKey( int key, int scanCode, int action, int mods )
 	{
+
+	}
+	
+	public void handleDirections( float lateral, float vertical, int action ){
 		Integer index = null;
 		
-		if ( key == GLFW_KEY_DOWN && action == GLFW_PRESS ){
+		if ( vertical < 0 && action == GLFW_PRESS ){
 			index = getMenuItems().indexOf( getSelectedMenuItem() );
 			index++;
 		}
-		else if ( key == GLFW_KEY_UP && action == GLFW_PRESS){
+		else if ( vertical > 0 && action == GLFW_PRESS){
 			index = getMenuItems().indexOf( getSelectedMenuItem() );
 			index--;
 		}

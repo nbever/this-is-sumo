@@ -28,7 +28,7 @@ public class AnimationManager {
 		MD5Animation anim = getAnimationMap().get( key );
 		
 		if ( anim == null ){
-			URL url = ModelManager.class.getResource( key );
+			URL url = ModelManager.class.getResource( "/" + key );
 			String filePath = url.getFile();
 			
 			try {

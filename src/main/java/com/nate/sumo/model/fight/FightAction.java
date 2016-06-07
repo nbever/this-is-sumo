@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.function.Function;
 
 import com.nate.model.MD5Animation;
+import com.nate.model.MD5FrameSkeleton;
 
 public abstract class FightAction {
 
@@ -30,17 +31,17 @@ public abstract class FightAction {
 	private Float startingEnergy;
 	private Float startingMaxEnergy;
 	
-	private Long startTime;
+	private Long startTime = 0L;
 	private Long lastTime = 0L;
 	private Long currentTime = 0L;
 	private Long phaseStartTime;
 	
-	private STATUS currentStatus;
+	private STATUS currentStatus = STATUS.ATTEMPT;
 	private DIRECTION actionDirection;
 	
 	private FightCoordinates startingSpot;
 	
-	private MD5Animation animation;
+	protected MD5Animation animation;
 	
 	public FightAction( RikishiStatus myStatus, FightKnowledgeIf callback ){
 		this.status = myStatus;
@@ -56,6 +57,10 @@ public abstract class FightAction {
 		setStartTime();
 		setPhaseStartTime();
 		currentStatus = STATUS.ATTEMPT;
+		
+		MD5Animation newAnimation = getAnimation();
+		
+		getMyStatus().getModelAnimationInfo().getModel().setAnimation( newAnimation );
 	}
 	
 	public void stop(){
@@ -69,6 +74,10 @@ public abstract class FightAction {
 	public void advance(){
 		lastTime = currentTime;
 		currentTime = System.currentTimeMillis();
+		
+		if ( getStartTime() == 0L ){
+			start();
+		}
 		
 		if ( getCurrentStatus().equals( STATUS.ATTEMPT ) &&
 			getElapsedTime() > getTryTime() ){
@@ -108,7 +117,7 @@ public abstract class FightAction {
 	}
 	
 	/**
-	 * This is the effect in curred based on the time elapsed.
+	 * This is the effect incurred based on the time elapsed.
 	 * This value is in terms of differences from current.
 	 * @return
 	 */
@@ -130,6 +139,10 @@ public abstract class FightAction {
 	// get/sets
 	public MD5Animation getAnimation(){
 		return animation;
+	}
+	
+	private RikishiStatus getMyStatus(){
+		return status;
 	}
 	
 	private Float getStartingMedialBalance() {

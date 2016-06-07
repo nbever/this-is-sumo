@@ -1,36 +1,38 @@
 package com.nate.sumo.model.appearence;
 
-import java.awt.Color;
+import com.nate.model.Quaternarion;
 
 public class AppearenceMap {
 
-	private String mawashiModel;
-	private String mawashiTxt;
-	private Color mawashiColor;
+	private String mawashiModel = "/base_mawashi.md5mesh";
+	private String mawashiTxt = "default_mawashi_tex.png";
+	private Quaternarion mawashiColor = new Quaternarion( 0.9f, 0.1f, 0.1f, 1.0f );
 	
-	private String bodyModel;
-	private String bodyTxt;
-	private Color skinTone;
+	private String bodyModel = "/base_sumo.md5mesh";
+	private String bodyTxt = "default_sumo_tex.png";
+	private Quaternarion skinTone;
 	
-	private String hairModel;
+	private String hairModel =  "/base_hair.md5mesh";
 	private String hairTxt;
-	private Color hairColor;
+	private Quaternarion hairColor = new Quaternarion( 0.0f, 0.0f, 0.0f, 1.0f );
 	
-	private String headModel;
-	private String headTxt;
+	private String headModel = "/base_head.md5mesh";
+	private String headTxt = "default_head_tex.png";
 	
 	private String keshoModel;
 	private String keshoTxt;
 	
 	private String portrait;
 	
-	public AppearenceMap(){}
+	public AppearenceMap(){
+		
+	}
 
-	public String colorToString( Color color ){
-		return color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "," + color.getAlpha();
+	public String colorToString( Quaternarion color ){
+		return color.getX() + "," + color.getY() + "," + color.getZ() + "," + color.getW();
 	}
 	
-	public Color stringToColor( String colorString ){
+	public Quaternarion stringToQuaternarion( String colorString ){
 		String[] sections = colorString.split( "," );
 		
 		int r = Integer.parseInt( sections[0] );
@@ -42,7 +44,7 @@ public class AppearenceMap {
 			a = Integer.parseInt( sections[3] );
 		}
 		
-		Color color = new Color( r, g, b, a );
+		Quaternarion color = new Quaternarion( r, g, b, a );
 		
 		return color;
 	}
@@ -67,14 +69,14 @@ public class AppearenceMap {
 		this.mawashiTxt = mawashiTxt;
 	}
 
-	public Color getMawashiColor()
+	public Quaternarion getMawashiColor()
 	{
 		return mawashiColor;
 	}
 
-	public void setMawashiColor( Color mawashiColor )
+	public void setMawashiColor( Quaternarion mawashiQuaternarion )
 	{
-		this.mawashiColor = mawashiColor;
+		this.mawashiColor = mawashiQuaternarion;
 	}
 
 	public String getBodyModel()
@@ -117,14 +119,14 @@ public class AppearenceMap {
 		this.hairTxt = hairTxt;
 	}
 
-	public Color getHairColor()
+	public Quaternarion getHairColor()
 	{
 		return hairColor;
 	}
 
-	public void setHairColor( Color hairColor )
+	public void setHairColor( Quaternarion hairQuaternarion )
 	{
-		this.hairColor = hairColor;
+		this.hairColor = hairQuaternarion;
 	}
 
 	public String getKeshoModel()
@@ -177,12 +179,12 @@ public class AppearenceMap {
 		this.headTxt = headTxt;
 	}
 
-	public Color getSkinTone()
+	public Quaternarion getSkinTone()
 	{
 		return skinTone;
 	}
 
-	public void setSkinTone( Color skinTone )
+	public void setSkinTone( Quaternarion skinTone )
 	{
 		this.skinTone = skinTone;
 	}

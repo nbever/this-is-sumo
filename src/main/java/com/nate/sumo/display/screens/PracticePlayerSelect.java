@@ -35,6 +35,18 @@ public class PracticePlayerSelect extends PlayerSelectScreen implements ActionHa
 		}
 	}
 	
+
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		
+		if ( !getConfirmDialog().isShowing() ){
+			super.handleDirections( lateral, vertical, action );
+		}
+		else {
+			getConfirmDialog().handleDirections( lateral, vertical, action );
+		}
+	}
+	
 	@Override
 	public void draw() {
 		super.draw();
@@ -86,5 +98,4 @@ public class PracticePlayerSelect extends PlayerSelectScreen implements ActionHa
 			close();
 		}
 	}
-
 }

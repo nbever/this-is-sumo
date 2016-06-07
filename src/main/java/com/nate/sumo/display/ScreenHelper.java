@@ -24,6 +24,25 @@ public class ScreenHelper
 		return instance;
 	}
 	
+	public void drawCircle( float radius, int segments, float lineWidth ){
+		
+		glLineWidth( lineWidth );
+		glBegin( GL_LINE_STRIP );
+		
+		double degPer = 2*Math.PI / segments;
+		
+		for ( int i = 0; i < segments; i++ ){
+			
+			double x = radius * Math.cos( degPer * i );
+			double y = radius * Math.sin( degPer * i );
+			glVertex3d( x, y, 0.0f );
+		}
+		
+		glVertex3f( radius, 0.0f, 0.0f );
+		
+		glEnd();
+	}
+	
 	public void drawSquare( float width, float height, boolean texture ){
 		this.drawSquare( width, height, texture, true, 0.0f );
 	}

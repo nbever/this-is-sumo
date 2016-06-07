@@ -89,17 +89,23 @@ public class ControllerSelector extends Widget{
 	@Override
 	public void handleKey(int key, int scanCode, int action, int mods) {
 		
+	}
+	
+
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		
 		if ( action != GLFW_PRESS ){
 			return;
 		}
 		
-		if ( key != GLFW_KEY_LEFT && key != GLFW_KEY_RIGHT ){
+		if ( vertical == 0 && lateral == 0 ){
 			return;
 		}
 		
 		int index = getSelection();
 		
-		if ( key == GLFW_KEY_LEFT ){
+		if ( lateral < 0 ){
 			index--;
 		}
 		else {

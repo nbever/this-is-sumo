@@ -9,6 +9,7 @@ public class ActionResult {
 	private float confidenceEffect = 0.0f;
 	private float balanceFactorEffect = 0.0f;
 	private float positionEffect = 0.0f;
+	private float positionDirection = 0.0f;
 	
 	public float getPowerEffect() {
 		return powerEffect;
@@ -52,6 +53,11 @@ public class ActionResult {
 	public void setPositionEffect(float positionEffect) {
 		this.positionEffect = positionEffect;
 	}
-	
+	public float getPositionDirection(){
+		return this.positionDirection;
+	}
+	public void setPositionDirection( float positionDirection ){
+		this.positionDirection = positionDirection;
+	}
 	
 }

@@ -2,24 +2,20 @@ package com.nate.sumo.display.screens;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jdk.nashorn.internal.ir.GetSplitState;
 
 import com.nate.model.Quaternarion;
 import com.nate.model.Vector3f;
 import com.nate.sumo.DatabaseManager;
-import com.nate.sumo.display.Screen;
+import com.nate.sumo.KeyMapper;
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.display.widgets.ButtonInstructions;
 import com.nate.sumo.display.widgets.ControllerSelector;
 import com.nate.sumo.display.widgets.Spinner;
-import com.nate.sumo.display.widgets.Widget;
-import com.nate.sumo.model.animation.VectorAnimation;
 import com.nate.sumo.model.common.Place;
 import com.nate.sumo.model.fight.Fight;
 import com.nate.sumo.model.rikishi.Heya;
@@ -192,21 +188,13 @@ public class MatchSetupScreen extends SwipeScreen {
 	public void handleKey(int key, int scanCode, int action, int mods) {
 		
 		if ( action == GLFW_PRESS ){
-			if ( key == GLFW_KEY_DOWN ){
-				selectNextWidget( true, true );
-				return;
-			}
-			else if ( key == GLFW_KEY_UP ){
-				selectNextWidget( true, false );
-				return;
-			}
-			else if ( key == GLFW_KEY_BACKSPACE ){
+			if ( key == KeyMapper.B_BUTTON ){
 				ScreenInitData back = new ScreenInitData( PracticePlayerSelect.class );
 				back.getInitData().put( PlayerSelectScreen.PLAYER_LIST, DatabaseManager.getInstance().getCurrentBanzuke() );
 				setNextScreenData( back );
 				close();
 			}
-			else if ( key == GLFW_KEY_ENTER ){
+			else if ( key == KeyMapper.A_BUTTON ){
 				Fight fightStatus = (Fight)getInitData().get( Fight.class.getSimpleName() );
 				ScreenInitData next = new ScreenInitData( FightScreen.class );
 				next.getInitData().put( Fight.class.getSimpleName(), fightStatus );
@@ -216,6 +204,23 @@ public class MatchSetupScreen extends SwipeScreen {
 		}
 		
 		getPlayer1SelectedWidget().handleKey( key, scanCode, action, mods );
+	}
+	
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		
+		if ( action == GLFW_PRESS ){
+			if ( vertical < 0 ){
+				selectNextWidget( true, true );
+				return;
+			}
+			else if ( vertical > 0 ){
+				selectNextWidget( true, false );
+				return;
+			}
+		}
+		
+		getPlayer1SelectedWidget().handleDirections( lateral, vertical, action );
 	}
 	
 	private void setNextScreenData( ScreenInitData nextScreen ){

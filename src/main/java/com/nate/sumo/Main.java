@@ -99,7 +99,8 @@ public class Main
 					// We will detect this in our rendering loop
 				}
 				else {
-					ScreenManager.getInstance().handleKey( key, scancode, action, mods );
+					KeyMapper.mapKey( key, scancode, action, mods );
+//					ScreenManager.getInstance().handleKey( key, scancode, action, mods );
 				}
 			}
 		});

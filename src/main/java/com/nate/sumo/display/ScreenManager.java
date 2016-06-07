@@ -4,11 +4,9 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import com.nate.sumo.display.screens.FontTestScreen;
 import com.nate.sumo.display.screens.MainScreen;
 import com.nate.sumo.display.screens.ScreenInitData;
 
@@ -110,6 +108,19 @@ public class ScreenManager implements Drawable, KeyHandler
 	{
 		// TODO Auto-generated method stub
 		getCurrentScreen().handleKey(key, scanCode, action, mods);
+	}
+	
+	public void handleDirections( float lateral, float vertical, int action ){
+		
+		if ( Math.abs( lateral ) < 0.2f ){
+			lateral = 0.0f;
+		}
+		
+		if ( Math.abs( vertical ) < 0.2f ){
+			vertical = 0.0f;
+		}
+		
+		getCurrentScreen().handleDirections( lateral, vertical, action );
 	}
 	
 	private Screen getCurrentScreen(){
