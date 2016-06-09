@@ -7,7 +7,8 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jme3.util.BufferUtils;
+import org.lwjgl.BufferUtils;
+
 import com.nate.sumo.display.Drawable;
 import com.nate.sumo.display.KeyHandler;
 import com.nate.sumo.display.fonts.Font;
@@ -55,13 +56,17 @@ public class Menu implements Drawable, KeyHandler
 	
 	public void handleKey( int key, int scanCode, int action, int mods )
 	{
+
+	}
+	
+	public void handleDirections( float lateral, float vertical, int action ){
 		Integer index = null;
 		
-		if ( key == GLFW_KEY_DOWN && action == GLFW_PRESS ){
+		if ( vertical < 0 && action == GLFW_PRESS ){
 			index = getMenuItems().indexOf( getSelectedMenuItem() );
 			index++;
 		}
-		else if ( key == GLFW_KEY_UP && action == GLFW_PRESS){
+		else if ( vertical > 0 && action == GLFW_PRESS){
 			index = getMenuItems().indexOf( getSelectedMenuItem() );
 			index--;
 		}

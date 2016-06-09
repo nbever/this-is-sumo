@@ -2,7 +2,7 @@ package com.nate.sumo.display;
 
 import static org.lwjgl.opengl.GL11.*;
 
-import com.jme3.math.Vector4f;
+import com.nate.model.Quaternarion;
 
 public class ScreenHelper
 {
@@ -22,6 +22,25 @@ public class ScreenHelper
 		}
 		
 		return instance;
+	}
+	
+	public void drawCircle( float radius, int segments, float lineWidth ){
+		
+		glLineWidth( lineWidth );
+		glBegin( GL_LINE_STRIP );
+		
+		double degPer = 2*Math.PI / segments;
+		
+		for ( int i = 0; i < segments; i++ ){
+			
+			double x = radius * Math.cos( degPer * i );
+			double y = radius * Math.sin( degPer * i );
+			glVertex3d( x, y, 0.0f );
+		}
+		
+		glVertex3f( radius, 0.0f, 0.0f );
+		
+		glEnd();
 	}
 	
 	public void drawSquare( float width, float height, boolean texture ){
@@ -58,7 +77,7 @@ public class ScreenHelper
 		glEnd();
 	}
 	
-	public void drawCircleBurst( float width, float height, Vector4f color ){
+	public void drawCircleBurst( float width, float height, Quaternarion color ){
 		
 //		glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 //		drawSquare( width, height, false );

@@ -58,9 +58,14 @@ public class ButtonInstructions extends Widget {
 	}
 
 	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
 	public List<String> getTextureNames() {
 
 		return Arrays.asList( TextureNames.CTL_A, TextureNames.CTL_B );
 	}
-
 }

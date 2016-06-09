@@ -2,6 +2,7 @@ package com.nate.sumo.display.widgets;
 
 import java.util.List;
 
+import com.nate.sumo.KeyMapper;
 import com.nate.sumo.display.fonts.Font;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -55,7 +56,7 @@ public class Spinner extends Widget {
 					
 					setAlpha();
 					
-					if ( isPressed && lastKey == GLFW_KEY_LEFT ){
+					if ( isPressed && lastKey == KeyMapper.LEFT_DPAD ){
 						setFull();
 					}
 					
@@ -64,7 +65,7 @@ public class Spinner extends Widget {
 					
 					setAlpha();
 					
-					if ( isPressed && lastKey == GLFW_KEY_RIGHT ){
+					if ( isPressed && lastKey == KeyMapper.RIGHT_DPAD ){
 						setFull();
 					}
 					
@@ -106,10 +107,15 @@ public class Spinner extends Widget {
 	@Override
 	public void handleKey(int key, int scanCode, int action, int mods) {
 
+	}
+	
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		
 		if ( !isSelected() ){
 			return;
 		}
-		System.out.println( action );
+
 		if ( action == GLFW_RELEASE ){
 			isPressed = false;
 			return;
@@ -117,12 +123,13 @@ public class Spinner extends Widget {
 		
 		if ( action == GLFW_PRESS ){
 			isPressed = true;
-			lastKey = key;
 			
-			if ( lastKey == GLFW_KEY_RIGHT ){
+			if ( lateral > 0 ){
+				lastKey = KeyMapper.RIGHT_DPAD;
 				selectNextItem();
 			}
-			else if ( lastKey == GLFW_KEY_LEFT ){
+			else if ( lateral < 0 ){
+				lastKey = KeyMapper.LEFT_DPAD;
 				selectPreviousItem();
 			}
 		}

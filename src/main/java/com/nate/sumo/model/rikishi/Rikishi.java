@@ -33,6 +33,14 @@ public class Rikishi {
 	
 	public Rikishi(){}
 
+	public void load(){
+		
+	}
+	
+	public void unload(){
+		
+	}
+	
 	public RikishiInfo getRikishiInfo() {
 		return rikishiInfo;
 	}

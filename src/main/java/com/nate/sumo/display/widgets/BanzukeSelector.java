@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.nate.model.Vector3f;
+import com.nate.sumo.KeyMapper;
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.display.TextureNames;
@@ -64,60 +65,54 @@ public class BanzukeSelector extends Widget
 		tableAnimation = new VectorAnimation( INITIAL_BG_POSITION, INITIAL_BG_POSITION, -1 );
 	}
 	
-	@Override
-	public void handleKey( int key, int scanCode, int action, int mods )
-	{
+	private boolean canHandleInput( int key, int action, Division cDiv, Rank rank ){
 		if ( action != GLFW_PRESS ){
-			return;
+			return false;
 		}
 		
 		if ( getSelectorAnimation().isRunning() ){
-			return;
+			return false;
 		}
 		
-		Division cDiv = Division.values()[currentDivision];
-		Rank rank = getRikishi().getRikishiInfo().getCurrentRank();
-		
-		if ( key == GLFW_KEY_BACKSPACE ){
+		if ( key == KeyMapper.B_BUTTON ){
 			deselectLast();
 		}
 		
 		if ( isHigashiSelected() && isNishiSelected() ){
+			return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public void handleKey( int key, int scanCode, int action, int mods )
+	{
+		Division cDiv = null;
+		Rank rank = null;
+		boolean canHandleInput = canHandleInput( key, action, cDiv, rank );
+
+		cDiv = Division.values()[currentDivision];
+		rank = getRikishi().getRikishiInfo().getCurrentRank();
+		
+		if ( canHandleInput == false ){
 			return;
 		}
 		
 		switch( key ){
-			case GLFW_KEY_COMMA:
+			case KeyMapper.L1_BUTTON:
 				currentDivision--;
 				selectorAnimation = new VectorAnimation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
 				fixDivision();
 				setRikishi( getCurrentTopRikishi() );
 				break;
-			case GLFW_KEY_PERIOD:
+			case KeyMapper.R1_BUTTON:
 				currentDivision++;
 				selectorAnimation = new VectorAnimation( INITIAL_SELECTOR, INITIAL_SELECTOR, SCREEN_MOVE_FRAMES );
 				fixDivision();
 				setRikishi( getCurrentTopRikishi() );
 				break;
-			case GLFW_KEY_DOWN:
-				moveSelectorDown( rank, cDiv );
-				getSelectorAnimation().start();
-				getTableAnimation().start();
-				break;
-			case GLFW_KEY_UP:
-				moveSelectorUp( rank, cDiv );
-				getSelectorAnimation().start();
-				getTableAnimation().start();
-				break;
-			case GLFW_KEY_RIGHT:
-				moveSelectorRight( rank, cDiv );
-				getSelectorAnimation().start();
-				break;
-			case GLFW_KEY_LEFT:
-				moveSelectorLeft( rank, cDiv );
-				getSelectorAnimation().start();
-				break;
-			case GLFW_KEY_ENTER:
+			case KeyMapper.A_BUTTON:
 				if ( !isHigashiSelected() ){
 					higashiSelected = true;
 					setRikishi( getCurrentTopRikishi() );
@@ -130,6 +125,41 @@ public class BanzukeSelector extends Widget
 				break;
 			default:
 				break;
+		}
+	}
+
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		
+		Division cDiv = null;
+		Rank rank = null;
+		boolean canHandleInput = canHandleInput( -1, action, cDiv, rank );
+		
+		cDiv = Division.values()[currentDivision];
+		rank = getRikishi().getRikishiInfo().getCurrentRank();
+		
+		if ( canHandleInput == false ){
+			return;
+		}
+		
+		if ( vertical < 0 ){
+			moveSelectorDown( rank, cDiv );
+		}
+		else if ( vertical > 0 ){
+			moveSelectorUp( rank, cDiv );
+		}
+		
+		if ( lateral > 0 ){
+			moveSelectorRight( rank, cDiv );
+		}
+		else if ( lateral < 0 ){
+			moveSelectorLeft( rank, cDiv );
+		}
+			
+		getSelectorAnimation().start();
+		
+		if ( vertical != 0 ){
+			getTableAnimation().start();
 		}
 	}
 	
@@ -693,5 +723,4 @@ public class BanzukeSelector extends Widget
 	private VectorAnimation getTableAnimation(){
 		return tableAnimation;
 	}
-
 }

@@ -5,8 +5,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.util.List;
 
-import com.nate.sumo.display.Screen;
-
 public class DohyoScreen extends SwipeScreen
 {
 
@@ -57,15 +55,21 @@ public class DohyoScreen extends SwipeScreen
 	@Override
 	public void handleKey( int key, int scanCode, int action, int mods )
 	{
+
+	}
+	
+	@Override
+	public void handleDirections( float lateral, float vertical, int action ){
+
 		if ( isClosing() || isLoading() ){
 			return;
 		}
 		
-		if ( key == GLFW_KEY_LEFT && (action == GLFW_REPEAT || action == GLFW_PRESS) ){
+		if ( lateral < 0 && action == GLFW_PRESS ){
 			cameraAngle -= 5.0f;
 			cameraAngle %= 360.0f;
 		}
-		else if ( key == GLFW_KEY_RIGHT && (action == GLFW_REPEAT || action == GLFW_PRESS) ){
+		else if ( lateral > 0 && action == GLFW_PRESS ){
 			cameraAngle += 5.0f;
 			cameraAngle %= 360.0f;
 		}

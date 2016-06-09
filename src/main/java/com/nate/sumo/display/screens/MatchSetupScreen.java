@@ -2,26 +2,22 @@ package com.nate.sumo.display.screens;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jdk.nashorn.internal.ir.GetSplitState;
 
-import com.jme3.math.Vector4f;
+import com.nate.model.Quaternarion;
 import com.nate.model.Vector3f;
 import com.nate.sumo.DatabaseManager;
-import com.nate.sumo.display.Screen;
+import com.nate.sumo.KeyMapper;
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.display.widgets.ButtonInstructions;
 import com.nate.sumo.display.widgets.ControllerSelector;
 import com.nate.sumo.display.widgets.Spinner;
-import com.nate.sumo.display.widgets.Widget;
-import com.nate.sumo.model.animation.VectorAnimation;
 import com.nate.sumo.model.common.Place;
-import com.nate.sumo.model.fight.FightStatus;
+import com.nate.sumo.model.fight.Fight;
 import com.nate.sumo.model.rikishi.Heya;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -29,7 +25,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class MatchSetupScreen extends SwipeScreen {
 
-	private FightStatus fight;
+	private Fight fight;
 	private ButtonInstructions buttonInstructions;
 	private ControllerSelector player1;
 	private ControllerSelector player2;
@@ -48,13 +44,13 @@ public class MatchSetupScreen extends SwipeScreen {
 	public MatchSetupScreen( Map<String, Object> initData ){
 		super( initData );
 		
-		fight = (FightStatus)initData.get( FightStatus.class.getSimpleName() );
+		fight = (Fight)initData.get( Fight.class.getSimpleName() );
 	}
 	
 	@Override
 	public List<String> getTextureNames() {
 
-		FightStatus fight = (FightStatus)getInitData().get( FightStatus.class.getSimpleName() );
+		Fight fight = (Fight)getInitData().get( Fight.class.getSimpleName() );
 		
 		return Arrays.asList( fight.getEastStatus().getRikishi().getAppearenceMap().getPortrait(), 
 			fight.getWestStatus().getRikishi().getAppearenceMap().getPortrait() );
@@ -192,30 +188,39 @@ public class MatchSetupScreen extends SwipeScreen {
 	public void handleKey(int key, int scanCode, int action, int mods) {
 		
 		if ( action == GLFW_PRESS ){
-			if ( key == GLFW_KEY_DOWN ){
-				selectNextWidget( true, true );
-				return;
-			}
-			else if ( key == GLFW_KEY_UP ){
-				selectNextWidget( true, false );
-				return;
-			}
-			else if ( key == GLFW_KEY_BACKSPACE ){
+			if ( key == KeyMapper.B_BUTTON ){
 				ScreenInitData back = new ScreenInitData( PracticePlayerSelect.class );
 				back.getInitData().put( PlayerSelectScreen.PLAYER_LIST, DatabaseManager.getInstance().getCurrentBanzuke() );
 				setNextScreenData( back );
 				close();
 			}
-			else if ( key == GLFW_KEY_ENTER ){
-				FightStatus fightStatus = (FightStatus)getInitData().get( FightStatus.class.getSimpleName() );
+			else if ( key == KeyMapper.A_BUTTON ){
+				Fight fightStatus = (Fight)getInitData().get( Fight.class.getSimpleName() );
 				ScreenInitData next = new ScreenInitData( FightScreen.class );
-				next.getInitData().put( FightStatus.class.getSimpleName(), fightStatus );
+				next.getInitData().put( Fight.class.getSimpleName(), fightStatus );
 				setNextScreenData( next );
 				close();
 			}
 		}
 		
 		getPlayer1SelectedWidget().handleKey( key, scanCode, action, mods );
+	}
+	
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		
+		if ( action == GLFW_PRESS ){
+			if ( vertical < 0 ){
+				selectNextWidget( true, true );
+				return;
+			}
+			else if ( vertical > 0 ){
+				selectNextWidget( true, false );
+				return;
+			}
+		}
+		
+		getPlayer1SelectedWidget().handleDirections( lateral, vertical, action );
 	}
 	
 	private void setNextScreenData( ScreenInitData nextScreen ){
@@ -237,7 +242,7 @@ public class MatchSetupScreen extends SwipeScreen {
 				new Vector3f( c_middle, 0.0f, 0.0f ),
 				new Vector3f( c_right, 0.0f, 0.0f ) );
 			
-			player1 = new ControllerSelector( posMap, 1, new Vector4f( 0.0f, 0.0f, 1.0f, 1.0f ) );
+			player1 = new ControllerSelector( posMap, 1, new Quaternarion( 0.0f, 0.0f, 1.0f, 1.0f ) );
 			
 			registerWidget( player1 );
 			selectWidget( player1, true );
@@ -253,7 +258,7 @@ public class MatchSetupScreen extends SwipeScreen {
 				new Vector3f( c_middle, 0.0f, 0.0f ),
 				new Vector3f( c_right, 0.0f, 0.0f ) );
 			
-			player2 = new ControllerSelector( posMap, 1, new Vector4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
+			player2 = new ControllerSelector( posMap, 1, new Quaternarion( 1.0f, 0.0f, 0.0f, 1.0f ) );
 			
 			registerWidget( player2 );
 		}
@@ -287,7 +292,7 @@ public class MatchSetupScreen extends SwipeScreen {
 		return locationSpinner;
 	}
 	
-	private FightStatus getFight(){
+	private Fight getFight(){
 		return fight;
 	}
 

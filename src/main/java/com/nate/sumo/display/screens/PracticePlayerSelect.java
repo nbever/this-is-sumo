@@ -7,7 +7,7 @@ import com.nate.sumo.display.Dialog.Type;
 import com.nate.sumo.display.widgets.Action;
 import com.nate.sumo.display.widgets.ActionHandler;
 import com.nate.sumo.model.basho.Match;
-import com.nate.sumo.model.fight.FightStatus;
+import com.nate.sumo.model.fight.Fight;
 
 public class PracticePlayerSelect extends PlayerSelectScreen implements ActionHandler
 {
@@ -32,6 +32,18 @@ public class PracticePlayerSelect extends PlayerSelectScreen implements ActionHa
 		}
 		else {
 			getConfirmDialog().handleKey( key, scanCode, action, mods );
+		}
+	}
+	
+
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		
+		if ( !getConfirmDialog().isShowing() ){
+			super.handleDirections( lateral, vertical, action );
+		}
+		else {
+			getConfirmDialog().handleDirections( lateral, vertical, action );
 		}
 	}
 	
@@ -80,11 +92,10 @@ public class PracticePlayerSelect extends PlayerSelectScreen implements ActionHa
 			Match match = new Match(getBanzukeSelector().getHigashiRikishi(), 
 				getBanzukeSelector().getNishiRikishi() );
 			
-			FightStatus fight = new FightStatus( match );
+			Fight fight = new Fight( match );
 			
-			initData.getInitData().put( FightStatus.class.getSimpleName(), fight );
+			initData.getInitData().put( Fight.class.getSimpleName(), fight );
 			close();
 		}
 	}
-
 }

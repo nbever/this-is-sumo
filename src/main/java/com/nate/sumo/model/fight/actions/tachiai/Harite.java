@@ -1,17 +1,15 @@
 package com.nate.sumo.model.fight.actions.tachiai;
 
-import java.util.function.Function;
-
-import com.nate.sumo.model.fight.Consequence;
+import com.nate.sumo.model.fight.FightKnowledgeIf;
+import com.nate.sumo.model.fight.RikishiStatus;
 import com.nate.sumo.model.fight.TachiAiAction;
 
 public class Harite extends TachiAiAction
 {
 
-	public Harite( Float energy, Float medialBalance, Float lateralBalance,
-			Function<Consequence, Void> callback )
+	public Harite( RikishiStatus myStatus, FightKnowledgeIf callback )
 	{
-		super(energy, medialBalance, lateralBalance, callback);
+		super( myStatus, callback);
 		// TODO Auto-generated constructor stub
 	}
 

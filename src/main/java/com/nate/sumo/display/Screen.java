@@ -1,7 +1,5 @@
 package com.nate.sumo.display;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -9,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.nate.model.Vector3f;
 import com.nate.sumo.display.screens.ScreenInitData;
 import com.nate.sumo.display.widgets.Widget;
 
@@ -35,6 +32,7 @@ public abstract class Screen implements Drawable, KeyHandler
 	public abstract ScreenInitData getNextScreenData();
 	
 	public abstract void handleKey( int key, int scanCode, int action, int mods );
+	public abstract void handleDirections( float lateral, float vertical, int action );
 	
 	public Screen( Map<String, Object> initData ){
 		

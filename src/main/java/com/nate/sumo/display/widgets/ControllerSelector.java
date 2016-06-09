@@ -2,11 +2,9 @@ package com.nate.sumo.display.widgets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.jme3.math.Vector4f;
+import com.nate.model.Quaternarion;
 import com.nate.model.Vector3f;
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureManager;
@@ -27,11 +25,9 @@ public class ControllerSelector extends Widget{
 	private VectorAnimation animation;
 	private List<Vector3f> positionMap;
 	private int selection;
-	private Vector4f color;
+	private Quaternarion color;
 	
-	private float fake_rotate = 0.0f;
-	
-	public ControllerSelector( List<Vector3f> positions, int initialPosition, Vector4f color ){
+	public ControllerSelector( List<Vector3f> positions, int initialPosition, Quaternarion color ){
 		super();
 		
 		positionMap = positions;
@@ -40,7 +36,7 @@ public class ControllerSelector extends Widget{
 	}
 	
 	public ControllerSelector() {
-		this( null, -1, new Vector4f( 1.0f, 1.0f, 1.0f, 1.0f ) );
+		this( null, -1, new Quaternarion( 1.0f, 1.0f, 1.0f, 1.0f ) );
 	}
 	
 	@Override
@@ -93,17 +89,23 @@ public class ControllerSelector extends Widget{
 	@Override
 	public void handleKey(int key, int scanCode, int action, int mods) {
 		
+	}
+	
+
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		
 		if ( action != GLFW_PRESS ){
 			return;
 		}
 		
-		if ( key != GLFW_KEY_LEFT && key != GLFW_KEY_RIGHT ){
+		if ( vertical == 0 && lateral == 0 ){
 			return;
 		}
 		
 		int index = getSelection();
 		
-		if ( key == GLFW_KEY_LEFT ){
+		if ( lateral < 0 ){
 			index--;
 		}
 		else {
@@ -145,7 +147,7 @@ public class ControllerSelector extends Widget{
 		return selection;
 	}
 	
-	public Vector4f getColor(){
+	public Quaternarion getColor(){
 		return color;
 	}
 

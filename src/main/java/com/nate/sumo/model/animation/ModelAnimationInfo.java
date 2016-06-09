@@ -1,9 +1,10 @@
 package com.nate.sumo.model.animation;
 
-import java.net.URL;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
 
 import com.nate.model.MD5Animation;
-import com.nate.model.MD5AnimationInfo;
 import com.nate.model.MD5Joint;
 import com.nate.model.MD5Mesh;
 import com.nate.model.MD5Model;
@@ -11,159 +12,164 @@ import com.nate.sumo.display.Drawable;
 import com.nate.sumo.display.ModelManager;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.model.appearence.AppearenceMap;
+import com.nate.sumo.model.fight.FightCoordinates;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.glfw.GLFW.*;
 
 public class ModelAnimationInfo implements Drawable{
 	
-	private MD5Animation currentAnimation;
-	
-	private MD5Joint[] skeleton;
-	
-	private MD5AnimationInfo animationInfo;
-	
 	private AppearenceMap appearence;
-
-	private MD5Model bodyModel;
-	private MD5Model hairModel;
-	private MD5Model headModel;
-	private MD5Model mawashiModel;
+	
+	private MD5Model model;
+	private MD5Animation animation;
 
 	public ModelAnimationInfo( AppearenceMap appMap ){
 		appearence = appMap;
 		
-		getBodyModel();
-		skeleton = getBodyModel().getBaseSkeleton();
-		getHairModel();
-		getHeadModel();
-		getMawashiModel();
+		getModel();
+//		skeleton = getBodyModel().getBaseSkeleton();
 	}
 	
-	// weird thing is... x = z, z = x, y = y
-	public void draw(){
-		
+	public void update( long deltaTime ){
+		getModel().update( deltaTime );
+	}
+	
+	// weird thing is... ( +back -forward, -right +left,+up and -down)
+	/**
+	 *           x
+	 * ---------------------
+	 * |         |         |
+	 * |  +,+    |   +,-   |
+	 * |         |         |
+	 * |---------|-------- | y
+	 * |         |         |
+	 * |  -,+    |  -,-    |
+	 * |         |         |
+	 * ---------------------
+	 * 
+	 * We'll draw it funky here but the coordinates
+	 * will be in "normal" cartesian system
+	 * 
+	 *   -,-        +,-
+	 *   
+	 *   -,+        +,+
+	 * 
+	 * @param coords
+	 */
+	public void draw( FightCoordinates coords ){
 		glPushMatrix();
-		
-		glTranslatef( 2.4f, 0.4f, -2.0f );
-		glScalef( 1.2f, 1.2f, 1.2f );
-		
-		glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
-		
-		glEnableClientState( GL_VERTEX_ARRAY );
-		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-		
-		glBindTexture( GL_TEXTURE_2D, TextureManager.getInstance().getTextureId( "default_sumo_tex.png" ) );
-		goThroughMeshes( getBodyModel(), getSkeleton() );
-//		goThroughMeshes( getHeadModel(), getSkeleton() );
-//		goThroughMeshes( getHairModel(), getSkeleton() );
-//		goThroughMeshes( getMawashiModel(), getSkeleton() );
-		
-		glDisableClientState( GL_VERTEX_ARRAY );
-		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-		
+				
+		//		glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+		//		
+		//		glTranslatef( 2.4f, 2.0f, 0.4f );
+		//		glScalef( 0.5f, 0.5f, 0.5f ); 
+	
+			if ( coords != null ){
+				glTranslatef( 1.0f, 0.0f, 0.0f );
+			}
+				
+			glEnableClientState( GL_VERTEX_ARRAY );
+			glEnableClientState( GL_NORMAL_ARRAY );
+			glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+			
+			getModel().render();
+	
+			glDisable( GL_TEXTURE_2D );
+			glDisableClientState( GL_VERTEX_ARRAY );
+			glDisableClientState( GL_NORMAL_ARRAY );
+			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+			
 		glPopMatrix();
 	}
 	
-	public void goThroughMeshes( MD5Model model, MD5Joint[] skeleton ){
+	public void draw(){
 		
-		for ( MD5Mesh mesh : model.getMeshes() ){
-			
-			model.prepareModel( mesh, skeleton );
-			mesh.getIndexArray().flip();
-			mesh.getVertexArray().flip();
-			mesh.getTexelArray().flip();
-			
-			glVertexPointer( 3, 0, mesh.getVertexArray() );
-			glTexCoordPointer( 2, 0, mesh.getTexelArray() );
-			
-			glDrawElements( GL_TRIANGLES, mesh.getIndexArray() );
-		}
+		this.draw( null );
 	}
 	
 	private AppearenceMap getAppearence(){
 		return appearence;
 	}
-	
-	public MD5Animation getCurrentAnimation() {
-		return currentAnimation;
-	}
 
-	public MD5Model getBodyModel() {
+	public MD5Model getModel() {
 		
-		if ( bodyModel == null ){
-			String model = getAppearence().getBodyModel();
+		if ( model == null ){
+			String modelStr = getAppearence().getBodyModel();
 			
-			if ( model == null ){
-				model = "/base_sumo.md5mesh";
+			int texId = -1;
+			try {
+				texId = TextureManager.getInstance().loadTexture( getAppearence().getBodyTxt() );
+			} catch ( Exception e) {
+				System.out.println( "Body texture: " + getAppearence().getBodyTxt() + " could not be loaded." );
 			}
 			
-			bodyModel = ModelManager.getInstance().loadModel( model );
-		}
-		
-		return bodyModel;
-	}
-
-	public MD5Model getHairModel() {
-		
-		if ( hairModel == null ){
-			String model = getAppearence().getHairModel();
+			model = ModelManager.getInstance().loadModel( modelStr, texId );
 			
-			if ( model == null ){
-				model = "/base_hair.md5mesh";
+			model.getMeshes().add( loadHairModel() );
+			model.getMeshes().add( loadHeadModel() );
+			model.getMeshes().add( loadMawashiModel() );
+			
+			model.setNumberOfMeshes( model.getNumberOfMeshes() + 3 );
+			
+			for ( MD5Mesh mesh : model.getMeshes() ){
+				model.prepareMesh( mesh, model.getJoints() );
+				model.prepareNormals( mesh );
 			}
-			
-			hairModel = ModelManager.getInstance().loadModel( model );
 		}
 		
-		return hairModel;
+		return model;
 	}
 
-	public MD5Model getHeadModel() {
+	private MD5Mesh loadHairModel() {
 		
-		if ( headModel == null ){
-			String model = getAppearence().getHeadModel();
-			
-			if ( model == null ){
-				model = "/base_head.md5mesh";
-			}
-			
-			headModel = ModelManager.getInstance().loadModel( model );
+		String modelStr = getAppearence().getHairModel();
+		
+		MD5Model hairModel = ModelManager.getInstance().loadModel( modelStr );
+		
+		MD5Mesh mesh = hairModel.getMeshes().get( 0 );
+		
+		try {
+			mesh.setColor( getAppearence().getHairColor() );
+			mesh.setTextureId( TextureManager.getInstance().loadTexture( getAppearence().getHairTxt() ) );
+		} catch (Exception e) {
+			System.out.println( "Hair texture " + getAppearence().getHairTxt() + " could not be loaded." );
 		}
 		
-		return headModel;
+		return hairModel.getMeshes().get( 0 );
 	}
 
-	public MD5Model getMawashiModel() {
+	public MD5Mesh loadHeadModel() {
 		
-		if ( mawashiModel == null ){
-			String model = getAppearence().getMawashiModel();
-			
-			if ( model == null ){
-				model = "/base_head.md5mesh";
-			}
-			
-			mawashiModel = ModelManager.getInstance().loadModel( model );
+		String modelStr = getAppearence().getHeadModel();
+		
+		MD5Model headModel = ModelManager.getInstance().loadModel( modelStr );
+		MD5Mesh mesh = headModel.getMeshes().get( 0 );
+		
+		try {
+			mesh.setTextureId( TextureManager.getInstance().loadTexture( getAppearence().getHeadTxt() ) );
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
-		return mawashiModel;
+		return headModel.getMeshes().get( 0 );
 	}
 
-	public MD5Joint[] getSkeleton() {
-		return skeleton;
+	public MD5Mesh loadMawashiModel() {
+		
+		String modelStr = getAppearence().getMawashiModel();
+		
+		MD5Model mawashiModel = ModelManager.getInstance().loadModel( modelStr );
+		MD5Mesh mesh = mawashiModel.getMeshes().get( 0 );
+		
+		try {
+			mesh.setColor( getAppearence().getMawashiColor() );
+			mesh.setTextureId( TextureManager.getInstance().loadTexture( getAppearence().getMawashiTxt() ) );
+		} catch (Exception e) {
+			System.out.println( "Mawashi texture " + getAppearence().getMawashiTxt() + " could not be loaded." );
+		}
+		
+		return mesh;
 	}
-
-	public void setSkeleton(MD5Joint[] skeleton) {
-		this.skeleton = skeleton;
-	}
-
-	public MD5AnimationInfo getAnimationInfo() {
-		return animationInfo;
-	}
-
-	public void setAnimationInfo(MD5AnimationInfo animationInfo) {
-		this.animationInfo = animationInfo;
-	}
-	
 	
 }

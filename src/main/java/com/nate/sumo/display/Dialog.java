@@ -3,8 +3,6 @@ package com.nate.sumo.display;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -129,22 +127,29 @@ public class Dialog extends Widget implements ActionHandler{
 		if ( action != GLFW_PRESS ){
 			return;
 		}
+
+		if ( getOkButton().isSelected() ){
+			getOkButton().handleKey( key, scanCode, action, mods );
+		}
+		else {
+			getCancelButton().handleKey( key, scanCode, action, mods );
+		}
+	}
+	
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
 		
-		if ( GLFW_KEY_RIGHT == key ){
+		if ( action != GLFW_PRESS ){
+			return;
+		}
+		
+		if ( lateral > 0 ){
 			getCancelButton().setSelected( true );
 			getOkButton().setSelected( false );
 		}
-		else if ( key == GLFW_KEY_LEFT ){
+		else if ( lateral < 0 ){
 			getCancelButton().setSelected( false );
 			getOkButton().setSelected( true );			
-		}
-		else {
-			if ( getOkButton().isSelected() ){
-				getOkButton().handleKey( key, scanCode, action, mods );
-			}
-			else {
-				getCancelButton().handleKey( key, scanCode, action, mods );
-			}
 		}
 	}
 
@@ -162,9 +167,9 @@ public class Dialog extends Widget implements ActionHandler{
 			glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 			
 			glPushMatrix();
-				glTranslatef( -1.1f, -1.1f, ScreenHelper.DIALOG_DEPTH );
+				glTranslatef( -1.3f, -1.3f, ScreenHelper.DIALOG_DEPTH );
 				glColor4f( 0.0f, 0.0f, 0.0f, 0.7f );
-				ScreenHelper.getInstance().drawSquare( 2.5f, 2.5f, false );
+				ScreenHelper.getInstance().drawSquare( 3.0f, 3.0f, false );
 			glPopMatrix();
 		
 			glEnable( GL_TEXTURE_2D );

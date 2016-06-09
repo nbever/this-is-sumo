@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.nate.sumo.DatabaseManager;
+import com.nate.sumo.KeyMapper;
 import com.nate.sumo.display.ScreenHelper;
 import com.nate.sumo.display.TextureNames;
 import com.nate.sumo.display.fonts.Font;
@@ -32,12 +33,18 @@ public class MainScreen extends SwipeScreen
 	@Override
 	public void handleKey( int key, int scanCode, int action, int mods )
 	{
-		if ( key == GLFW_KEY_ENTER && action == GLFW_PRESS ){
+		if ( key == KeyMapper.A_BUTTON && action == GLFW_PRESS ){
 			close();
 		}
 		else {
 			getMenu().handleKey(key, scanCode, action, mods);
 		}
+	}
+	
+
+	@Override
+	public void handleDirections(float lateral, float vertical, int action) {
+		getMenu().handleDirections( lateral, vertical, action );
 	}
 
 	@Override
@@ -145,5 +152,4 @@ public class MainScreen extends SwipeScreen
 //		ScreenInitData data = new ScreenInitData( DohyoScreen.class );
 		return data;
 	}
-
 }

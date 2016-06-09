@@ -4,13 +4,14 @@ import java.util.function.Function;
 
 import com.nate.sumo.model.fight.Consequence;
 import com.nate.sumo.model.fight.FightAction;
+import com.nate.sumo.model.fight.FightKnowledgeIf;
+import com.nate.sumo.model.fight.RikishiStatus;
 
 public class DashiNage extends FightAction{
 
-	public DashiNage( Float energy, Float medialBalance, Float lateralBalance,
-			Function<Consequence, Void> callback )
+	public DashiNage( RikishiStatus status, FightKnowledgeIf callback )
 	{
-		super(energy, medialBalance, lateralBalance, callback);
+		super( status, callback);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -19,13 +20,6 @@ public class DashiNage extends FightAction{
 	{
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	protected PHASE_STATUS getPhaseStatus()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

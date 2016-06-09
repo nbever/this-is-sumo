@@ -1,17 +1,14 @@
 package com.nate.sumo.model.fight.actions.tachiai;
 
-import java.util.function.Function;
-
-import com.nate.sumo.model.fight.Consequence;
-import com.nate.sumo.model.fight.FightAction;
+import com.nate.sumo.model.fight.FightKnowledgeIf;
+import com.nate.sumo.model.fight.RikishiStatus;
 import com.nate.sumo.model.fight.TachiAiAction;
 
 public class Defense extends TachiAiAction{
 
-	public Defense( Float energy, Float medialBalance, Float lateralBalance,
-			Function<Consequence, Void> callback )
+	public Defense( RikishiStatus myStatus, FightKnowledgeIf callback )
 	{
-		super(energy, medialBalance, lateralBalance, callback);
+		super( myStatus, callback);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -21,12 +18,4 @@ public class Defense extends TachiAiAction{
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	protected PHASE_STATUS getPhaseStatus()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

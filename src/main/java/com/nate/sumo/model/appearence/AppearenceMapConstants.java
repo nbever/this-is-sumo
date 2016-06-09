@@ -1,8 +1,9 @@
 package com.nate.sumo.model.appearence;
 
-import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
+
+import com.nate.model.Quaternarion;
 
 public class AppearenceMapConstants {
 
@@ -132,34 +133,34 @@ public class AppearenceMapConstants {
 	public static final String KESHO_TXT_10 = "kesho_txt_10.jpg";
 	public static final List<String> KESHO_TXTS = Arrays.asList( KESHO_TXT_1, KESHO_TXT_2, KESHO_TXT_3, KESHO_TXT_4, KESHO_TXT_5, KESHO_TXT_6, KESHO_TXT_7, KESHO_TXT_8, KESHO_TXT_9, KESHO_TXT_10 );
 	
-	public static final Color HAIR_BLACK = new Color( 9, 8, 6 );
-	public static final Color HAIR_OFF_BLACK = new Color( 44, 34, 43 );
-	public static final Color HAIR_DARK_GRAY = new Color( 113, 99, 90 );
-	public static final Color HAIR_MEDIUM_GRAY = new Color( 183, 166, 158 );
-	public static final Color HAIR_LIGHT_GRAY = new Color( 214, 196, 194 );
-	public static final Color HAIR_PLATNUM_BLONDE = new Color( 202, 191, 177 );
-	public static final Color HAIR_BLEACHED_BLONDE = new Color( 220, 208, 186 );
-	public static final Color HAIR_WHITE_BLONDE = new Color( 255, 245,225 );
-	public static final Color HAIR_LIGHT_BLONDE = new Color( 230, 206, 168 );
-	public static final Color HAIR_GOLDEN_BLONDE = new Color( 229, 200, 168 );
-	public static final Color HAIR_ASH_BLONDE = new Color( 222, 188, 153 );
-	public static final Color HAIR_HONEY_BLONDE = new Color( 184, 151, 120 );
-	public static final Color HAIR_STRAWBERRY_BLONDE = new Color( 165, 107, 70 );
-	public static final Color HAIR_LIGHT_RED = new Color( 181, 82, 57 );
-	public static final Color HAIR_DARK_RED = new Color( 141, 74, 67 );
-	public static final Color HAIR_LIGHT_AUBURN = new Color( 145, 85, 61 );
-	public static final Color HAIR_DARK_AUBURN = new Color( 83, 61, 50 );
-	public static final Color HAIR_DARK_BROWN = new Color( 59, 48, 36 );
-	public static final Color HAIR_GOLDEN_BROWN = new Color( 85, 72, 56 );
-	public static final Color HAIR_MEDIUM_BROWN = new Color( 78, 67, 63 );
-	public static final Color HAIR_CHESTNUT_BROWN = new Color( 80, 68, 68 );
-	public static final Color HAIR_BROWN = new Color( 106, 78, 66 );
-	public static final Color HAIR_LIGHT_BROWN = new Color( 167, 133, 106 );
-	public static final Color HAIR_ASH_BROWN = new Color( 151, 121, 97 );
-	public static final List<Color> JAPANESE_HAIR_COLORS = 
+	public static final Quaternarion HAIR_BLACK = new Quaternarion( 9f, 8f, 6f, 1f );
+	public static final Quaternarion HAIR_OFF_BLACK = new Quaternarion( 44f, 34f, 43f, 1f );
+	public static final Quaternarion HAIR_DARK_GRAY = new Quaternarion( 113f, 99f, 90f, 1f );
+	public static final Quaternarion HAIR_MEDIUM_GRAY = new Quaternarion( 183f, 166f, 158f, 1f );
+	public static final Quaternarion HAIR_LIGHT_GRAY = new Quaternarion( 214f, 196f, 194f, 1f );
+	public static final Quaternarion HAIR_PLATNUM_BLONDE = new Quaternarion( 202f, 191f, 177f, 1f );
+	public static final Quaternarion HAIR_BLEACHED_BLONDE = new Quaternarion( 220f, 208f, 186f, 1f );
+	public static final Quaternarion HAIR_WHITE_BLONDE = new Quaternarion( 255f, 245f,225f, 1f );
+	public static final Quaternarion HAIR_LIGHT_BLONDE = new Quaternarion( 230f, 206f, 168f, 1f );
+	public static final Quaternarion HAIR_GOLDEN_BLONDE = new Quaternarion( 229f, 200f, 168f, 1f );
+	public static final Quaternarion HAIR_ASH_BLONDE = new Quaternarion( 222f, 188f, 153f, 1f );
+	public static final Quaternarion HAIR_HONEY_BLONDE = new Quaternarion( 184f, 151f, 120f, 1f );
+	public static final Quaternarion HAIR_STRAWBERRY_BLONDE = new Quaternarion( 165f, 107f, 70f, 1f );
+	public static final Quaternarion HAIR_LIGHT_RED = new Quaternarion( 181f, 82f, 57f, 1f );
+	public static final Quaternarion HAIR_DARK_RED = new Quaternarion( 141f, 74f, 67f, 1f );
+	public static final Quaternarion HAIR_LIGHT_AUBURN = new Quaternarion( 145f, 85f, 61f, 1f );
+	public static final Quaternarion HAIR_DARK_AUBURN = new Quaternarion( 83f, 61f, 50f, 1f );
+	public static final Quaternarion HAIR_DARK_BROWN = new Quaternarion( 59f, 48f, 36f, 1f );
+	public static final Quaternarion HAIR_GOLDEN_BROWN = new Quaternarion( 85f, 72f, 56f, 1f );
+	public static final Quaternarion HAIR_MEDIUM_BROWN = new Quaternarion( 78f, 67f, 63f, 1f );
+	public static final Quaternarion HAIR_CHESTNUT_BROWN = new Quaternarion( 80f, 68f, 68f, 1f );
+	public static final Quaternarion HAIR_BROWN = new Quaternarion( 106f, 78f, 66f, 1f );
+	public static final Quaternarion HAIR_LIGHT_BROWN = new Quaternarion( 167f, 133f, 106f, 1f );
+	public static final Quaternarion HAIR_ASH_BROWN = new Quaternarion( 151f, 121f, 97f, 1f );
+	public static final List<Quaternarion> JAPANESE_HAIR_COLORS = 
 		Arrays.asList( HAIR_BLACK, HAIR_OFF_BLACK, HAIR_DARK_BROWN, HAIR_DARK_AUBURN, HAIR_BLACK, HAIR_BLACK );
-	public static final List<Color> MONGOLIAN_HAIR_COLORS = Arrays.asList( HAIR_BLACK, HAIR_OFF_BLACK, HAIR_BLACK );
-	public static final List<Color> EUROPEAN_HAIR_COLORS = Arrays.asList( HAIR_BLACK, HAIR_OFF_BLACK, HAIR_BLEACHED_BLONDE, HAIR_WHITE_BLONDE, 
+	public static final List<Quaternarion> MONGOLIAN_HAIR_COLORS = Arrays.asList( HAIR_BLACK, HAIR_OFF_BLACK, HAIR_BLACK );
+	public static final List<Quaternarion> EUROPEAN_HAIR_COLORS = Arrays.asList( HAIR_BLACK, HAIR_OFF_BLACK, HAIR_BLEACHED_BLONDE, HAIR_WHITE_BLONDE, 
 		HAIR_LIGHT_BLONDE, HAIR_GOLDEN_BLONDE, HAIR_ASH_BLONDE, HAIR_HONEY_BLONDE, HAIR_STRAWBERRY_BLONDE, HAIR_LIGHT_RED, HAIR_DARK_RED, HAIR_LIGHT_AUBURN,
 		HAIR_DARK_AUBURN, HAIR_DARK_BROWN, HAIR_GOLDEN_BROWN, HAIR_MEDIUM_BROWN, HAIR_CHESTNUT_BROWN, HAIR_BROWN, HAIR_LIGHT_BROWN, HAIR_ASH_BROWN,
 		HAIR_DARK_AUBURN, HAIR_DARK_BROWN, HAIR_GOLDEN_BROWN, HAIR_MEDIUM_BROWN, HAIR_CHESTNUT_BROWN, HAIR_BROWN, HAIR_LIGHT_BROWN, HAIR_ASH_BROWN,
