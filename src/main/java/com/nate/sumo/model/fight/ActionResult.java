@@ -8,7 +8,8 @@ public class ActionResult {
 	private float lateralBalanceEffect = 0.0f;
 	private float confidenceEffect = 0.0f;
 	private float balanceFactorEffect = 0.0f;
-	private float positionEffect = 0.0f;
+	private float xPositionEffect = 0.0f;
+	private float yPositionEffect = 0.0f;
 	private float positionDirection = 0.0f;
 	
 	public float getPowerEffect() {
@@ -47,17 +48,23 @@ public class ActionResult {
 	public void setBalanceFactorEffect(float balanceFactorEffect) {
 		this.balanceFactorEffect = balanceFactorEffect;
 	}
-	public float getPositionEffect() {
-		return positionEffect;
-	}
-	public void setPositionEffect(float positionEffect) {
-		this.positionEffect = positionEffect;
-	}
 	public float getPositionDirection(){
 		return this.positionDirection;
 	}
 	public void setPositionDirection( float positionDirection ){
 		this.positionDirection = positionDirection;
+	}
+	public float getxPositionEffect() {
+		return xPositionEffect;
+	}
+	public void setxPositionEffect(float xPositionEffect) {
+		this.xPositionEffect = xPositionEffect;
+	}
+	public float getyPositionEffect() {
+		return yPositionEffect;
+	}
+	public void setyPositionEffect(float yPositionEffect) {
+		this.yPositionEffect = yPositionEffect;
 	}
 	
 }

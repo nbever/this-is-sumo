@@ -6,6 +6,7 @@ import com.nate.model.MD5Animation;
 import com.nate.model.MD5Model;
 import com.nate.sumo.model.animation.ModelAnimationInfo;
 import com.nate.sumo.model.fight.Fight.PHASE;
+import com.nate.sumo.model.fight.actions.cut_scenes.PreBout;
 import com.nate.sumo.model.fight.actions.cut_scenes.SlowWalk;
 import com.nate.sumo.model.fight.actions.cut_scenes.Stand;
 import com.nate.sumo.model.rikishi.Rikishi;
@@ -13,10 +14,10 @@ import com.nate.sumo.model.rikishi.Rikishi;
 public class RikishiStatus {
 
 	private Rikishi rikishi;
-	private Float medialBalance;
-	private Float lateralBalance;
-	private Float energy;
-	private Float maxEnergy;
+	private Float medialBalance = 0.0f;
+	private Float lateralBalance = 0.0f;
+	private Float energy = 1000.0f;
+	private Float maxEnergy = 1000.0f;
 	
 	private FightCoordinates spot;
 	
@@ -56,22 +57,18 @@ public class RikishiStatus {
 		switch( getFight().getPhase() ){
 			case PRE_FIGHT:
 				if ( getCurrentAction() == null ){
-					setCurrentAction( new Stand( this, getFight() ) );
+//					setCurrentAction( new Stand( this, getFight() ) );
+					setCurrentAction( new PreBout( this, getFight() ) );
 					resetAnimation = true;
 				}
 				break;
-			case PREP:
-				if ( getCurrentAction() instanceof Stand ){
-					setCurrentAction( new SlowWalk( this, getFight(), new Route() ) );
-					resetAnimation = true;
-				}
 			default:
 		}
 		
-//		if ( resetAnimation == true ){
-//			
-//			modelInfo.getModel().setAnimation( getCurrentAction().getAnimation() );
-//		}
+		if ( resetAnimation == true ){
+			
+			getModelAnimationInfo().getModel().setAnimation( getCurrentAction().getAnimation() );
+		}
 		
 		long elapsedTime = 0L;
 		
@@ -111,16 +108,32 @@ public class RikishiStatus {
 		return energy;
 	}
 	
+	private void setEnergy( Float val ){
+		energy = val;
+	}
+	
 	public Float getMaxEnergy(){
 		return maxEnergy;
+	}
+	
+	private void setMaxEnergy( Float val ){
+		maxEnergy = val;
 	}
 	
 	public Float getMedialBalance(){
 		return medialBalance;
 	}
 	
+	private void setMedialBalance( Float val ){
+		medialBalance = val;
+	}
+	
 	public Float getLateralBalance(){
 		return lateralBalance;
+	}
+	
+	private void setLateralBalance( Float val ){
+		lateralBalance = val;
 	}
 	
 	public FightKnowledgeIf getFight(){
@@ -129,5 +142,29 @@ public class RikishiStatus {
 	
 	public FightCoordinates getFightCoordinates(){
 		return spot;
+	}
+	
+	private void setFightCoordinates( FightCoordinates val ){
+		spot = val;
+	}
+	
+	public void computeResults( ActionResult result ){
+		
+		if ( result == null ){
+			return;
+		}
+		
+		setEnergy( getEnergy() + result.getPowerEffect() );
+		setMaxEnergy( getMaxEnergy() + result.getMaxPowerEffect() );
+		setMedialBalance( getMedialBalance() + result.getMedialBalanceEffect() );
+		setLateralBalance( getLateralBalance() + result.getLateralBalanceEffect() );
+		
+		FightCoordinates coords = new FightCoordinates();
+		
+		coords.setX( getFightCoordinates().getX() + result.getxPositionEffect() );
+		coords.setY( getFightCoordinates().getY() + result.getyPositionEffect() );
+		coords.setFacing( (getFightCoordinates().getFacing() + result.getPositionDirection()) % 360.0f );
+		setFightCoordinates( coords );
+	
 	}
 }

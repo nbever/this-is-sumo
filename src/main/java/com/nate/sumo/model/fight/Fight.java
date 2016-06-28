@@ -31,11 +31,11 @@ public class Fight implements FightKnowledgeIf{
 		if ( startTime == 0L ){
 			startTime = Instant.now().toEpochMilli();
 		}
-		
-		if ( getElapsedTime() > 3000L && bothRikishiAreStill() && phase != PHASE.POST_FIGHT ){
-			phase = PHASE.values()[getPhase().ordinal()+1];
-		}
-		
+//		
+//		if ( getElapsedTime() > 3000L && bothRikishiAreStill() && phase != PHASE.POST_FIGHT ){
+//			phase = PHASE.values()[getPhase().ordinal()+1];
+//		}
+//		
 		getEastStatus().advance();
 	}
 	

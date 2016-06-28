@@ -69,6 +69,8 @@ public class KeyMapper {
 		case GLFW_KEY_E:
 			mappedKey = L1_BUTTON;
 			break;
+		default:
+			mappedKey = -1;
 		}
 		
 		ScreenManager.getInstance().handleKey( mappedKey, scanCode, action, mods );

@@ -8,14 +8,19 @@ import com.nate.sumo.model.fight.RikishiStatus;
 
 public class Stand extends NonInteractionAction {
 
+	private long duration = -1L;
+	
 	public Stand(RikishiStatus myStatus, FightKnowledgeIf callback) {
 		super( myStatus, callback );
 	}
 
+	public Stand(RikishiStatus myStatus, FightKnowledgeIf callback, long duration) {
+		this( myStatus, callback );
+		this.duration = duration;
+	}
+	
 	@Override
 	protected void advancePhase() {
-		// TODO Auto-generated method stub
-
 	}
 	
 	@Override
@@ -23,9 +28,25 @@ public class Stand extends NonInteractionAction {
 		
 		if ( animation == null ){
 			animation = AnimationManager.getInstance().loadAnimation( "sumo-idle1.md5anim" );
+			animation.setRepeat( true );
 		}
 		
 		return animation;
+	}
+	
+	@Override
+	public long getActionTime() {
+		return this.duration;
+	}
+	
+	@Override
+	public long getTryTime() {
+		return 0L;
+	}
+	
+	@Override
+	public long getRecoveryTime() {
+		return 0L;
 	}
 
 }

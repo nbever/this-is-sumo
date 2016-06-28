@@ -1,10 +1,8 @@
 package com.nate.sumo.model.fight;
 
 import java.time.Instant;
-import java.util.function.Function;
 
 import com.nate.model.MD5Animation;
-import com.nate.model.MD5FrameSkeleton;
 
 public abstract class FightAction {
 
@@ -13,7 +11,8 @@ public abstract class FightAction {
 		EXECUTE,
 		RECOVER,
 		FAILURE,
-		NONE
+		NONE,
+		DONE
 	}
 	
 	public enum DIRECTION {
@@ -47,28 +46,43 @@ public abstract class FightAction {
 		this.status = myStatus;
 		this.callback = callback;
 		
-		this.startingEnergy = myStatus.getEnergy();
-		this.startingLateralBalance = myStatus.getLateralBalance();
-		this.startingMedialBalance = myStatus.getMedialBalance();
-		this.startingMaxEnergy = myStatus.getMaxEnergy();
+
 	}
 	
 	public void start(){
 		setStartTime();
 		setPhaseStartTime();
 		currentStatus = STATUS.ATTEMPT;
+		currentTime = Instant.now().toEpochMilli();
+		lastTime = currentTime;
+		this.startingEnergy = getMyStatus().getEnergy();
+		this.startingLateralBalance = getMyStatus().getLateralBalance();
+		this.startingMedialBalance = getMyStatus().getMedialBalance();
+		this.startingMaxEnergy = getMyStatus().getMaxEnergy();
+		this.setStartingSpot( getMyStatus().getFightCoordinates() );
 		
 		MD5Animation newAnimation = getAnimation();
 		
-		getMyStatus().getModelAnimationInfo().getModel().setAnimation( newAnimation );
+		if ( getMyStatus().getModelAnimationInfo() != null ){
+			getMyStatus().getModelAnimationInfo().getModel().setAnimation( newAnimation );
+		}
 	}
 	
 	public void stop(){
 		setCurrentStatus( STATUS.RECOVER );
 	}
 	
+	/**
+	 * This is only the time that has elapsed since the 
+	 * last time the action was advanced
+	 * @return
+	 */
 	public long getElapsedTime(){
 		return currentTime - lastTime;
+	}
+	
+	public long getTotalActionTime(){
+		return currentTime - getStartTime();
 	}
 	
 	public void advance(){
@@ -80,7 +94,7 @@ public abstract class FightAction {
 		}
 		
 		if ( getCurrentStatus().equals( STATUS.ATTEMPT ) &&
-			getElapsedTime() > getTryTime() ){
+			getTotalActionTime() > getTryTime() ){
 			boolean rez = doSuccessTest();
 			
 			if ( rez == true ){
@@ -92,10 +106,34 @@ public abstract class FightAction {
 			}
 		}
 		else if ( getCurrentStatus().equals( STATUS.EXECUTE ) &&
-			getElapsedTime() > getTryTime() + getActionTime() &&
-			!( this instanceof NonInteractionAction )){
+			getTotalActionTime() > getTryTime() + getActionTime() ){
+			
 			setCurrentStatus( STATUS.RECOVER );
 		}
+		else if ( getCurrentStatus().equals(  STATUS.RECOVER ) &&
+			getTotalActionTime() > getTryTime() + getActionTime() + getRecoveryTime() ){
+			setCurrentStatus( STATUS.DONE );
+		}
+		
+		computeCurrentStatus();
+	}
+	
+	private void computeCurrentStatus(){
+		
+		ActionResult rez = new ActionResult();
+		
+		switch( getCurrentStatus() ){
+		case ATTEMPT:
+			rez = getAttemptActionResult( getElapsedTime() );
+			break;
+		case EXECUTE:
+			rez = getSuccessfulActionResults( getElapsedTime() );
+			break;
+		default:
+			break;
+		}
+		
+		getMyStatus().computeResults( rez );
 	}
 	
 	private void done(){
@@ -141,7 +179,7 @@ public abstract class FightAction {
 		return animation;
 	}
 	
-	private RikishiStatus getMyStatus(){
+	protected RikishiStatus getMyStatus(){
 		return status;
 	}
 	
@@ -173,16 +211,17 @@ public abstract class FightAction {
 		phaseStartTime = Instant.now().toEpochMilli();
 	}
 	
-	private STATUS getCurrentStatus() {
+	public STATUS getCurrentStatus() {
 		return currentStatus;
 	}
 
-	private void setCurrentStatus(STATUS currentStatus) {
+	protected void setCurrentStatus(STATUS currentStatus) {
 		this.currentStatus = currentStatus;
+
 		setPhaseStartTime();
 	}
 
-	private FightCoordinates getStartingSpot() {
+	public FightCoordinates getStartingSpot() {
 		return startingSpot;
 	}
 

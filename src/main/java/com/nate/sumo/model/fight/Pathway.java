@@ -7,6 +7,8 @@ public class Pathway {
 	private float moveFacing;
 	private float arrivalFacing;
 	
+	public static final float DESTINATION = 1000.0f;
+	
 	public Pathway( float xDest, float yDest, float moveFacing, float arrivalFacing ){
 		this.xDest = xDest;
 		this.yDest = yDest;

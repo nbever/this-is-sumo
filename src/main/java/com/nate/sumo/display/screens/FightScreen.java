@@ -98,6 +98,7 @@ public class FightScreen extends Screen {
 							glVertex3f( 1.5f, 1.25f, 0.0f );
 						glEnd();
 					glPopMatrix();
+				
 					
 					glPushMatrix();
 						setRikishiPosition( getFight().getEastStatus() );

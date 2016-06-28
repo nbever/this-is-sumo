@@ -26,8 +26,8 @@ public class FightCoordinates {
 	}
 	
 	public void setEastPreFight(){
-		setX( -0.8f );
-		setY( -0.3f );
+		setX( -5.0f );
+		setY( 6.0f );
 	}
 	
 	public void setWestPreFight(){
