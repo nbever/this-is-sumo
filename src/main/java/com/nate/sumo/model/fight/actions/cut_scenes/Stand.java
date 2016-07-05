@@ -27,7 +27,7 @@ public class Stand extends NonInteractionAction {
 	public MD5Animation getAnimation() {
 		
 		if ( animation == null ){
-			animation = AnimationManager.getInstance().loadAnimation( "sumo-idle1.md5anim" );
+			animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/sumo-idle1.md5anim" );
 			animation.setRepeat( true );
 		}
 		

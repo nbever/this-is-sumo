@@ -8,6 +8,8 @@ import com.nate.model.MD5Animation;
 
 public class AnimationManager {
 
+	public static final String DEFAULT_FOLDER = "default_actions";
+	
 	private static AnimationManager instance;
 	
 	private Map<String, MD5Animation> animMap;

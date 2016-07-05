@@ -104,10 +104,20 @@ public class FightScreen extends Screen {
 						setRikishiPosition( getFight().getEastStatus() );
 					
 						glRotatef( 180.0f, 1.0f, 0.0f, 0.0f );
-						glScalef( 1.3f, 1.3f, 1.3f );
+						glScalef( 1.6f, 1.6f, 1.6f );
 						
 						getFight().advance();
 						getFight().getEastStatus().draw();
+					glPopMatrix();
+					
+					glPushMatrix();
+						glTranslatef( 0.0f, -2.0f, 0.0f );
+						
+						glBegin( GL_LINE_STRIP );
+							glVertex3f( 0.0f, 0.0f, 0.0f );
+							glVertex3f( 0.0f, 0.0f, -3.0f );
+						glEnd();
+						
 					glPopMatrix();
 					
 				glPopMatrix();
@@ -121,10 +131,15 @@ public class FightScreen extends Screen {
 	
 	/**
 	 * Abstracted this method so we could deal with the insanity of the coordinate flip flop one place
+	 * 
+	 * It also deals with rotations.  It wants to go counter-clockwise with 0 point toward the viewer. 
+	 * That means we're off by 270 degrees and need to flip the rotation in order for the "facing" value
+	 * to make sense.
 	 * @param status
 	 */
 	private void setRikishiPosition( RikishiStatus status ){
 		glTranslatef( status.getFightCoordinates().getY(), status.getFightCoordinates().getX(), 0.0f );
+		glRotatef( -1.0f * (status.getFightCoordinates().getFacing() - 270.0f), 0.0f, 0.0f, 1.0f );
 	}
 
 	@Override

@@ -14,6 +14,8 @@ public class SlowWalk extends NonInteractionAction{
 	private Route route;
 	private Pathway currentPathway;
 	
+	private static final Double TURN_SIZE = 1.0;
+	
 	public SlowWalk(RikishiStatus myStatus, FightKnowledgeIf callback, Route route ) {
 		super( myStatus, callback );
 		
@@ -25,7 +27,7 @@ public class SlowWalk extends NonInteractionAction{
 	public MD5Animation getAnimation() {
 	
 		if ( animation == null ){
-			animation = AnimationManager.getInstance().loadAnimation( "slowwalk.md5anim" );
+			animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/slowwalk.md5anim" );
 			animation.setRepeat( true );
 		}
 		
@@ -40,21 +42,38 @@ public class SlowWalk extends NonInteractionAction{
 		//TODO: Calculate rate based on speed
 		Float rate = elapsedTime * (1.0f / 1000.0f);
 		
-		double angle = Math.atan2( getCurrentPathway().getxDest() - getMyStatus().getFightCoordinates().getX(), 
-			getCurrentPathway().getyDest() - getMyStatus().getFightCoordinates().getY() );
+		double angle = Math.atan2( getCurrentPathway().getyDest() - getMyStatus().getFightCoordinates().getY(), 
+			getCurrentPathway().getxDest() - getMyStatus().getFightCoordinates().getX() );
 		
-		double x = rate * Math.sin( angle );
-		double y = rate * Math.cos( angle );
+		double y = rate * Math.sin( angle );
+		double x = rate * Math.cos( angle );
 		
 		boolean right = (getCurrentPathway().getxDest() - getStartingSpot().getX() > 0);
 		boolean up = (getCurrentPathway().getyDest() - getStartingSpot().getY() > 0);
 		
 		if ( (getCurrentPathway().getxDest() - (getMyStatus().getFightCoordinates().getX() + x) > 0) != right ){
-			x = getCurrentPathway().getxDest();
+			x = getCurrentPathway().getxDest() - getMyStatus().getFightCoordinates().getX();
 		}
 		
 		if ( (getCurrentPathway().getyDest() - (getMyStatus().getFightCoordinates().getY() + y) > 0) != up ){
-			y = getCurrentPathway().getyDest();
+			y = getCurrentPathway().getyDest() - getMyStatus().getFightCoordinates().getY();
+		}
+		
+		double wannaFace = (angle / (2*Math.PI)) * 360.0;
+		
+		if ( getCurrentPathway().getMoveFacing() != Pathway.DESTINATION ){
+			wannaFace = getCurrentPathway().getMoveFacing();
+		}
+		
+		// need wannaFace to be positive to simplify comparisons
+		if ( wannaFace < 0 ){
+			wannaFace += 360.0;
+		}
+		
+		if ( Math.abs( wannaFace - getMyStatus().getFightCoordinates().getFacing() ) > 0.001 ){
+			
+			float turnDiff = turn( wannaFace, getMyStatus().getFightCoordinates().getFacing() );
+			rez.setPositionDirection( turnDiff );
 		}
 		
 		rez.setxPositionEffect( (float)x );
@@ -63,11 +82,40 @@ public class SlowWalk extends NonInteractionAction{
 		return rez;
 	}
 	
+	/**
+	 * Returns the amount to turn
+	 * @param wannFace
+	 * @param facing
+	 * @return
+	 */
+	private float turn( double wannaFace, double facing ){
+		
+		double turnRight = Math.abs( (facing + 360.0) - wannaFace );
+		double turnLeft = Math.abs( facing - wannaFace );
+		
+		double turn = turnRight;
+		
+		if ( turnLeft < turnRight ){
+			turn = turnLeft;
+		}
+		
+		if ( Math.abs( turn ) > TURN_SIZE ){
+			turn = TURN_SIZE;
+		}
+		
+		if ( turnLeft > turnRight ){
+			turn *= -1.0;
+		}
+		
+		return (float)turn;
+	}
+	
 	@Override
 	public void advance() {
 		
 		if ( didIArrive() ){
 			setCurrentStatus( STATUS.DONE );
+			getMyStatus().getFightCoordinates().setFacing( getCurrentPathway().getArrivalFacing() );
 		}
 		
 		super.advance();
@@ -75,15 +123,10 @@ public class SlowWalk extends NonInteractionAction{
 	
 	private boolean didIArrive(){
 		
-		System.out.println( getMyStatus().getFightCoordinates().getX() + ", " + getMyStatus().getFightCoordinates().getY() +
-			" vs. " + getCurrentPathway().getxDest() + ", " + getCurrentPathway().getyDest() );
-		
 		if ( 
 			getCurrentPathway() == null || 
 			(getMyStatus().getFightCoordinates().getX() == getCurrentPathway().getxDest() &&
 			getMyStatus().getFightCoordinates().getY() == getCurrentPathway().getyDest() )){
-			
-			System.out.println( "They are equal" );
 			
 			return true;
 		}
