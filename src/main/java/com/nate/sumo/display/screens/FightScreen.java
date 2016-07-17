@@ -101,8 +101,17 @@ public class FightScreen extends Screen {
 				
 					
 					glPushMatrix();
-						setRikishiPosition( getFight().getEastStatus() );
 					
+//						glColor3f( 0.6f, 0.0f, 1.0f );
+//						glLineWidth( 1.0f );
+//						
+//						glBegin( GL_LINE_STRIP );
+//							glVertex3f( 6.0f, -5.0f, 0.0f );
+//							glVertex3f( 6.0f, -5.0f, -3.0f );
+//						glEnd();
+//					
+						setRikishiPosition( getFight().getEastStatus() );
+						
 						glRotatef( 180.0f, 1.0f, 0.0f, 0.0f );
 						glScalef( 1.6f, 1.6f, 1.6f );
 						
@@ -110,15 +119,15 @@ public class FightScreen extends Screen {
 						getFight().getEastStatus().draw();
 					glPopMatrix();
 					
-					glPushMatrix();
-						glTranslatef( 0.0f, -2.0f, 0.0f );
-						
-						glBegin( GL_LINE_STRIP );
-							glVertex3f( 0.0f, 0.0f, 0.0f );
-							glVertex3f( 0.0f, 0.0f, -3.0f );
-						glEnd();
-						
-					glPopMatrix();
+//					glPushMatrix();
+//						glTranslatef( 0.0f, -2.0f, 0.0f );
+//						
+//						glBegin( GL_LINE_STRIP );
+//							glVertex3f( 0.0f, 0.0f, 0.0f );
+//							glVertex3f( 0.0f, 0.0f, -3.0f );
+//						glEnd();
+//						
+//					glPopMatrix();
 					
 				glPopMatrix();
 
@@ -140,6 +149,7 @@ public class FightScreen extends Screen {
 	private void setRikishiPosition( RikishiStatus status ){
 		glTranslatef( status.getFightCoordinates().getY(), status.getFightCoordinates().getX(), 0.0f );
 		glRotatef( -1.0f * (status.getFightCoordinates().getFacing() - 270.0f), 0.0f, 0.0f, 1.0f );
+		glTranslatef( -1.6f, 0.0f, 0.0f );
 	}
 
 	@Override

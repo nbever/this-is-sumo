@@ -40,7 +40,8 @@ public class SlowWalk extends NonInteractionAction{
 		ActionResult rez = new ActionResult();
 		
 		//TODO: Calculate rate based on speed
-		Float rate = elapsedTime * (1.0f / 1000.0f);
+		Float rate = elapsedTime * (1.5f / 1000.0f);
+		Double turnRate = 1.0;
 		
 		double angle = Math.atan2( getCurrentPathway().getyDest() - getMyStatus().getFightCoordinates().getY(), 
 			getCurrentPathway().getxDest() - getMyStatus().getFightCoordinates().getX() );
@@ -65,6 +66,17 @@ public class SlowWalk extends NonInteractionAction{
 			wannaFace = getCurrentPathway().getMoveFacing();
 		}
 		
+		// if you are close to the destination we will change the facing desire
+		double xDiff = getCurrentPathway().getxDest() - getMyStatus().getFightCoordinates().getX();
+		double yDiff = getCurrentPathway().getyDest() - getMyStatus().getFightCoordinates().getY();
+		
+		double dist = Math.abs( Math.sqrt( Math.pow( xDiff, 2.0 ) + Math.pow( yDiff, 2.0 ) ) );
+		
+		if ( dist < (rate*30) ){
+			wannaFace = getCurrentPathway().getArrivalFacing();
+			turnRate = 2.0;
+		}
+		
 		// need wannaFace to be positive to simplify comparisons
 		if ( wannaFace < 0 ){
 			wannaFace += 360.0;
@@ -72,7 +84,7 @@ public class SlowWalk extends NonInteractionAction{
 		
 		if ( Math.abs( wannaFace - getMyStatus().getFightCoordinates().getFacing() ) > 0.001 ){
 			
-			float turnDiff = turn( wannaFace, getMyStatus().getFightCoordinates().getFacing() );
+			float turnDiff = turn( wannaFace, getMyStatus().getFightCoordinates().getFacing(), turnRate );
 			rez.setPositionDirection( turnDiff );
 		}
 		
@@ -88,7 +100,7 @@ public class SlowWalk extends NonInteractionAction{
 	 * @param facing
 	 * @return
 	 */
-	private float turn( double wannaFace, double facing ){
+	private float turn( double wannaFace, double facing, double turnRate ){
 		
 		double turnRight = Math.abs( (facing + 360.0) - wannaFace );
 		double turnLeft = Math.abs( facing - wannaFace );

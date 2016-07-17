@@ -26,7 +26,7 @@ public class PreBout extends Scene {
 			sequence = new ArrayList<FightAction>();
 			
 			Route route = new Route();
-			Pathway p = new Pathway( -2.0f, 0.0f, Pathway.DESTINATION, 0.0f );
+			Pathway p = new Pathway( -3.3f, 0.0f, Pathway.DESTINATION, 0.0f );
 			route.addPathway( p );
 			
 			Stand stand = new Stand( getMyStatus(), getCallback(), 3000L );
