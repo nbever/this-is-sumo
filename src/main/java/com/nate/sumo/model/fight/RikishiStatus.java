@@ -65,11 +65,6 @@ public class RikishiStatus {
 			default:
 		}
 		
-		if ( resetAnimation == true ){
-			
-			getModelAnimationInfo().getModel().setAnimation( getCurrentAction().getAnimation() );
-		}
-		
 		long elapsedTime = 0L;
 		
 		if ( getCurrentAction() != null ){

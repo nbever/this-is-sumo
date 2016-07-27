@@ -40,6 +40,7 @@ public abstract class Scene extends FightAction {
 			index++;
 			action.stop();
 			action = getActions().get( getIndex() );
+			System.out.println( "Starting: " + action.getClass().getName() );
 			action.start();
 		}
 		

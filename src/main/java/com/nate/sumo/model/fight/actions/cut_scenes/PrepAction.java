@@ -20,12 +20,9 @@ public class PrepAction extends FightAction {
 	}
 	
 	@Override
-	public MD5Animation getAnimation() {
+	protected MD5Animation buildAnimation() {
 		
-		if ( animation == null ){
-			animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/pretachai.md5anim" );
-			animation.setRepeat( false );
-		}
+		MD5Animation animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/pretachai.md5anim" );
 		
 		return animation;
 	}

@@ -14,19 +14,10 @@ public class Crouch extends NonInteractionAction {
 	}
 	
 	@Override
-	public MD5Animation getAnimation() {
-		if ( animation == null ){
-			animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/crouch.md5anim" );
-			animation.setRepeat( false );
-		}
+	protected MD5Animation buildAnimation() {
+		
+		MD5Animation animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/crouch.md5anim" );
 		
 		return animation;
 	}
-	
-	@Override
-	public long getTotalActionTime() {
-	
-		return -1L;
-	}
-
 }

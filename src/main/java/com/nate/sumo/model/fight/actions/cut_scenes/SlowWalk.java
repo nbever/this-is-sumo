@@ -24,12 +24,9 @@ public class SlowWalk extends NonInteractionAction{
 	}
 	
 	@Override
-	public MD5Animation getAnimation() {
+	protected MD5Animation buildAnimation() {
 	
-		if ( animation == null ){
-			animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/slowwalk.md5anim" );
-			animation.setRepeat( true );
-		}
+		MD5Animation animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/slowwalk.md5anim" );
 		
 		return animation;
 	}

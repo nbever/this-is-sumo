@@ -24,13 +24,10 @@ public class Stand extends NonInteractionAction {
 	}
 	
 	@Override
-	public MD5Animation getAnimation() {
+	protected MD5Animation buildAnimation() {
 		
-		if ( animation == null ){
-			animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/sumo-idle1.md5anim" );
-			animation.setRepeat( true );
-		}
-		
+		MD5Animation animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/sumo-idle1.md5anim" );
+
 		return animation;
 	}
 	

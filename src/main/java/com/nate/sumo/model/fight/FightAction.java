@@ -1,8 +1,11 @@
 package com.nate.sumo.model.fight;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.nate.model.MD5Animation;
+import com.nate.model.MD5FrameData;
 
 public abstract class FightAction {
 
@@ -40,7 +43,8 @@ public abstract class FightAction {
 	
 	private FightCoordinates startingSpot;
 	
-	protected MD5Animation animation;
+	private MD5Animation animation;
+	private MD5Animation transitionAnimation;
 	
 	public FightAction( RikishiStatus myStatus, FightKnowledgeIf callback ){
 		this.status = myStatus;
@@ -50,6 +54,17 @@ public abstract class FightAction {
 	}
 	
 	public void start(){
+
+		initializeActionTimers();
+		
+		MD5Animation newAnimation = getAnimation();
+		
+		if ( getMyStatus().getModelAnimationInfo() != null ){
+			getMyStatus().getModelAnimationInfo().getModel().setAnimation( newAnimation );
+		}
+	}
+	
+	private void initializeActionTimers(){
 		setStartTime();
 		setPhaseStartTime();
 		currentStatus = STATUS.ATTEMPT;
@@ -60,12 +75,6 @@ public abstract class FightAction {
 		this.startingMedialBalance = getMyStatus().getMedialBalance();
 		this.startingMaxEnergy = getMyStatus().getMaxEnergy();
 		this.setStartingSpot( getMyStatus().getFightCoordinates() );
-		
-		MD5Animation newAnimation = getAnimation();
-		
-		if ( getMyStatus().getModelAnimationInfo() != null ){
-			getMyStatus().getModelAnimationInfo().getModel().setAnimation( newAnimation );
-		}
 	}
 	
 	public void stop(){
@@ -86,6 +95,7 @@ public abstract class FightAction {
 	}
 	
 	public void advance(){
+		
 		lastTime = currentTime;
 		currentTime = System.currentTimeMillis();
 		
@@ -93,8 +103,20 @@ public abstract class FightAction {
 			start();
 		}
 		
+		if ( getMyStatus().getModelAnimationInfo().getModel().hasAnimation() && 
+			 getMyStatus().getModelAnimationInfo().getModel().getAnimation().isTransitioning() ){
+			return;
+		}
+		
+		if ( getMyStatus().getModelAnimationInfo().getModel().hasAnimation() &&
+			 getMyStatus().getModelAnimationInfo().getModel().getAnimation().getAnimationTime() == 0.0f ){
+			getMyStatus().getModelAnimationInfo().getModel().getAnimation().setAnimationTime( 1.0f );
+			initializeActionTimers();
+		}
+		
 		if ( getCurrentStatus().equals( STATUS.ATTEMPT ) &&
 			getTotalActionTime() > getTryTime() ){
+			
 			boolean rez = doSuccessTest();
 			
 			if ( rez == true ){
@@ -143,15 +165,17 @@ public abstract class FightAction {
 	/** Overwrite these ***/
 	
 	public long getTryTime(){
-		return 2000L;
+//		return 2000L;
+		
+		return (long)getAnimation().getAnimationDuration();
 	}
 	
 	public long getActionTime(){
-		return 3000L;
+		return 0L;
 	}
 	
 	public long getRecoveryTime(){
-		return 1000L;
+		return 0L;
 	}
 	
 	/**
@@ -173,9 +197,15 @@ public abstract class FightAction {
 	}
 	
 	protected abstract void advancePhase();
+	protected abstract MD5Animation buildAnimation();
 	
 	// get/sets
 	public MD5Animation getAnimation(){
+		
+		if ( animation == null ){
+			animation = buildAnimation();
+		}
+		
 		return animation;
 	}
 	

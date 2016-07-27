@@ -3,7 +3,7 @@ package com.nate.sumo.model.fight.actions.cut_scenes;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nate.sumo.model.fight.ActionInstructions;
+import com.nate.model.MD5Animation;
 import com.nate.sumo.model.fight.FightAction;
 import com.nate.sumo.model.fight.FightKnowledgeIf;
 import com.nate.sumo.model.fight.Pathway;
@@ -45,6 +45,12 @@ public class PreBout extends Scene {
 		}
 		
 		return sequence;
+	}
+
+	@Override
+	protected MD5Animation buildAnimation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -14,12 +14,11 @@ public class CrouchIdle extends NonInteractionAction {
 	}
 	
 	@Override
-	public MD5Animation getAnimation() {
-		if ( animation == null ){
-			animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/crouch.idle.md5anim" );
-			animation.setRepeat( true );
-		}
-		return super.getAnimation();
+	protected MD5Animation buildAnimation() {
+
+		MD5Animation animation = AnimationManager.getInstance().loadAnimation( AnimationManager.DEFAULT_FOLDER + "/crouch.idle.md5anim" );
+		animation.setRepeat( true );
+		return animation;
 	}
 	
 	@Override

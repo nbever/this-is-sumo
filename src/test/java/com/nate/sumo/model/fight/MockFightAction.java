@@ -1,5 +1,7 @@
 package com.nate.sumo.model.fight;
 
+import com.nate.model.MD5Animation;
+
 public class MockFightAction extends FightAction{
 
 	public MockFightAction(RikishiStatus myStatus, FightKnowledgeIf callback) {
@@ -11,6 +13,12 @@ public class MockFightAction extends FightAction{
 	protected void advancePhase() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected MD5Animation buildAnimation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
