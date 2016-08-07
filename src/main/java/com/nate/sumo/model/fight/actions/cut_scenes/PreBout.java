@@ -26,12 +26,21 @@ public class PreBout extends Scene {
 			sequence = new ArrayList<FightAction>();
 			
 			Route route = new Route();
-			Pathway p = new Pathway( -3.3f, 0.0f, Pathway.DESTINATION, 0.0f );
+
+			float xcoord = 3.3f;
+			float arriveFacing = 180.0f;
+			
+			if ( getMyStatus().isEast() ){
+				xcoord *= -1.0f;
+				arriveFacing = 0.0f;
+			}
+			
+			Pathway p = new Pathway( xcoord, 0.0f, Pathway.DESTINATION, arriveFacing );
 			route.addPathway( p );
 			
-			Stand stand = new Stand( getMyStatus(), getCallback(), 3000L );
+			Stand stand = new Stand( getMyStatus(), getCallback(), (long)((Math.random()*2500)+1000) );
 			SlowWalk walk = new SlowWalk( getMyStatus(), getCallback(), route );
-			Stand stand2 = new Stand( getMyStatus(), getCallback(), 500L );
+			Stand stand2 = new Stand( getMyStatus(), getCallback(), (long)((Math.random()*500)+200) );
 			PrepAction prep = new PrepAction( getMyStatus(), getCallback() );
 			Crouch crouch = new Crouch( getMyStatus(), getCallback() );
 			CrouchIdle crouchIdle = new CrouchIdle( getMyStatus(), getCallback() );

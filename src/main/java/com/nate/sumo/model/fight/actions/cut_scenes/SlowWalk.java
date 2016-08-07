@@ -8,6 +8,7 @@ import com.nate.sumo.model.fight.NonInteractionAction;
 import com.nate.sumo.model.fight.Pathway;
 import com.nate.sumo.model.fight.RikishiStatus;
 import com.nate.sumo.model.fight.Route;
+import com.nate.util.MathHelper;
 
 public class SlowWalk extends NonInteractionAction{
 
@@ -20,7 +21,10 @@ public class SlowWalk extends NonInteractionAction{
 		super( myStatus, callback );
 		
 		this.route = route;
-		currentPathway = this.route.getNextPath();
+		
+		if ( route != null ){
+			currentPathway = this.route.getNextPath();
+		}
 	}
 	
 	@Override
@@ -37,11 +41,10 @@ public class SlowWalk extends NonInteractionAction{
 		ActionResult rez = new ActionResult();
 		
 		//TODO: Calculate rate based on speed
-		Float rate = elapsedTime * (1.5f / 1000.0f);
-		Double turnRate = 1.0;
+		Float rate = getWalkRate( elapsedTime );
+		Double turnRate = getTurnRate();
 		
-		double angle = Math.atan2( getCurrentPathway().getyDest() - getMyStatus().getFightCoordinates().getY(), 
-			getCurrentPathway().getxDest() - getMyStatus().getFightCoordinates().getX() );
+		double angle = getAngleToDest();
 		
 		double y = rate * Math.sin( angle );
 		double x = rate * Math.cos( angle );
@@ -57,17 +60,8 @@ public class SlowWalk extends NonInteractionAction{
 			y = getCurrentPathway().getyDest() - getMyStatus().getFightCoordinates().getY();
 		}
 		
-		double wannaFace = (angle / (2*Math.PI)) * 360.0;
-		
-		if ( getCurrentPathway().getMoveFacing() != Pathway.DESTINATION ){
-			wannaFace = getCurrentPathway().getMoveFacing();
-		}
-		
-		// if you are close to the destination we will change the facing desire
-		double xDiff = getCurrentPathway().getxDest() - getMyStatus().getFightCoordinates().getX();
-		double yDiff = getCurrentPathway().getyDest() - getMyStatus().getFightCoordinates().getY();
-		
-		double dist = Math.abs( Math.sqrt( Math.pow( xDiff, 2.0 ) + Math.pow( yDiff, 2.0 ) ) );
+		double wannaFace = getFacingDesire();
+		double dist = getDistanceFromDestination();
 		
 		if ( dist < (rate*30) ){
 			wannaFace = getCurrentPathway().getArrivalFacing();
@@ -91,13 +85,54 @@ public class SlowWalk extends NonInteractionAction{
 		return rez;
 	}
 	
+	protected double getDistanceFromDestination(){
+		
+		// if you are close to the destination we will change the facing desire
+		double xDiff = getCurrentPathway().getxDest() - getMyStatus().getFightCoordinates().getX();
+		double yDiff = getCurrentPathway().getyDest() - getMyStatus().getFightCoordinates().getY();
+		
+		double dist = Math.abs( Math.hypot( xDiff, yDiff ) );
+
+		return dist;
+	}
+	
+	protected double getFacingDesire(){
+		
+		double angle = getAngleToDest();
+		
+		double wannaFace = (angle / (2*Math.PI)) * 360.0;
+		
+		if ( getCurrentPathway().getMoveFacing() != Pathway.DESTINATION ){
+			wannaFace = getCurrentPathway().getMoveFacing();
+		}
+		
+		return wannaFace;
+	}
+	
+	protected double getAngleToDest(){
+		
+		double y = getCurrentPathway().getyDest() - getMyStatus().getFightCoordinates().getY();
+		double x = getCurrentPathway().getxDest() - getMyStatus().getFightCoordinates().getX();
+		double angle = MathHelper.atan_full( x, y );
+			
+		return angle;
+	}
+	
+	protected float getWalkRate( long elapsedTime ){
+		return elapsedTime * (1.5f / 1000.0f);
+	}
+	
+	protected Double getTurnRate(){
+		return 1.0;
+	}
+	
 	/**
 	 * Returns the amount to turn
 	 * @param wannFace
 	 * @param facing
 	 * @return
 	 */
-	private float turn( double wannaFace, double facing, double turnRate ){
+	protected float turn( double wannaFace, double facing, double turnRate ){
 		
 		double turnRight = Math.abs( (facing + 360.0) - wannaFace );
 		double turnLeft = Math.abs( facing - wannaFace );
@@ -108,8 +143,8 @@ public class SlowWalk extends NonInteractionAction{
 			turn = turnLeft;
 		}
 		
-		if ( Math.abs( turn ) > TURN_SIZE ){
-			turn = TURN_SIZE;
+		if ( Math.abs( turn ) > turnRate ){
+			turn = turnRate;
 		}
 		
 		if ( turnLeft > turnRight ){

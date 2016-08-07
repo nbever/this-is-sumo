@@ -37,6 +37,7 @@ public class Fight implements FightKnowledgeIf{
 //		}
 //		
 		getEastStatus().advance();
+		getWestStatus().advance();
 	}
 	
 	public RikishiStatus getEastStatus(){

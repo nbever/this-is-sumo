@@ -18,6 +18,7 @@ public class RikishiStatus {
 	private Float lateralBalance = 0.0f;
 	private Float energy = 1000.0f;
 	private Float maxEnergy = 1000.0f;
+	private boolean east = false;
 	
 	private FightCoordinates spot;
 	
@@ -32,6 +33,7 @@ public class RikishiStatus {
 	public RikishiStatus( Rikishi rikishi, Boolean east, FightKnowledgeIf fight ){
 		this.rikishi = rikishi;
 		this.fight = fight;
+		this.east = east;
 		this.spot = new FightCoordinates();
 		
 		if ( east ){
@@ -141,6 +143,10 @@ public class RikishiStatus {
 	
 	private void setFightCoordinates( FightCoordinates val ){
 		spot = val;
+	}
+	
+	public boolean isEast(){
+		return this.east;
 	}
 	
 	public void computeResults( ActionResult result ){

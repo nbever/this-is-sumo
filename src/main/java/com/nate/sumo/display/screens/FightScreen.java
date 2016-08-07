@@ -99,6 +99,7 @@ public class FightScreen extends Screen {
 						glEnd();
 					glPopMatrix();
 				
+					getFight().advance();
 					
 					glPushMatrix();
 					
@@ -119,6 +120,15 @@ public class FightScreen extends Screen {
 						getFight().getEastStatus().draw();
 					glPopMatrix();
 					
+					glPushMatrix();
+					
+						setRikishiPosition( getFight().getWestStatus() );
+						
+						glRotatef( 180.0f, 1.0f, 0.0f, 0.0f );
+						glScalef( 1.6f, 1.6f, 1.6f );
+						
+						getFight().getWestStatus().draw();
+					glPopMatrix();
 //					glPushMatrix();
 //						glTranslatef( 0.0f, -2.0f, 0.0f );
 //						
@@ -178,6 +188,7 @@ public class FightScreen extends Screen {
 			dohyo.load( file.getAbsolutePath(), "dohyo_tex.tga" );
 
 			getFight().getEastStatus().load();
+			getFight().getWestStatus().load();
 		}
 		catch( Exception e ){
 			e.printStackTrace();

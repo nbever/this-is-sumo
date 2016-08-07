@@ -29,17 +29,17 @@ public class AnimationManager {
 		
 		MD5Animation anim = getAnimationMap().get( key );
 		
-		if ( anim == null ){
+//		if ( anim == null ){
 			URL url = ModelManager.class.getResource( "/" + key );
 			String filePath = url.getFile();
 			
 			try {
 				anim = MD5Animation.loadAnimation( filePath );
-				getAnimationMap().put( key, anim );
+//				getAnimationMap().put( key, anim );
 			} catch (Exception e) {
 				System.out.println( "Could not locate animation " + key );
 			}
-		}
+//		}
 		
 		return anim;
 	}

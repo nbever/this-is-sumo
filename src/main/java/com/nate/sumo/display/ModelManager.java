@@ -31,18 +31,18 @@ public class ModelManager {
 	public MD5Model loadModel( String key, int texId ){
 		
 		MD5Model model = getModelMap().get( key );
-		
-		if ( model == null ){
+//		
+//		if ( model == null ){
 			URL url = ModelManager.class.getResource( key );
 			String filePath = url.getFile();
 			
 			try {
 				model = MD5Model.loadModel( filePath, texId );
-				getModelMap().put( key, model );
+//				getModelMap().put( key, model );
 			} catch (Exception e) {
 				System.out.println( "Could not locate model " + key );
 			}
-		}
+//		}
 		
 		return model;
 	}
