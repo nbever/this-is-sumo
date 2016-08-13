@@ -251,7 +251,7 @@ public class BanzukeSelector extends Widget
 		if ( rank.getRankNumber() == 1 ){
 		
 			// if it's at the top we can't go up anymore
-			if ( MathHelper.equalsf( getSelectorAnimation().getEndingValue().getY(), INITIAL_SELECTOR.getY() ) ){
+			if ( MathHelper.equals( getSelectorAnimation().getEndingValue().getY(), INITIAL_SELECTOR.getY() ) ){
 				return;
 			}
 			

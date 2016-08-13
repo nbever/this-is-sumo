@@ -15,7 +15,8 @@ public abstract class FightAction {
 		RECOVER,
 		FAILURE,
 		NONE,
-		DONE
+		DONE,
+		WAITING
 	}
 	
 	public enum DIRECTION {

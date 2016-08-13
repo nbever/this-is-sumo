@@ -19,6 +19,10 @@ public abstract class Scene extends FightAction {
 	
 	public abstract List<FightAction> getActions();
 
+	protected FightAction getCutSceneAction(){
+		return getActions().get( getIndex() );
+	}
+	
 	@Override
 	protected void advancePhase() {
 		
@@ -27,7 +31,9 @@ public abstract class Scene extends FightAction {
 	@Override
 	public void advance() {
 		
-		FightAction action = getActions().get( getIndex() );
+		advancePhase();
+		
+		FightAction action = getCutSceneAction();
 		
 		if ( action.getAnimation().isFinished() || action.getCurrentStatus().equals( STATUS.DONE )){
 			// go to the next action

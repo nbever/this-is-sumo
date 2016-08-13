@@ -1,6 +1,8 @@
 package com.nate.sumo.model.fight;
 
-public abstract class TachiAiAction extends FightAction
+import com.nate.sumo.display.widgets.SequenceIf;
+
+public abstract class TachiAiAction extends FightAction implements SequenceIf
 {
 
 	public TachiAiAction( RikishiStatus status, FightKnowledgeIf callback )

@@ -2,9 +2,9 @@ package com.nate.util;
 
 public class MathHelper {
 
-	public static Boolean equalsf( float f1, float f2 ){
+	public static Boolean equals( Number f1, Number f2 ){
 		
-		return Math.abs( f1 - f2 ) < 0.000001;
+		return Math.abs( f1.doubleValue() - f2.doubleValue() ) < 0.000001;
 	}
 	
 	public static Double atan_full( double x, double y ){

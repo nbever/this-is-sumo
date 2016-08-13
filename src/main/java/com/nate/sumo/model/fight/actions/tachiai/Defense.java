@@ -1,5 +1,8 @@
 package com.nate.sumo.model.fight.actions.tachiai;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.nate.model.MD5Animation;
 import com.nate.sumo.model.fight.FightKnowledgeIf;
 import com.nate.sumo.model.fight.RikishiStatus;
@@ -24,5 +27,10 @@ public class Defense extends TachiAiAction{
 	protected MD5Animation buildAnimation() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<SEQUENCE_KEY> getSequence() {
+		return Arrays.asList( SEQUENCE_KEY.AWAY, SEQUENCE_KEY.AWAY, SEQUENCE_KEY.RANDOM, SEQUENCE_KEY.RANDOM, SEQUENCE_KEY.DOWN, SEQUENCE_KEY.AWAY );
 	}
 }

@@ -32,18 +32,18 @@ public class KeyMapper {
 	public static final int UP_RSTICK = 20;
 	public static final int DOWN_RSTICK = 21;
 	
-	public static void mapKey( int key, int scancode, int action, int mods ){
+	public static void mapKey( ScreenManager screenManager, int key, int scancode, int action, int mods ){
 		
 		
 		if ( key != GLFW_KEY_RIGHT &&  key != GLFW_KEY_LEFT && key != GLFW_KEY_UP && key != GLFW_KEY_DOWN ){
-			mapButton( key, scancode, action, mods );
+			mapButton( screenManager, key, scancode, action, mods );
 		}
 		else {
-			mapDirections( key, scancode, action, mods );
+			mapDirections( screenManager, key, scancode, action, mods );
 		}
 	}
 	
-	private static void mapButton( int key, int scanCode, int action, int mods ){
+	private static void mapButton( ScreenManager screenManager, int key, int scanCode, int action, int mods ){
 		
 		int mappedKey = 0;
 		
@@ -73,10 +73,10 @@ public class KeyMapper {
 			mappedKey = -1;
 		}
 		
-		ScreenManager.getInstance().handleKey( mappedKey, scanCode, action, mods );
+		screenManager.handleKey( mappedKey, scanCode, action, mods );
 	}
 	
-	private static void mapDirections( int key, int scanCode, int action, int mods ){
+	private static void mapDirections( ScreenManager screenManager, int key, int scanCode, int action, int mods ){
 	
 		float lateral = 0.0f;
 		float vertical = 0.0f;
@@ -97,7 +97,7 @@ public class KeyMapper {
 			
 		}
 		
-		ScreenManager.getInstance().handleDirections( lateral, vertical, action );
+		screenManager.handleDirections( lateral, vertical, action );
 	}
 	
 }

@@ -11,6 +11,10 @@ public class TextureNames
 	public static final String CTL_B = "controls/b2.png";
 	public static final String CTL_X = "controls/x2.png";
 	public static final String CTL_Y = "controls/y2.png";
+	public static final String CTL_LEFT = "controls/left.png";
+	public static final String CTL_RIGHT = "controls/right.png";
+	public static final String CTL_UP = "controls/up.png";
+	public static final String CTL_DOWN = "controls/down.png";
 	public static final String CTL_CONTROLLER = "controls/controller.png";
 	
 	public static final String DIALOG_BKG = "dialog.jpg";

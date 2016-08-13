@@ -23,11 +23,21 @@ public class ScreenHelper
 		
 		return instance;
 	}
-	
+
 	public void drawCircle( float radius, int segments, float lineWidth ){
+		drawCircle( radius, segments, lineWidth, false );
+	}
+	
+	public void drawCircle( float radius, int segments, float lineWidth, boolean fill ){
 		
-		glLineWidth( lineWidth );
-		glBegin( GL_LINE_STRIP );
+		if ( fill == false ){
+			glLineWidth( lineWidth );
+			glBegin( GL_LINE_STRIP );
+		}
+		else {
+			glBegin( GL_TRIANGLE_FAN );
+			glVertex3f( 0.0f, 0.0f, 0.0f );
+		}
 		
 		double degPer = 2*Math.PI / segments;
 		

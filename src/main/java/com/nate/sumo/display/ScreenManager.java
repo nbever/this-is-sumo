@@ -13,28 +13,32 @@ import com.nate.sumo.display.screens.ScreenInitData;
 public class ScreenManager implements Drawable, KeyHandler
 {
 
-	private static ScreenManager screenManager;
+//	protected static ScreenManager screenManager;
 	
 	private Screen currentScreen;
 	private Screen nextScreen;
 	private int backgroundTexture = -1;
 	
-	private ScreenManager(){}
+//	public static ScreenManager getInstance(){
+//		if ( screenManager == null ){
+//			screenManager = new ScreenManager();
+//		}
+//		return screenManager;
+//	}
 	
-	public static ScreenManager getInstance(){
-		if ( screenManager == null ){
-			screenManager = new ScreenManager();
-			screenManager.currentScreen = new MainScreen();
-			
-			try{
-				screenManager.setBackgroundTexture( "shrine.jpg" );
-			}
-			catch ( Exception e){
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	public ScreenManager(){}
+	
+	public void initialize(){
+		
+		currentScreen = new MainScreen();
+		
+		try{
+			setBackgroundTexture( "shrine.jpg" );
 		}
-		return screenManager;
+		catch ( Exception e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void draw(){
@@ -125,6 +129,10 @@ public class ScreenManager implements Drawable, KeyHandler
 	
 	private Screen getCurrentScreen(){
 		return currentScreen;
+	}
+	
+	protected void setCurrentScreen( Screen screen ){
+		currentScreen = screen;
 	}
 	
 	private Screen getNextScreen(){

@@ -73,9 +73,11 @@ public class SlowWalk extends NonInteractionAction{
 			wannaFace += 360.0;
 		}
 		
+		float turnDiff = 0.0f;
+		
 		if ( Math.abs( wannaFace - getMyStatus().getFightCoordinates().getFacing() ) > 0.001 ){
 			
-			float turnDiff = turn( wannaFace, getMyStatus().getFightCoordinates().getFacing(), turnRate );
+			turnDiff = turn( wannaFace, getMyStatus().getFightCoordinates().getFacing(), turnRate );
 			rez.setPositionDirection( turnDiff );
 		}
 		
@@ -128,30 +130,37 @@ public class SlowWalk extends NonInteractionAction{
 	
 	/**
 	 * Returns the amount to turn
+	 * 
+	 * right is -
+	 * left is +
+	 * 
+	 * Calculations are in degrees!
+	 * 
 	 * @param wannFace
 	 * @param facing
 	 * @return
 	 */
 	protected float turn( double wannaFace, double facing, double turnRate ){
 		
-		double turnRight = Math.abs( (facing + 360.0) - wannaFace );
-		double turnLeft = Math.abs( facing - wannaFace );
-		
-		double turn = turnRight;
-		
-		if ( turnLeft < turnRight ){
-			turn = turnLeft;
+		if ( MathHelper.equals( wannaFace, facing ) ){
+			return 0.0f;
 		}
 		
-		if ( Math.abs( turn ) > turnRate ){
-			turn = turnRate;
+		// turn the negatives into positive
+		double diff = wannaFace - facing;
+		double absDiff = Math.abs( diff );
+		double otherWay = 360.0 - absDiff;
+		
+		double wayToGo = turnRate;
+		
+		if ( absDiff < otherWay && diff < 0 ){
+			wayToGo *= -1.0;
+		}
+		else if ( absDiff > otherWay && diff > 0 ){
+			wayToGo *= -1.0;
 		}
 		
-		if ( turnLeft > turnRight ){
-			turn *= -1.0;
-		}
-		
-		return (float)turn;
+		return (float)wayToGo;
 	}
 	
 	@Override

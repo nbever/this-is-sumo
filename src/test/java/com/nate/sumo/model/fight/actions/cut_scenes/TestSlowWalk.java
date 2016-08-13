@@ -7,6 +7,7 @@ import org.junit.Test;
 import com.nate.sumo.model.fight.Pathway;
 import com.nate.sumo.model.fight.RikishiStatus;
 import com.nate.sumo.model.fight.Route;
+import com.nate.util.MathHelper;
 
 public class TestSlowWalk {
 
@@ -26,6 +27,18 @@ public class TestSlowWalk {
 		turn = slowWalk.turn( wantToFace, facing, 2.4 );
 		
 		assertTrue( "Expected 2.4 but got: " + turn, turn == 2.4f );
+		
+		turn = slowWalk.turn( 2.0, 280.0, 2.0 );
+		
+		assertTrue( "Expected 2 but got " + turn, turn == 2.0 );
+		
+		turn = slowWalk.turn( 200.0, 270.0, 4.1 );
+
+		assertTrue( "Expected -4.1 but got " + turn, MathHelper.equals( turn, -4.1 ) );
+		
+		turn = slowWalk.turn( 254.18, 270.0, 1.0 );
+		
+		assertTrue( "Expected -1 but got: " + turn, MathHelper.equals( turn, -1.0 ) );
 	}
 	
 	@Test

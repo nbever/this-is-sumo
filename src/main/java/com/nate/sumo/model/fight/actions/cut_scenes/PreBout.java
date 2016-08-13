@@ -55,6 +55,16 @@ public class PreBout extends Scene {
 		
 		return sequence;
 	}
+	
+	@Override
+	protected void advancePhase() {
+		// TODO Auto-generated method stub
+		super.advancePhase();
+		
+		if ( getCutSceneAction() instanceof CrouchIdle ){
+			setCurrentStatus( STATUS.WAITING );
+		}
+	}
 
 	@Override
 	protected MD5Animation buildAnimation() {

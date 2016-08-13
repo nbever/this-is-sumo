@@ -169,15 +169,15 @@ public class FightScreen extends Screen {
 
 	@Override
 	public void drawLoading() {
-		try {
-			ScreenManager.getInstance().setBackgroundTexture( null );
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			ScreenManager.getInstance().setBackgroundTexture( null );
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (URISyntaxException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		try {
 			dohyo = new ObjImpScene();
