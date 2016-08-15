@@ -102,14 +102,12 @@ public class TestGuitarHeroScreen extends Screen implements SequenceIf{
 
 	@Override
 	public void handleKey(int key, int scanCode, int action, int mods) {
-		// TODO Auto-generated method stub
-		
+		getGuitarHero().handleKey( key, scanCode, action, mods );
 	}
 
 	@Override
 	public void handleDirections(float lateral, float vertical, int action) {
-		// TODO Auto-generated method stub
-		
+		getGuitarHero().handleDirections( lateral, vertical, action );
 	}
 	
 	private GuitarHero getGuitarHero(){

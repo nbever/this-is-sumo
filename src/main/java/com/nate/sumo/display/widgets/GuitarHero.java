@@ -6,10 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.nate.model.Quaternarion;
+import com.nate.sumo.KeyMapper;
 import com.nate.sumo.display.ScreenHelper;
-import com.nate.sumo.display.ScreenManager;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.display.TextureNames;
+import com.nate.sumo.display.fonts.Font;
 import com.nate.sumo.display.widgets.SequenceIf.SEQUENCE_KEY;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -28,6 +29,7 @@ public class GuitarHero extends Widget {
 	private float xInt;
 	private float maxBack = 0.0f;
 	private SequenceMapper currentHitPoint;
+	private boolean done = false;
 	
 	private static final float SIZE = 0.2f;
 	
@@ -44,10 +46,6 @@ public class GuitarHero extends Widget {
 		private float position = -100.0f;
 		private int hitScore = NONE; 
 		private int textureId = -1;
-		
-		public SequenceMapper( SEQUENCE_KEY key ){
-			this.key = key;
-		}
 		
 		public SequenceMapper( SEQUENCE_KEY key, float position ){
 			this.key = key;
@@ -147,9 +145,9 @@ public class GuitarHero extends Widget {
 			return TextureManager.getInstance().getTextureId( TextureNames.CTL_UP );
 		case DOWN:
 			return TextureManager.getInstance().getTextureId( TextureNames.CTL_DOWN );
+		default:
+			return -1;
 		}
-		
-		return -1;
 	}
 	
 	private void calculateHelpers( float xStart, float xFinish, float yStart, float yFinish ){
@@ -160,6 +158,24 @@ public class GuitarHero extends Widget {
 		// (pos, x) -> m(-5.0, xFinish), M(maxBack, xStart)
 		xSlope = (xStart - xFinish) / (getMaxBack() - (-5.0f) );
 		xInt = xStart - (xSlope * (getMaxBack()));
+	}
+	
+	public int getScore(){
+		
+		double total = 0;
+		double points = 0;
+		
+		for ( SequenceMapper sm : getSequenceMapper() ){
+			points += sm.getHitScore();
+			total += 2;
+		}
+		
+		int score = (int)Math.round( (points / total) * 100.0 );
+		return score;
+	}
+	
+	public boolean isDone(){
+		return done;
 	}
 	
 	@Override
@@ -177,6 +193,9 @@ public class GuitarHero extends Widget {
 			if ( getSequenceMapper().get( getSequenceMapper().size()-1 ).getPosition() < 0.0f ){
 				drawControlStrip( eTime );
 			}
+			else {
+				done = true;
+			}
 			
 			// draw the results
 			glPushMatrix();
@@ -192,7 +211,7 @@ public class GuitarHero extends Widget {
 							glColor4f( 0.1f, 0.9f, 0.1f, 0.8f );
 						}
 						else if ( cM.getHitScore() == SequenceMapper.PARTIAL ){
-							glColor4f( 1.0f, 0.5f, 0.5f, 0.8f );
+							glColor4f( 1.0f, 1.0f, 0.0f, 0.8f );
 						}
 						else {
 							glColor4f( 0.9f, 0.1f, 0.0f, 0.8f );
@@ -203,6 +222,18 @@ public class GuitarHero extends Widget {
 					}
 				}
 			glPopMatrix();
+			
+			if ( isDone() ){
+				glPushMatrix();
+					glEnable( GL_BLEND );
+					glEnable( GL_TEXTURE_2D );
+					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+					glColor3f( 1.0f, 1.0f, 1.0f );
+					glTranslatef( getXFinish() - 0.16f, getYFinish(), -5.0f );
+					glScalef( 1.8f, 1.8f, 1.0f );
+					Font.TIMES_NEW_ROMAN.drawString( getScore() + "%" );
+				glPopMatrix();
+			}
 			
 			glDisable( GL_TEXTURE_2D );
 			glDisable( GL_BLEND );
@@ -343,14 +374,104 @@ public class GuitarHero extends Widget {
 
 	@Override
 	public void handleKey(int key, int scanCode, int action, int mods) {
-		// TODO Auto-generated method stub
-
+		buttonEntered( key );
 	}
 
 	@Override
 	public void handleDirections(float lateral, float vertical, int action) {
-		// TODO Auto-generated method stub
-
+		if ( Math.abs( lateral ) > Math.abs( vertical ) ){
+			if ( lateral < 0 ){
+				buttonEntered( KeyMapper.LEFT_DPAD );
+			}
+			else {
+				buttonEntered( KeyMapper.RIGHT_DPAD );
+			}
+		}
+		else {
+			if ( vertical < 0 ){
+				buttonEntered( KeyMapper.DOWN_DPAD );
+			}
+			else {
+				buttonEntered( KeyMapper.UP_DPAD );
+			}
+		}
+	}
+	
+	private void buttonEntered( int key ){
+		
+		SequenceMapper sm = getCurrentHitPoint();
+		
+		if ( sm == null ){
+			return;
+		}
+		
+		if ( sm.getHitScore() == SequenceMapper.NONE ){
+			
+			boolean isKeyRight = pressMatch( sm.getKey(), key );
+			
+			if ( !isKeyRight ){
+				sm.setHitScore( SequenceMapper.MISS );
+				return;
+			}
+			
+			if ( sm.getPosition() < -3.0 && sm.getPosition() > -5.0 ){
+//				System.out.println( "Hit: " + sm.getPosition() );
+				sm.setHitScore( SequenceMapper.HIT );
+			}
+			else if ( sm.getPosition() <= 0.0 ){
+//				System.out.println( "Partial: " + sm.getPosition() );
+				sm.setHitScore( SequenceMapper.PARTIAL );
+			}
+			else {
+//				System.out.println(  "Missed: " + sm.getPosition() );
+				sm.setHitScore( SequenceMapper.MISS );
+			}
+		}
+	}
+	
+	private boolean pressMatch( SEQUENCE_KEY sKey, int bKey ){
+		
+		if ( sKey.equals( SEQUENCE_KEY.A ) && bKey == KeyMapper.A_BUTTON ){
+			return true;
+		}
+		
+		if ( sKey.equals( SEQUENCE_KEY.B ) && bKey == KeyMapper.B_BUTTON ){
+			return true;
+		}
+		
+		if ( sKey.equals( SEQUENCE_KEY.X ) && bKey == KeyMapper.X_BUTTON ){
+			return true;
+		}
+		
+		if ( sKey.equals( SEQUENCE_KEY.Y ) && bKey == KeyMapper.Y_BUTTON ){
+			return true;
+		}
+		
+		if ( sKey.equals( SEQUENCE_KEY.UP ) && bKey == KeyMapper.UP_DPAD ){
+			return true;
+		}
+		
+		if ( sKey.equals( SEQUENCE_KEY.DOWN ) && bKey == KeyMapper.DOWN_DPAD ){
+			return true;
+		}
+		
+		if ( sKey.equals( SEQUENCE_KEY.AWAY ) && isTowardLeft() && bKey == KeyMapper.RIGHT_DPAD ){
+			return true;
+		}
+		
+		if ( sKey.equals( SEQUENCE_KEY.TOWARD ) && !isTowardLeft() && bKey == KeyMapper.RIGHT_DPAD ){
+			return true;
+		}
+		
+		if ( sKey.equals( SEQUENCE_KEY.AWAY ) && !isTowardLeft() && bKey == KeyMapper.LEFT_DPAD ){
+			return true;
+		}
+		
+		if ( sKey.equals( SEQUENCE_KEY.TOWARD ) && isTowardLeft() && bKey == KeyMapper.LEFT_DPAD ){
+			return true;
+		}
+		
+		return false;
 	}
 
 	@Override
