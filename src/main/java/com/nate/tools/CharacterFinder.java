@@ -11,7 +11,7 @@ import com.nate.sumo.display.fonts.JapaneseFontTranslator;
 
 public class CharacterFinder {
 
-	private static final String PAGE = "http://www.sumo.or.jp/honbasho/banzuke/index?rank=5&page=2";
+	private static final String PAGE = "http://www.saiga-jp.com/language/kanji_list.html";
 	
 	public static void main( String[] args ){
 		try {
