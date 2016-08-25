@@ -2,7 +2,7 @@ package com.nate.sumo.model.fight.tachiai;
 
 import static org.lwjgl.opengl.GL11.*;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
 
 import com.nate.sumo.KeyMapper;
@@ -15,7 +15,6 @@ import com.nate.sumo.model.fight.FightKnowledgeIf;
 import com.nate.sumo.model.fight.RikishiStatus;
 import com.nate.sumo.model.fight.RikishiStatus.PLAYER_CONTROL;
 import com.nate.sumo.model.fight.actions.tachiai.Oshi;
-import com.nate.sumo.model.rikishi.RikishiStats;
 import com.nate.sumo.model.rikishi.RikishiTemperment;
 import com.nate.util.MathHelper;
 
@@ -31,6 +30,10 @@ public class TachiAiHandler implements KeyHandler{
 	private double westEffectiveness = -1.0;
 	private GuitarHero eastGuitarHero;
 	private GuitarHero westGuitarHero;
+	
+	private double eastBreathRate = -1.0;
+	private double westBreatRate = -1.0;
+	private double runningTime = 0.0;
 	
 	private FightKnowledgeIf fightKnowledge;
 	
@@ -54,6 +57,10 @@ public class TachiAiHandler implements KeyHandler{
 				}
 				else if ( getEastEffectiveness() == -1.0 ){
 					getEastGuitarHero().draw();
+					
+					if ( getEastGuitarHero().isDone() ){
+						setEastEffectiveness( (double)getEastGuitarHero().getScore() / 100.0 );
+					}
 				}
 			}
 			
@@ -63,11 +70,47 @@ public class TachiAiHandler implements KeyHandler{
 				}
 				else if ( getWestEffectiveness() == -1.0 ){
 					getWestGuitarHero().draw();
+					
+					if ( getWestGuitarHero().isDone() ){
+						setWestEffectiveness( (double)getWestGuitarHero().getScore() / 100.0 );
+					}
 				}
+			}
+			
+			// draw the clouds
+			if ( getEastEffectiveness() != -1.0 && getWestEffectiveness() != -1.0 ){
+				drawClouds();
 			}
 			
 			glDisable( GL_TEXTURE_2D );
 			glDisable( GL_BLEND );
+		glPopMatrix();
+	}
+	
+	private void drawClouds(){
+		
+		if ( runningTime == 0.0 ){
+			runningTime = Instant.now().toEpochMilli();
+		}
+		
+		double elapsed = Instant.now().toEpochMilli() - runningTime;
+		
+		// initialize the breath rates
+		if ( getEastBreathRate() == -1.0 ){
+			setEastBreathRate( (Math.random()*8.0 + 2.0) / 1000.0 );
+		}
+		
+		if ( getWestBreathRate() == -1.0 ){
+			setWestBreathRate( (Math.random()*8.0 + 2.0) / 1000.0 );
+		}
+		
+		float scaleFactor = (float)( 0.4 * Math.sin( elapsed * getEastBreathRate() ) + 1.0);
+		
+		glPushMatrix();
+			glColor3f( 1.0f, 1.0f, 1.0f );
+			glTranslatef( 0.0f, 0.0f, ScreenHelper.SCREEN_DEPTH );
+			glScalef( scaleFactor, scaleFactor, 1.0f );
+			ScreenHelper.getInstance().drawSquare( 0.2f, 0.2f, false, true, 1.0f );
 		glPopMatrix();
 	}
 	
@@ -271,6 +314,22 @@ public class TachiAiHandler implements KeyHandler{
 	
 	private double getWestEffectiveness(){
 		return westEffectiveness;
+	}
+	
+	private double getEastBreathRate(){
+		return eastBreathRate;
+	}
+	
+	private void setEastBreathRate( double rate ){
+		eastBreathRate = rate;
+	}
+	
+	private double getWestBreathRate(){
+		return westBreatRate;
+	}
+	
+	private void setWestBreathRate( double rate ){
+		westBreatRate = rate;
 	}
 	
 	private GuitarHero getEastGuitarHero(){
