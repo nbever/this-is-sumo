@@ -131,7 +131,7 @@ public class MatchSetupScreen extends SwipeScreen {
 			glPopMatrix();
 			
 			glPushMatrix();
-				glTranslatef( -0.01f, 0.0f, 0.0f );
+				glTranslatef( -0.1f, 0.0f, 0.0f );
 				glScalef( 2.4f, 2.4f, 0.0f );
 				glColor3f( 1.0f, 0.0f, 0.0f );
 				Font.JAPANESE_CALI.drawJapaneseString( "対" );

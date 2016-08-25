@@ -100,17 +100,50 @@ public class TachiAiHandler implements KeyHandler{
 			setEastBreathRate( (Math.random()*8.0 + 2.0) / 1000.0 );
 		}
 		
-		if ( getWestBreathRate() == -1.0 ){
+		while ( getWestBreathRate() == -1.0 ){
 			setWestBreathRate( (Math.random()*8.0 + 2.0) / 1000.0 );
+			
+			if ( getWestBreathRate() == getEastBreathRate() ){
+				setWestBreathRate( -1.0 );
+			}
 		}
 		
-		float scaleFactor = (float)( 0.4 * Math.sin( elapsed * getEastBreathRate() ) + 1.0);
+		float eastScaleFactor = (float)( 0.4 * Math.sin( elapsed * getEastBreathRate() ) + 1.0);
+		float westScaleFactor = (float)( 0.4 * Math.sin( elapsed * getWestBreathRate() ) + 1.0);
 		
 		glPushMatrix();
+		
 			glColor3f( 1.0f, 1.0f, 1.0f );
-			glTranslatef( 0.0f, 0.0f, ScreenHelper.SCREEN_DEPTH );
-			glScalef( scaleFactor, scaleFactor, 1.0f );
-			ScreenHelper.getInstance().drawSquare( 0.2f, 0.2f, false, true, 1.0f );
+			
+			if ( Math.abs( eastScaleFactor - westScaleFactor ) <= 0.1 && eastScaleFactor > 1.2 && elapsed > 1500 ){
+
+				// always flip the color
+				glColor3f( 1.0f, 0.0f, 0.0f );
+	
+				// only set the stuff once.
+				if ( getWestBreathRate() != getEastBreathRate() ){
+					if ( getWestBreathRate() > getEastBreathRate() ){
+						setWestBreathRate( getEastBreathRate() );
+						westScaleFactor = eastScaleFactor;
+					}
+					else {
+						setEastBreathRate( getWestBreathRate() );
+						eastScaleFactor = westScaleFactor;
+					}
+				}
+			}
+			
+			glPushMatrix();
+				glTranslatef( -0.25f, -0.2f, ScreenHelper.SCREEN_DEPTH );
+				glScalef( eastScaleFactor, eastScaleFactor, 1.0f );
+				ScreenHelper.getInstance().drawSquare( 0.1f, 0.1f, false, true, 1.0f );
+			glPopMatrix();
+			glPushMatrix();
+				glTranslatef( 0.25f, -0.2f, ScreenHelper.SCREEN_DEPTH );
+				glRotatef( 180.0f, 0.0f, 1.0f, 0.0f );
+				glScalef( westScaleFactor, westScaleFactor, 1.0f );
+				ScreenHelper.getInstance().drawSquare( 0.1f, 0.1f, false, true, 1.0f );
+		glPopMatrix();			
 		glPopMatrix();
 	}
 	
