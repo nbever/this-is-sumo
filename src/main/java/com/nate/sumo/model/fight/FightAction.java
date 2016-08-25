@@ -1,11 +1,7 @@
 package com.nate.sumo.model.fight;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.nate.model.MD5Animation;
-import com.nate.model.MD5FrameData;
 
 public abstract class FightAction {
 
@@ -56,6 +52,7 @@ public abstract class FightAction {
 	
 	public void start(){
 
+		setStartTime();
 		initializeActionTimers();
 		
 		MD5Animation newAnimation = getAnimation();
@@ -66,7 +63,7 @@ public abstract class FightAction {
 	}
 	
 	private void initializeActionTimers(){
-		setStartTime();
+
 		setPhaseStartTime();
 		currentStatus = STATUS.ATTEMPT;
 		currentTime = Instant.now().toEpochMilli();
@@ -128,14 +125,22 @@ public abstract class FightAction {
 				setCurrentStatus( STATUS.FAILURE );
 			}
 		}
-		else if ( getCurrentStatus().equals( STATUS.EXECUTE ) &&
-			getTotalActionTime() > getTryTime() + getActionTime() ){
+		else if ( getCurrentStatus().equals( STATUS.EXECUTE ) ){
 			
-			setCurrentStatus( STATUS.RECOVER );
+//			System.out.println( "Total Time: " + getTotalActionTime() + " To enter recovery: " + (getTryTime() + getActionTime() ) );
+			
+			if( getTotalActionTime() > getTryTime() + getActionTime() ){
+				setCurrentStatus( STATUS.RECOVER );				
+			}
+
 		}
-		else if ( getCurrentStatus().equals(  STATUS.RECOVER ) &&
-			getTotalActionTime() > getTryTime() + getActionTime() + getRecoveryTime() ){
-			setCurrentStatus( STATUS.DONE );
+		else if ( getCurrentStatus().equals(  STATUS.RECOVER ) ){
+			
+//			System.out.println( "Total Time: " + getTotalActionTime() + " To be done: " + (getTryTime() + getActionTime() + getRecoveryTime() ) );
+			
+			if ( getTotalActionTime() > getTryTime() + getActionTime() + getRecoveryTime() ){
+				setCurrentStatus( STATUS.DONE );				
+			}
 		}
 		
 		computeCurrentStatus();

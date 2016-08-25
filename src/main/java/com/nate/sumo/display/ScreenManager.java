@@ -94,6 +94,16 @@ public class ScreenManager implements Drawable, KeyHandler
 				}
 			}
 			
+			try {
+				setBackgroundTexture( nextScreen.getScreenBackground() );
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			nextScreen.draw();
 		}
 		
@@ -141,12 +151,21 @@ public class ScreenManager implements Drawable, KeyHandler
 	
 	public void setBackgroundTexture( String resource ) throws IOException, URISyntaxException{
 		
+		if ( resource.equals( Screen.DONT_CHANGE ) ){
+			return;
+		}
+		
 		if ( backgroundTexture != -1 ){
 			TextureManager.getInstance().releaseTexture( backgroundTexture );
 			backgroundTexture = -1;
 		}
 		
 		if ( resource == null ){
+			return;
+		}
+		
+		if ( resource.equals( Screen.NONE ) ){
+			backgroundTexture = -1;
 			return;
 		}
 		

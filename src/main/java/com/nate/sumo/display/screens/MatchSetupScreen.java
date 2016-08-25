@@ -18,6 +18,7 @@ import com.nate.sumo.display.widgets.ControllerSelector;
 import com.nate.sumo.display.widgets.Spinner;
 import com.nate.sumo.model.common.Place;
 import com.nate.sumo.model.fight.Fight;
+import com.nate.sumo.model.fight.RikishiStatus.PLAYER_CONTROL;
 import com.nate.sumo.model.rikishi.Heya;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -195,6 +196,20 @@ public class MatchSetupScreen extends SwipeScreen {
 				close();
 			}
 			else if ( key == KeyMapper.A_BUTTON ){
+				
+				// set the player control
+				if ( getPlayer1().getSelection() == 0 ){
+					getFight().getEastStatus().setControl( PLAYER_CONTROL.PLAYER_1 );
+				}else if ( getPlayer1().getSelection() == 2 ){
+					getFight().getWestStatus().setControl( PLAYER_CONTROL.PLAYER_1 );
+				}
+				
+				if ( getPlayer2().getSelection() == 0 ){
+					getFight().getEastStatus().setControl( PLAYER_CONTROL.PLAYER_2 );
+				}else if ( getPlayer2().getSelection() == 2 ){
+					getFight().getWestStatus().setControl( PLAYER_CONTROL.PLAYER_2 );
+				}
+				
 				Fight fightStatus = (Fight)getInitData().get( Fight.class.getSimpleName() );
 				ScreenInitData next = new ScreenInitData( FightScreen.class );
 				next.getInitData().put( Fight.class.getSimpleName(), fightStatus );

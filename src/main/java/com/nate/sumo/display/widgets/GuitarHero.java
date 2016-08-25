@@ -151,12 +151,12 @@ public class GuitarHero extends Widget {
 	}
 	
 	private void calculateHelpers( float xStart, float xFinish, float yStart, float yFinish ){
-		// ( pos, y) -> m(-5.0, yFinish), M(maxBack, yStart)
-		ySlope = (yStart - yFinish) / (getMaxBack() - (-5.0f) );
+		// ( pos, y) -> m(0.0, yFinish), M(maxBack, yStart)
+		ySlope = (yStart - yFinish) / getMaxBack();
 		yInt = yStart - (ySlope * (getMaxBack()));
 		
-		// (pos, x) -> m(-5.0, xFinish), M(maxBack, xStart)
-		xSlope = (xStart - xFinish) / (getMaxBack() - (-5.0f) );
+		// (pos, x) -> m(0.0, xFinish), M(maxBack, xStart)
+		xSlope = (xStart - xFinish) / getMaxBack();
 		xInt = xStart - (xSlope * (getMaxBack()));
 	}
 	
@@ -190,7 +190,7 @@ public class GuitarHero extends Widget {
 		
 		glPushMatrix();
 		
-			if ( getSequenceMapper().get( getSequenceMapper().size()-1 ).getPosition() < 0.0f ){
+			if ( getSequenceMapper().get( getSequenceMapper().size()-1 ).getPosition() < 5.0f ){
 				drawControlStrip( eTime );
 			}
 			else {
@@ -200,7 +200,7 @@ public class GuitarHero extends Widget {
 			// draw the results
 			glPushMatrix();
 				glDisable( GL_TEXTURE_2D );
-				glTranslatef( getXFinish() - SIZE, 0.13f, -5.0f );
+				glTranslatef( getXFinish() - SIZE, getYFinish(), 0.0f );
 				
 				for ( int i = getSequenceMapper().size()-1; i >= 0; i-- ){
 
@@ -229,7 +229,7 @@ public class GuitarHero extends Widget {
 					glEnable( GL_TEXTURE_2D );
 					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 					glColor3f( 1.0f, 1.0f, 1.0f );
-					glTranslatef( getXFinish() - 0.16f, getYFinish(), -5.0f );
+					glTranslatef( getXFinish() - 0.15f, getYFinish(), 0.0f );
 					glScalef( 1.8f, 1.8f, 1.0f );
 					Font.TIMES_NEW_ROMAN.drawString( getScore() + "%" );
 				glPopMatrix();
@@ -237,6 +237,7 @@ public class GuitarHero extends Widget {
 			
 			glDisable( GL_TEXTURE_2D );
 			glDisable( GL_BLEND );
+			glDisable( GL_DEPTH_TEST );
 			
 		glPopMatrix();
 	}
@@ -245,25 +246,27 @@ public class GuitarHero extends Widget {
 		glEnable( GL_BLEND );
 		glEnable( GL_TEXTURE_2D );
 		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+		
 		// advance the list
 		for ( SequenceMapper m : getSequenceMapper() ){
 			
 			float newPosition = ((float)eTime / 1000.0f ) * getSpeed() + m.getPosition();
 			m.setPosition( newPosition );
+			boolean inHitZone = isInHitZone( m );
 			
 			glPushMatrix();
 				float y = getY( m.getPosition() );
 				float x = getX( m.getPosition() );
 				
 
-				if ( newPosition > -5.0f ){
-					glTranslatef( getXFinish() - 0.15f, getYFinish() - 0.05f, -5.0f );
+				if ( newPosition > 0.0f ){
+					glTranslatef( getXFinish() - 0.15f, getYFinish(), 0.0f );
 				}
 				else {
 					glTranslatef( x, y, m.getPosition() );
 				}
 				
-				if ( isInHitZone( m ) ){
+				if ( inHitZone ){
 					
 					setCurrentHitPoint( m );
 					
@@ -279,19 +282,26 @@ public class GuitarHero extends Widget {
 					clearHitPoint( m );
 				}
 				
-				glEnable( GL_TEXTURE_2D );
-				glBindTexture( GL_TEXTURE_2D, m.getTextureId() );
-				glColor3f( 1.0f, 1.0f, 1.0f );
-				ScreenHelper.getInstance().drawSquare( SIZE/2.0f, SIZE/2.0f, true );
+				if ( inHitZone || m.getPosition() < 5.0f ){
+
+					glEnable( GL_TEXTURE_2D );
+					glBindTexture( GL_TEXTURE_2D, m.getTextureId() );
+					glColor3f( 1.0f, 1.0f, 1.0f );
+					ScreenHelper.getInstance().drawSquare( SIZE/2.0f, SIZE/2.0f, true );
+				}
 				
 			glPopMatrix();
 			
-		}		
+		}	
+		
+		glDisable( GL_BLEND );
+		glDisable( GL_TEXTURE_2D );
+		glDisable( GL_DEPTH_TEST );
 	}
 	
 	private boolean isInHitZone( SequenceMapper mapper ){
 		
-		if ( mapper.getPosition() > -5.0f && mapper.getPosition() < 0.0f ){
+		if ( mapper.getPosition() > 0.0f && mapper.getPosition() < 5.0f ){
 			return true;
 		}
 		
@@ -414,11 +424,11 @@ public class GuitarHero extends Widget {
 				return;
 			}
 			
-			if ( sm.getPosition() < -3.0 && sm.getPosition() > -5.0 ){
+			if ( sm.getPosition() < 2.0 && sm.getPosition() > -1.0 ){
 //				System.out.println( "Hit: " + sm.getPosition() );
 				sm.setHitScore( SequenceMapper.HIT );
 			}
-			else if ( sm.getPosition() <= 0.0 ){
+			else if ( sm.getPosition() <= 5.0 ){
 //				System.out.println( "Partial: " + sm.getPosition() );
 				sm.setHitScore( SequenceMapper.PARTIAL );
 			}

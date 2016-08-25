@@ -100,4 +100,22 @@ public class KeyMapper {
 		screenManager.handleDirections( lateral, vertical, action );
 	}
 	
+	public static int convertDirectionToKey( float lateral, float vertical ){
+		
+		if ( Math.abs( lateral ) > Math.abs( vertical ) ){
+			if ( lateral < 0.0f ){
+				return LEFT_DPAD;
+			}
+			
+			return RIGHT_DPAD;
+		}
+		else {
+			if ( vertical < 0.0f ){
+				return DOWN_DPAD;
+			}
+			
+			return UP_DPAD;
+		}
+	}
+	
 }

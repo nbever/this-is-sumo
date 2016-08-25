@@ -37,4 +37,19 @@ public class MathHelper {
 		return reg_tan;
 	}
 	
+	/**
+	 * To find the a value in a  y=a(x-vX)^2 + vY formula
+	 * @param x some x
+	 * @param y some matching y
+	 * @param vX the inflection point x
+	 * @param vY the inflection point y
+	 * @return
+	 */
+	public static Double findAPoly2( Double x, Double y, Double vX, Double vY ){
+		
+		Double a = y - vY;
+		a /= Math.pow( x-vX, 2.0 );
+		return a;
+	}
+	
 }

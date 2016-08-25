@@ -6,7 +6,7 @@ import java.util.List;
 import com.nate.model.MD5Animation;
 import com.nate.sumo.model.fight.FightKnowledgeIf;
 import com.nate.sumo.model.fight.RikishiStatus;
-import com.nate.sumo.model.fight.TachiAiAction;
+import com.nate.sumo.model.fight.tachiai.TachiAiAction;
 
 public class Henka extends TachiAiAction
 {

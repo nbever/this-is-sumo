@@ -12,6 +12,10 @@ import com.nate.sumo.display.widgets.Widget;
 
 public abstract class Screen implements Drawable, KeyHandler
 {
+	// background constants
+	public static final String DONT_CHANGE = "DONT_CHANGE";
+	public static final String NONE = "NONE";
+	
 	private Map<String, Integer> textures;
 	private Map<String, Object> initData;
 	protected List<String> textureNames;
@@ -58,6 +62,10 @@ public abstract class Screen implements Drawable, KeyHandler
 				}
 			}
 		}
+	}
+	
+	protected String getScreenBackground(){
+		return DONT_CHANGE;
 	}
 	
 	private void unloadTextures(){

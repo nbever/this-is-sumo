@@ -1,8 +1,6 @@
 package com.nate.sumo.display.screens;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -10,22 +8,26 @@ import java.util.Map;
 
 import objimp.ObjImpScene;
 
+import com.nate.model.Quaternarion;
 import com.nate.sumo.display.Screen;
 import com.nate.sumo.display.ScreenHelper;
-import com.nate.sumo.display.ScreenManager;
 import com.nate.sumo.display.TextureManager;
 import com.nate.sumo.model.fight.Fight;
+import com.nate.sumo.model.fight.Fight.PHASE;
 import com.nate.sumo.model.fight.RikishiStatus;
+import com.nate.sumo.model.fight.RikishiStatus.PLAYER_CONTROL;
+import com.nate.sumo.model.fight.tachiai.TachiAiHandler;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class FightScreen extends Screen {
 
 	private ObjImpScene dohyo;
-	private float v_rot = 0.0f;//10.0f;
+	private float v_rot = 10.0f;//10.0f;
 	private float h_rot = 90.0f;
 	
 	private Fight fight;
+	private TachiAiHandler tachiAiHandler;
 	
 	public FightScreen(Map<String, Object> initData) {
 		super( initData );
@@ -37,6 +39,11 @@ public class FightScreen extends Screen {
 	public List<String> getTextureNames() {
 		// TODO Auto-generated method stub
 		return Arrays.asList( "dohyo_tex.tga" );
+	}
+	
+	@Override
+	protected String getScreenBackground() {
+		return NONE;
 	}
 
 	@Override
@@ -52,16 +59,13 @@ public class FightScreen extends Screen {
 			glTranslatef( 0.0f, 0.0f, ScreenHelper.SCREEN_DEPTH );
 			
 			glColor3f( 1.0f, 1.0f, 1.0f );
-//			Font.JAPANESE_CALI.drawJapaneseString( "ロヂング。。。" );
-//			Font.TIMES_NEW_ROMAN.drawString( "Test 1 2" );
-			
+
 			glPushMatrix();
 			
 				glTranslatef( 0.0f, -1.0f, -3.0f );
 				glScalef( 0.6f, 0.6f, 0.6f );
 				glDisable( GL_BLEND );
-//				glEnable( GL_CULL_FACE );
-				
+
 				glRotatef( v_rot, 1.0f, 0.0f, 0.0f );
 				glRotatef( h_rot, 0.0f, 1.0f, 0.0f );
 			
@@ -71,80 +75,110 @@ public class FightScreen extends Screen {
 				glDisable( GL_TEXTURE_2D );
 				
 				glPushMatrix();
-					glColor3f( 1.0f, 1.0f, 0.0f );
-					glTranslatef( 0.0f, 0.45f, 0.0f );
-					glRotatef( 90.0f, 1.0f, 0.0f, 0.0f );
-
-					glScalef( 0.32f, 0.32f, 0.32f );
-					ScreenHelper.getInstance().drawCircle( 7.5f, 36, 10.0f );
-					
-					glPushMatrix();
-						glColor3f( 0.0f, 1.0f, 1.0f );
-						float WIDTH = 18.0f;
-						glTranslatef( -1.0f*(WIDTH/2.0f), -1.0f*(WIDTH/2.0f), 0.0f );
-						ScreenHelper.getInstance().drawSquare( WIDTH, WIDTH, false, false, 10.0f );
-					glPopMatrix();
-					
-					glPushMatrix();
-						glColor3f( 1.0f, 1.0f, 1.0f );
-						
-						glBegin( GL_LINE_STRIP );
-							glVertex3f( -1.5f, -1.25f, 0.0f );
-							glVertex3f( 1.5f, -1.25f, 0.0f );
-						glEnd();
-						
-						glBegin( GL_LINE_STRIP );
-							glVertex3f( -1.5f, 1.25f, 0.0f );
-							glVertex3f( 1.5f, 1.25f, 0.0f );
-						glEnd();
-					glPopMatrix();
+					drawDohyoGuides();
 				
 					getFight().advance();
 					
-					glPushMatrix();
-					
-//						glColor3f( 0.6f, 0.0f, 1.0f );
-//						glLineWidth( 1.0f );
-//						
-//						glBegin( GL_LINE_STRIP );
-//							glVertex3f( 6.0f, -5.0f, 0.0f );
-//							glVertex3f( 6.0f, -5.0f, -3.0f );
-//						glEnd();
-//					
-						setRikishiPosition( getFight().getEastStatus() );
-						
-						glRotatef( 180.0f, 1.0f, 0.0f, 0.0f );
-						glScalef( 1.6f, 1.6f, 1.6f );
-						
-						getFight().advance();
-						getFight().getEastStatus().draw();
-					glPopMatrix();
-					
-					glPushMatrix();
-					
-						setRikishiPosition( getFight().getWestStatus() );
-						
-						glRotatef( 180.0f, 1.0f, 0.0f, 0.0f );
-						glScalef( 1.6f, 1.6f, 1.6f );
-						
-						getFight().getWestStatus().draw();
-					glPopMatrix();
-//					glPushMatrix();
-//						glTranslatef( 0.0f, -2.0f, 0.0f );
-//						
-//						glBegin( GL_LINE_STRIP );
-//							glVertex3f( 0.0f, 0.0f, 0.0f );
-//							glVertex3f( 0.0f, 0.0f, -3.0f );
-//						glEnd();
-//						
-//					glPopMatrix();
-					
+					drawRikishi();
 				glPopMatrix();
-
+					
 			glPopMatrix();
-			
+
 			glDisable( GL_DEPTH_TEST );
 			
+			if ( getFight().getPhase().equals( PHASE.TACHI_AI ) ){
+				
+				getTachiAiHandler().draw();
+			}
+		
+		glPopMatrix();
+	}
+	
+	private void drawRikishi(){
+		glPushMatrix();
+		
+			setRikishiPosition( getFight().getEastStatus() );
+			
+			drawPlayerIndicator( getFight().getEastStatus().getControl() );
+			
+			glRotatef( 180.0f, 1.0f, 0.0f, 0.0f );
+			glScalef( 1.6f, 1.6f, 1.6f );
+			
+			getFight().getEastStatus().draw();
+			
+		glPopMatrix();
+		
+		glPushMatrix();
+		
+			setRikishiPosition( getFight().getWestStatus() );
+			
+			drawPlayerIndicator( getFight().getWestStatus().getControl() );
+			
+			glRotatef( 180.0f, 1.0f, 0.0f, 0.0f );
+			glScalef( 1.6f, 1.6f, 1.6f );
+			
+			getFight().getWestStatus().draw();
+			
+		glPopMatrix();		
+	}
+	
+	private void drawPlayerIndicator( PLAYER_CONTROL control ){
+
+		glPushMatrix();
+		
+			glEnable( GL_BLEND );
+		
+			glTranslatef( 1.6f, 0.0f, 0.0f );
+			Quaternarion rColor = getControlColor( control );
+			
+			if ( rColor != null ){
+				glColor4f( rColor.getX(), rColor.getY(), rColor.getZ(), rColor.getW() );
+				ScreenHelper.getInstance().drawCircle( 1.0f, 36, 10.0f, true );
+			}
+			
+			glDisable( GL_BLEND );
+		glPopMatrix();		
+	}
+	
+	private Quaternarion getControlColor( PLAYER_CONTROL control ){
+		
+		if ( control.equals( PLAYER_CONTROL.PLAYER_2 ) ){
+			return new Quaternarion( 0.6f, 0.0f, 0.0f, 0.3f );
+		}
+		else if ( control.equals( PLAYER_CONTROL.PLAYER_1 ) ){
+			return new Quaternarion( 0.0f, 0.0f, 0.6f, 0.3f );
+		}
+		
+		return null;
+	}
+	
+	private void drawDohyoGuides(){
+		glColor3f( 1.0f, 1.0f, 0.0f );
+		glTranslatef( 0.0f, 0.45f, 0.0f );
+		glRotatef( 90.0f, 1.0f, 0.0f, 0.0f );
+
+		glScalef( 0.32f, 0.32f, 0.32f );
+		ScreenHelper.getInstance().drawCircle( 7.5f, 36, 10.0f );
+		
+		glPushMatrix();
+			glColor3f( 0.0f, 1.0f, 1.0f );
+			float WIDTH = 18.0f;
+			glTranslatef( -1.0f*(WIDTH/2.0f), -1.0f*(WIDTH/2.0f), 0.0f );
+			ScreenHelper.getInstance().drawSquare( WIDTH, WIDTH, false, false, 10.0f );
+		glPopMatrix();
+		
+		glPushMatrix();
+			glColor3f( 1.0f, 1.0f, 1.0f );
+			
+			glBegin( GL_LINE_STRIP );
+				glVertex3f( -1.5f, -1.25f, 0.0f );
+				glVertex3f( 1.5f, -1.25f, 0.0f );
+			glEnd();
+			
+			glBegin( GL_LINE_STRIP );
+				glVertex3f( -1.5f, 1.25f, 0.0f );
+				glVertex3f( 1.5f, 1.25f, 0.0f );
+			glEnd();
 		glPopMatrix();
 	}
 	
@@ -211,27 +245,46 @@ public class FightScreen extends Screen {
 
 	@Override
 	public void handleKey(int key, int scanCode, int action, int mods) {
-
+		
+		if ( getFight().getPhase().equals( PHASE.TACHI_AI ) ){
+			getTachiAiHandler().handleKey( key, scanCode, action, mods );
+			return;
+		}
+		
 	}
 	
 	@Override
 	public void handleDirections(float lateral, float vertical, int action) {
-		if ( lateral > 0 ){
-			h_rot += 5.0f;
-		}
-		else if ( lateral < 0 ){
-			h_rot -= 5.0f;
+		
+		if ( getFight().getPhase().equals( PHASE.TACHI_AI ) ){
+			getTachiAiHandler().handleDirections(  lateral, vertical, action );
+			return;
 		}
 		
-		if ( vertical > 0 ){
-			v_rot += 5.0f;
-		}
-		else if ( vertical < 0 ){
-			v_rot -= 5.0f;
-		}		
+//		if ( lateral > 0 ){
+//			h_rot += 5.0f;
+//		}
+//		else if ( lateral < 0 ){
+//			h_rot -= 5.0f;
+//		}
+//		
+//		if ( vertical > 0 ){
+//			v_rot += 5.0f;
+//		}
+//		else if ( vertical < 0 ){
+//			v_rot -= 5.0f;
+//		}		
 	}
 	
 	private Fight getFight(){
 		return fight;
+	}
+	
+	private TachiAiHandler getTachiAiHandler(){
+		if ( tachiAiHandler == null ){
+			tachiAiHandler = new TachiAiHandler( getFight().getEastStatus(), getFight().getWestStatus(), getFight() );
+		}
+		
+		return tachiAiHandler;
 	}
 }

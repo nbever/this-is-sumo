@@ -13,12 +13,17 @@ import com.nate.sumo.model.rikishi.Rikishi;
 
 public class RikishiStatus {
 
+	public enum PLAYER_CONTROL{PLAYER_1,PLAYER_2,CPU};
+	
 	private Rikishi rikishi;
 	private Float medialBalance = 0.0f;
 	private Float lateralBalance = 0.0f;
+	private Float balanceFactor = 1.0f;
 	private Float energy = 1000.0f;
 	private Float maxEnergy = 1000.0f;
 	private boolean east = false;
+	
+	private PLAYER_CONTROL control = PLAYER_CONTROL.CPU;
 	
 	private FightCoordinates spot;
 	
@@ -131,6 +136,22 @@ public class RikishiStatus {
 	
 	private void setLateralBalance( Float val ){
 		lateralBalance = val;
+	}
+	
+	public Float getBalanceFactor(){
+		return balanceFactor;
+	}
+	
+	public void setBalanceFactor( Float val ){
+		balanceFactor = val;
+	}
+	
+	public void setControl( PLAYER_CONTROL control ){
+		this.control = control;
+	}
+	
+	public PLAYER_CONTROL getControl(){
+		return this.control;
 	}
 	
 	public FightKnowledgeIf getFight(){

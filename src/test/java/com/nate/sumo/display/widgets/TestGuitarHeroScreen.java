@@ -42,7 +42,10 @@ public class TestGuitarHeroScreen extends Screen implements SequenceIf{
 	@Override
 	public void drawScreen() {
 		// TODO Auto-generated method stub
-		getGuitarHero().draw();
+		glPushMatrix();
+			glTranslatef( 0.0f, 0.0f, ScreenHelper.SCREEN_DEPTH );
+			getGuitarHero().draw();
+		glPopMatrix();
 		
 //		glPushMatrix();
 //			glTranslatef( -0.5f, 0.5f, -5.0f );
